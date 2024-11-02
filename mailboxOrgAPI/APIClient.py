@@ -78,15 +78,6 @@ class APIClient:
         api_response = self.api_request('hello.innerworld', {})
         return api_response
 
-    def domain_list(self, account) -> dict:
-        """
-        Function to list all domains
-        :param account: the account to list domains for
-        :return: the API response
-        """
-        api_response = self.api_request('domain_list',{'account':account})
-        return api_response
-
     def domain_list(self, account: str) -> dict:
         """
         Function to list all domains
