@@ -48,15 +48,16 @@ class APIClient:
             "jsonrpc": "2.0",
             "id": self.get_jsonrpc_id()
         }
-        # print('Headers:', headers)
         print('API request:\t', request)
 
         api_response = requests.post(
             self.url, data=json.dumps(request), headers=headers).json()
-        print('API response:\t', api_response)
+        print('API full response:\t', api_response)
         if 'result' in api_response:
+            print('API result:\t', api_response['result'])
             return api_response['result']
         elif 'error' in api_response:
+            print(api_response['error'])
             return api_response['error']
         else:
             return api_response
@@ -212,7 +213,7 @@ class APIClient:
         """
         params = {'mail':mail}
         for attribute in attributes:
-            print(attribute)
+            print('Attribute:', attribute)
             if attribute not in mail_set_arguments:
                 raise ValueError(attribute, 'not found')
             if type(attributes[attribute]) != mail_set_arguments[attribute]:
