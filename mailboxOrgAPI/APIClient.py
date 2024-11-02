@@ -84,7 +84,7 @@ class APIClient:
         :param account: the account to list domains for
         :return: the API response
         """
-        api_response = self.api_request('domain_list',{'account':account})
+        api_response = self.api_request('domain.list',{'account':account})
         return api_response
 
     def domain_add(self, account: str, domain: str, password: str) -> dict:
@@ -95,7 +95,7 @@ class APIClient:
         :param password: the password of the domain
         :return: the API response
         """
-        api_response = self.api_request('domain_add', {'account':account, 'domain':domain, 'password':password})
+        api_response = self.api_request('domain.add', {'account':account, 'domain':domain, 'password':password})
         return api_response
 
     def domain_get(self, domain: str) -> dict:
@@ -104,7 +104,7 @@ class APIClient:
         :param domain: the domain to get
         :return: the API response
         """
-        api_response = self.api_request('domain_get',{'domain':domain})
+        api_response = self.api_request('domain.get',{'domain':domain})
         return api_response
 
     def domain_set(self, domain: str, attributes: dict) -> dict:
@@ -118,7 +118,7 @@ class APIClient:
         for element in attributes:
             params.update({element:attributes[element]})
 
-        api_response = self.api_request('domain_set', params)
+        api_response = self.api_request('domain.set', params)
         return api_response
 
 
@@ -145,7 +145,7 @@ class APIClient:
         """
         if forwards is None:
             forwards = []
-        api_response = self.api_request('mail_add',{'mail':mail, 'password':password, 'plan':plan,
+        api_response = self.api_request('mail_.dd',{'mail':mail, 'password':password, 'plan':plan,
                                                     'first_name':first_name, 'last_name':last_name,
                                                     'inboxsave':inboxsave, 'forwards':forwards})
         return api_response
@@ -156,7 +156,7 @@ class APIClient:
         :param mail: the mail to retrieve
         :return the response for the request
         """
-        api_response = self.api_request('mail_get', {'mail':mail})
+        api_response = self.api_request('mail.get', {'mail':mail})
         return api_response
 
     def mail_set(self, mail:str, attributes: dict):
@@ -169,14 +169,14 @@ class APIClient:
         params = {'mail':mail}
         for element in attributes:
             params.update({element: attributes[element]})
-        api_response = self.api_request('mail_set', params)
+        api_response = self.api_request('mail.set', params)
         return api_response
 
-    def mail_delete(self, mail: str):
+    def mail_delete(self, mail: str) -> dict:
         """
         Function to delete a mail
         :param mail: the mail to delete
         :return: the response for the request
         """
-        api_response = self.api_request('mail_delete', {'mail':mail})
-        return api_response    def mail_apppassword_list(self, mail:str) -> dict:        """        Function to list all app passwords of a given mail        :param mail: the mail to list app passwords for        :return: the response for the request        """        api_response = self.api_request('mail.apppassword.list', {'mail':mail})
+        api_response = self.api_request('mail.delete', {'mail':mail})
+        return api_response
