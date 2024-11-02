@@ -190,12 +190,21 @@ class APIClient:
         api_response = self.api_request('mail.apppassword.list', {'mail':mail})
         return api_response
 
-    def mail_apppassword_add(self, mail:str) -> dict:
+    def mail_apppassword_add(self, mail:str, memo:str) -> dict:
         """
         Function to generate a new mail app password for a mail
         :param mail: the mail to generate a new mail app password
+        :param memo: memo of the app password
         :return: the response for the request
         """
-        api_response = self.api_request('mail.apppassword.add', {'mail':mail})
+        api_response = self.api_request('mail.apppassword.add', {'mail':mail, 'memo':memo})
         return api_response
-    
+
+    def mail_apppassword_delete(self, id: int) -> dict:
+        """
+        Function to delete a mail app password
+        :param id: the id of the mail app password
+        :return: the response for the request
+        """
+        api_response = self.api_request('mail.apppassword.delete', {'id':id})
+        return api_response
