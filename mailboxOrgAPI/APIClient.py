@@ -40,11 +40,11 @@ class APIClient:
             "id": self.get_jsonrpc_id()
         }
         # print('Headers:', headers)
-        print('Request:', request)
+        print('API request:\t', request)
 
         api_response = requests.post(
             self.url, data=json.dumps(request), headers=headers).json()
-        print('API response:', api_response)
+        print('API response:\t', api_response)
         return api_response['result']
 
     def auth(self, username, password) -> dict:
