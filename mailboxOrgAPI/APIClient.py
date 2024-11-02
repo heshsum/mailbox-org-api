@@ -5,6 +5,15 @@ import json
 import requests
 
 headers = {'content-type': 'application/json'}
+domain_capabilities = ['MAIL_SPAMPROTECTION', 'MAIL_BLACKLIST', 'MAIL_BACKUPRECOVER', 'MAIL_PASSWORDRESET_SMS']
+mail_capabilities = ['MAIL_SPAMPROTECTION', 'MAIL_BLACKLIST', 'MAIL_BACKUPRECOVER', 'MAIL_OTP', 'MAIL_PASSWORDRESET_SMS']
+mail_set_arguments = {'password': str, 'password_hash': str, 'same_password_allowed': bool,
+                      'require_password_reset': bool, 'plan': str, 'additional_mail_quota': str,
+                      'additional_cloud_quota': str, 'first_name': str, 'last_name': str, 'inboxsave': bool,
+                      'forwards': list, 'aliases': list, 'alternate_mail': str, 'memo': str, 'allow_nets': str,
+                      'active': bool, 'title': str, 'birthday': str, 'position': str, 'department': str, 'company': str,
+                      'street': str, 'postal_code': str, 'city': str, 'phone': str, 'fax': str, 'cell_phone': str,
+                      'uid_extern': str, 'language': str}
 
 class APIClient:
     """
@@ -114,6 +123,21 @@ class APIClient:
         api_response = self.api_request('domain.get',{'domain':domain})
         return api_response
 
+    def domain_capabilities_set(self, domain: str, capabilties: dict) -> dict:
+        """
+        Function to set a domain capabilities
+        :param domain: the domain to set the capabilities for
+        :param capabilties: a list of capabilities to set for the domain
+        :return: the API response
+        """
+        params = {'domain': domain}
+        for element in capabilties:
+            if element not in domain_capabilities:
+                break
+            params.update({element: capabilties[element]})
+        api_response = self.api_request('domain.capabilities.set', params)
+        return api_response
+
     def domain_set(self, domain: str, attributes: dict) -> dict:
         """
         Function to set a domain
@@ -188,12 +212,34 @@ class APIClient:
         :return:
         """
         params = {'mail':mail}
-        for element in attributes:
-            params.update({element: attributes[element]})
+        for attribute in attributes:
+            print(attribute)
+            if attribute not in mail_set_arguments:
+                raise ValueError(attribute, 'not found')
+            if type(attributes[attribute]) != mail_set_arguments[attribute]:
+                errormsg = ('Attribute ' + attribute + ' must be of type ' + str(mail_set_arguments[attribute]) + '. '
+                            + str(type(attributes[attribute])) + ' provided.')
+                raise TypeError(errormsg)
+            params.update({attribute: attributes[attribute]})
         api_response = self.api_request('mail.set', params)
         return api_response
 
-    def mail_delete(self, mail: str) -> dict:
+    def mail_capabilities_set(self, mail: str, capabilties: dict) -> dict:
+        """
+        Function to set a domain capabilities
+        :param mail: the mail to set the capabilities for
+        :param capabilties: a list of capabilities to set for the domain
+        :return: the API response
+        """
+        params = {'mail': mail}
+        for attribute in capabilties:
+            if attribute not in mail_capabilities:
+                raise ValueError(attribute, 'not found')
+            params.update({attribute: capabilties[attribute]})
+        api_response = self.api_request('mail.capabilities.set', params)
+        return api_response
+
+    def mail_del(self, mail: str) -> dict:
         """
         Function to delete a mail
         :param mail: the mail to delete
