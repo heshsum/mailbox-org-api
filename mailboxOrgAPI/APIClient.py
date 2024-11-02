@@ -183,6 +183,7 @@ class APIClient:
         :param forwards: List of addresses to forwards mails to
         :param memo: Memo of the mail
         :param language: the language of the mail in locale format
+        :param uid_extern: the external UID of the mail
         :return: the response for the request
         """
         if forwards is None:
@@ -267,13 +268,13 @@ class APIClient:
         api_response = self.api_request('mail.apppassword.add', {'mail':mail, 'memo':memo})
         return api_response
 
-    def mail_apppassword_delete(self, id: int) -> dict:
+    def mail_apppassword_delete(self, apppassword_id: int) -> dict:
         """
         Function to delete a mail app password
-        :param id: the id of the mail app password
+        :param apppassword_id: the id of the mail app password
         :return: the response for the request
         """
-        api_response = self.api_request('mail.apppassword.delete', {'id':id})
+        api_response = self.api_request('mail.apppassword.delete', {'id':apppassword_id})
         return api_response
 
     def context_list(self, account: str) -> dict:
