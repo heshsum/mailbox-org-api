@@ -188,3 +188,14 @@ class APIClient:
         :return: the response for the request
         """
         api_response = self.api_request('mail.apppassword.list', {'mail':mail})
+        return api_response
+
+    def mail_apppassword_add(self, mail:str) -> dict:
+        """
+        Function to generate a new mail app password for a mail
+        :param mail: the mail to generate a new mail app password
+        :return: the response for the request
+        """
+        api_response = self.api_request('mail.apppassword.add', {'mail':mail})
+        return api_response
+    
