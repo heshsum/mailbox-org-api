@@ -179,4 +179,4 @@ class APIClient:
         :return: the response for the request
         """
         api_response = self.api_request('mail_delete', {'mail':mail})
-        return api_response
+        return api_response    def mail_apppassword_list(self, mail:str) -> dict:        """        Function to list all app passwords of a given mail        :param mail: the mail to list app passwords for        :return: the response for the request        """        api_response = self.api_request('mail.apppassword.list', {'mail':mail})
