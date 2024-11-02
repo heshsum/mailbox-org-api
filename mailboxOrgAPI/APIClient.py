@@ -145,7 +145,7 @@ class APIClient:
         """
         if forwards is None:
             forwards = []
-        api_response = self.api_request('mail_.add',{'mail':mail, 'password':password, 'plan':plan,
+        api_response = self.api_request('mail.add',{'mail':mail, 'password':password, 'plan':plan,
                                                     'first_name':first_name, 'last_name':last_name,
                                                     'inboxsave':inboxsave, 'forwards':forwards})
         return api_response
