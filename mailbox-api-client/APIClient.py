@@ -70,6 +70,14 @@ class APIClient:
             return True
         return False
 
+    def hello_world(self):
+        api_response = self.api_request('hello.world',{})
+        return api_response
+
+    def hello_innerworld(self):
+        api_response = self.api_request('hello.innerworld', {})
+        return api_response
+
     def domain_list(self, account) -> dict:
         """
         Function to list all domains
@@ -79,22 +87,56 @@ class APIClient:
         api_response = self.api_request('domain_list',{'account':account})
         return api_response
 
+    def domain_list(self, account: str) -> dict:
+        """
+        Function to list all domains
+        :param account: the account to list domains for
+        :return: the API response
+        """
+        api_response = self.api_request('domain_list',{'account':account})
+        return api_response
+
+    def domain_add(self, account: str, domain: str, password: str) -> dict:
+        """
+        Function to add a domain
+        :param account: the account to add a domain for
+        :param domain: the domain to add
+        :param password: the password of the domain
+        :return: the API response
+        """
+        api_response = self.api_request('domain_add', {'account':account, 'domain':domain, 'password':password})
+        return api_response
+
+    def domain_get(self, domain: str) -> dict:
+        """
+        Function to get a specific domain
+        :param domain: the domain to get
+        :return: the API response
+        """
+        api_response = self.api_request('domain_get',{'domain':domain})
+        return api_response
+
+    def domain_set(self, domain: str, attributes: dict) -> dict:
+        """
+        Function to set a domain
+        :param domain: the domain to update
+        :param attributes: the attributes to set
+        :return:
+        """
+        params = {'domain':domain }
+        for element in attributes:
+            params.update({element:attributes[element]})
+
+        api_response = self.api_request('domain_set', params)
+        return api_response
+
+
     def mail_list(self, domain) -> dict:
         """
         Function to list all mailboxes
         :return: the response from the mailbox.org Business API
         """
         api_response = self.api_request('mail.list', {'domain':domain})
-        return api_response
-
-
-    def mail_get(self, mail: str):
-        """
-        Function to retrieve a mail address
-        :param mail: the mail to retrieve
-        :return the response for the request
-        """
-        api_response = self.api_request('mail_get', {'mail':mail})
         return api_response
 
     def mail_add(self, mail:str, password: str, plan: str, first_name: str, last_name: str, inboxsave: bool = True,
@@ -115,6 +157,28 @@ class APIClient:
         api_response = self.api_request('mail_add',{'mail':mail, 'password':password, 'plan':plan,
                                                     'first_name':first_name, 'last_name':last_name,
                                                     'inboxsave':inboxsave, 'forwards':forwards})
+        return api_response
+
+    def mail_get(self, mail: str):
+        """
+        Function to retrieve a mail address
+        :param mail: the mail to retrieve
+        :return the response for the request
+        """
+        api_response = self.api_request('mail_get', {'mail':mail})
+        return api_response
+
+    def mail_set(self, mail:str, attributes: dict):
+        """
+        Function to update a mail
+        :param mail: the mail to update
+        :param attributes: dict of the attributes to update
+        :return:
+        """
+        params = {'mail':mail}
+        for element in attributes:
+            params.update({element: attributes[element]})
+        api_response = self.api_request('mail_set', params)
         return api_response
 
     def mail_delete(self, mail: str):
