@@ -55,7 +55,6 @@ class APIClient:
             self.url, data=json.dumps(request), headers=headers).json()
         print('API response:\t', api_response)
         if 'result' in api_response:
-            print("result exists")
             return api_response['result']
         elif 'error' in api_response:
             return api_response['error']
