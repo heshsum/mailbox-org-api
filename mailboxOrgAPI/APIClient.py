@@ -190,7 +190,7 @@ class APIClient:
         :param mail: the mail to delete
         :return: the response for the request
         """
-        api_response = self.api_request('mail.delete', {'mail':mail})
+        api_response = self.api_request('mail.del', {'mail':mail})
         return api_response
 
     def mail_apppassword_list(self, mail:str) -> dict:
