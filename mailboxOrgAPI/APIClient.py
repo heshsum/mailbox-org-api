@@ -131,7 +131,7 @@ class APIClient:
         return api_response
 
     def mail_add(self, mail:str, password: str, plan: str, first_name: str, last_name: str, inboxsave: bool = True,
-                 forwards=None):
+                 forwards: list = None, memo: str = None, language: str = 'en_EN', uid_extern: str = None) -> dict:
         """
         Function to add a mail
         :param mail: the mail to add
@@ -141,13 +141,18 @@ class APIClient:
         :param last_name: the last name of the mail
         :param inboxsave: True if the mail should be saved into the inbox folder (relevant for forwards)
         :param forwards: List of addresses to forwards mails to
+        :param memo: Memo of the mail
+        :param language: the language of the mail in locale format
         :return: the response for the request
         """
         if forwards is None:
             forwards = []
+        if memo is None:
+            memo = ''
         api_response = self.api_request('mail.add',{'mail':mail, 'password':password, 'plan':plan,
                                                     'first_name':first_name, 'last_name':last_name,
-                                                    'inboxsave':inboxsave, 'forwards':forwards})
+                                                    'inboxsave':inboxsave, 'forwards':forwards, 'memo':memo,
+                                                    'language':language, 'uid_extern':uid_extern})
         return api_response
 
     def mail_get(self, mail: str):
