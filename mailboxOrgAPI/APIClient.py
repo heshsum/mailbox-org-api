@@ -229,3 +229,14 @@ class APIClient:
         """
         api_response = self.api_request('mail.apppassword.delete', {'id':id})
         return api_response
+
+    def context_list(self, account: str) -> dict:
+        """
+        Function to list all contexts of a given account
+        :param account: the account to list all contexts for
+        :return: the response for the request
+        """
+        api_response = self.api_request('context.list', {'account':account})
+        return api_response
+
+
