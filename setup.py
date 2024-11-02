@@ -1,7 +1,7 @@
 from setuptools import find_packages, setup
 
 setup(
-    name='mailbox-api-client',
+    name='mailboxOrgAPI',
     packages=find_packages(),
     version='0.1.0',
     description='A library to access the mailbox.org Business API',
