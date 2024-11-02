@@ -128,6 +128,15 @@ class APIClient:
         api_response = self.api_request('domain.set', params)
         return api_response
 
+    def domain_del(self, account: str, domain: str) -> dict:
+        """
+        Function to delete a domain
+        :param account: the account to delete a domain in
+        :param domain: the domain to delete
+        :return: the API response
+        """
+        api_response = self.api_request('domain.del', {'account':account, 'domain':domain})
+        return api_response
 
     def mail_list(self, domain) -> dict:
         """
