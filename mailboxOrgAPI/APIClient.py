@@ -45,7 +45,14 @@ class APIClient:
         api_response = requests.post(
             self.url, data=json.dumps(request), headers=headers).json()
         print('API response:\t', api_response)
-        return api_response['result']
+        if 'result' in api_response:
+            print("result exists")
+            return api_response['result']
+        elif 'error' in api_response:
+            return api_response['error']
+        else:
+            return api_response
+
 
     def auth(self, username, password) -> dict:
         api_response = self.api_request('auth', {'user':username, 'pass':password})
