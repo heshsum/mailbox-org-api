@@ -1,5 +1,30 @@
 # mailbox-api-client
+
+## Motivation and purpose
 A library to access the mailbox.org Business API.  
 The goal is to provide a comprehensive library that can easily be used to integrate the business features at mailbox.org.
 
-API documentation can be found here: [https://api.mailbox.org](https://api.mailbox.org)
+## Usage
+Basic usage is fairly straightforward: 
+```
+from mailboxOrgAPI import APIClient
+
+username = foo
+password = bar
+
+# Initializing
+api_connection = APIClient.APIClient()
+
+# Testing with hello.world
+connection.hello_world()
+
+# Creating a new API session
+connection.auth(username, password)
+
+# Closing the session
+connection.deauth()
+``` 
+The implemented functions follow the naming scheme of the API, but with underscores instead of points (e.g. `mail_add()` for of `mail.add`).
+
+## API documentation
+mailbox.org provides API documentation here: [https://api.mailbox.org](https://api.mailbox.org)
