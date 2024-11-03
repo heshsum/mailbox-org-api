@@ -5,10 +5,10 @@ A library to access the mailbox.org Business API.
 The goal is to provide a comprehensive library that can easily be used to integrate the business features at mailbox.org.
 
 ## Usage
-Basic usage is fairly straightforward: 
+Basic usage is fairly straightforward:
 
 ```python
-from mailboxOrgAPI import APIClient
+from mailbox_org_api import APIClient
 
 username = 'foo'
 password = 'bar'

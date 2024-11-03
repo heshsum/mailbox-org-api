@@ -1,5 +1,5 @@
 import pytest
-from mailboxOrgAPI import APIClient
+from mailbox_org_api import APIClient
 
 def test_headers():
     client = APIClient.APIClient()
