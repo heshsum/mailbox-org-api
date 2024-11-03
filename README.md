@@ -22,6 +22,9 @@ api_connection.hello_world()
 # Creating a new API session
 api_connection.auth(username, password)
 
+# Testing the session with hello.innerworld
+api_connection.hello_innerworld()
+
 # Closing the session
 api_connection.deauth()
 ``` 
