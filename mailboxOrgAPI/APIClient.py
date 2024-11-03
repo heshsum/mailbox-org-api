@@ -53,44 +53,65 @@ class APIClient:
         api_response = requests.post(
             self.url, data=json.dumps(request), headers=headers).json()
         print('API full response:\t', api_response)
+
+        # Depending on the type of response the return changes.
+        # If a successful result, only the result is returned
         if 'result' in api_response:
             print('API result:\t', api_response['result'])
             return api_response['result']
+
+        # In case of an error, the error is returned
         elif 'error' in api_response:
             print(api_response['error'])
             return api_response['error']
+
+        # If neither a success nor an error, the full response if returned
         else:
             return api_response
 
-
     def auth(self, username, password) -> dict:
+        """
+        Function to authenticate and create a new API session
+        :param username: the username
+        :param password: the password
+        """
         api_response = self.api_request('auth', {'user':username, 'pass':password})
         if api_response['session']:
+            # Level gives information about the calls available
             self.level = api_response["level"]
-            self.auth_id = str(api_response["session"])
-            headers.update({"HPLS-AUTH": self.auth_id})
+            print('Level:', self.level)
 
-        print('Level:', self.level)
-        print('Auth ID:', self.auth_id)
+            # The session id
+            self.auth_id = str(api_response["session"])
+            print('Auth ID:', self.auth_id)
+            # The auth-header is added to the list of headers, as it has to be provided with each call
+            headers.update({"HPLS-AUTH": self.auth_id})
         return api_response
 
-
-    def deauth(self) -> bool:
+    def deauth(self) -> dict:
         """
         Function to close the current API session
         :return: True if the API session is closed, False otherwise
         """
         api_response = self.api_request('deauth',{})
         if api_response:
+            # The auth header is stripped
             del headers["HPLS-AUTH"]
-            return True
-        return False
+        return api_response
 
     def hello_world(self):
+        """
+        Function for hello world, just to test the connection
+        :return: The response from the mailbox.org Business API
+        """
         api_response = self.api_request('hello.world',{})
         return api_response
 
     def hello_innerworld(self):
+        """
+        Hello World function to test the authentication
+        :return: The response from the mailbox.org Business API
+        """
         api_response = self.api_request('hello.innerworld', {})
         return api_response
 
