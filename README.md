@@ -35,7 +35,7 @@ The implemented functions follow the naming scheme of the API, but with undersco
 1. I'm not a programmer. I'm not very good at this. Be aware of my incompetence.
 2. Implementation is not complete. Not all functions of the API have been implemented
 3. Type hinting is available for most functions, but not all of them.  
-E.g. 'mail_add()' accepts kwargs due to the number of available attributes. 
+E.g. `mail_add()` accepts kwargs due to the number of available attributes. 
 In that case type errors will be returned if wrong types are provided.
 
 ## API documentation
