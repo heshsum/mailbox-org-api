@@ -6,7 +6,7 @@ setup(
     version='0.1.0',
     description='A library to access the mailbox.org Business API',
     author='Hendrik Schlange',
-    install_requires=['json','requests'],
+    install_requires=['requests'],
     tests_require=['pytest'],
     test_suite='tests',
 )
