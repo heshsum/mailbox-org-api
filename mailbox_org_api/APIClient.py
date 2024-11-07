@@ -278,7 +278,7 @@ class APIClient:
         api_response = self.api_request('mail.get', {'mail':mail})
         return api_response
 
-    def mail_set(self, mail:str, attributes: dict):
+    def mail_set(self, mail: str, attributes: dict):
         """
         Function to update a mail
         :param mail: the mail to update
