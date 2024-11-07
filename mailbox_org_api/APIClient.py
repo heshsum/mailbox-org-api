@@ -14,6 +14,11 @@ mail_set_arguments = {'password': str, 'password_hash': str, 'same_password_allo
                       'active': bool, 'title': str, 'birthday': str, 'position': str, 'department': str, 'company': str,
                       'street': str, 'postal_code': str, 'city': str, 'phone': str, 'fax': str, 'cell_phone': str,
                       'uid_extern': str, 'language': str}
+account_set_arguments = {'password': str, 'plan': str, 'memo': str, 'address_payment_first_name': str,
+                         'address_payment_last_name': str, 'address_payment_street': str,
+                         'address_payment_zipcode': str, 'address_payment_town': str, 'company': str, 'bank_iban': str,
+                         'bank_bic': str, 'bank_account_owner': str, 'av_contract_accept_name': str,
+                         'tarifflimits': list, 'av_contract_professional_secrecy': bool}
 
 class APIClient:
     """
@@ -113,6 +118,53 @@ class APIClient:
         :return: The response from the mailbox.org Business API
         """
         api_response = self.api_request('hello.innerworld', {})
+        return api_response
+
+    def account_add(self, account_name: str) -> dict:
+        """
+        Function to create a new account
+        :param account_name: the account name to create
+        :return: the response from the mailbox.org Business API
+        """
+        api_response = self.api_request('account.add', {'account_name':account_name})
+        return api_response
+
+    def account_get(self, account_name: str) -> dict:
+        """
+        Function to get a specific account
+        :param account_name: the account name to get
+        :return: the response from the mailbox.org Business API
+        """
+        api_response = self.api_request('account.get', {'account_name':account_name})
+        return api_response
+
+    def account_set(self, account_name: str, attributes: dict) -> dict:
+        """
+        Function to update a specific account
+        :param account_name: the account name to update
+        :param attributes: the attributes to update
+        :return: the response from the mailbox.org Business API
+        """
+        params = {'account':account_name}
+        for attribute in attributes:
+            print('Attribute:', attribute)
+            if attribute not in account_set_arguments:
+                raise ValueError(attribute, 'not found')
+            if type(attributes[attribute]) != account_set_arguments[attribute]:
+                errormsg = ('Attribute ' + attribute + ' must be of type ' + str(account_set_arguments[attribute]) + '. '
+                            + str(type(attributes[attribute])) + ' provided.')
+                raise TypeError(errormsg)
+            params.update({attribute: attributes[attribute]})
+        api_response = self.api_request('account.set', params)
+        return api_response
+
+    def account_del(self, account_name: str) -> dict:
+        """
+        Function to delete a specific account
+        :param account_name: the account name to delete
+        :return: the response from the mailbox.org Business API
+        """
+        api_response = self.api_request('account.del', {'account_name':account_name})
         return api_response
 
     def domain_list(self, account: str) -> dict:
