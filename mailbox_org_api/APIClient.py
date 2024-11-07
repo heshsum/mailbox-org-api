@@ -350,6 +350,15 @@ class APIClient:
         api_response = self.api_request('mail.apppassword.delete', {'id':apppassword_id})
         return api_response
 
+    def mail_externaluid(self, mail: str) -> dict:
+        """
+        Function to get a mail using an external UID
+        :param mail: the mail to get
+        :return: the response for the request
+        """
+        api_response = self.api_request('mail.externaluid', {'mail':mail})
+        return api_response
+
     def context_list(self, account: str) -> dict:
         """
         Function to list all contexts of a given account
