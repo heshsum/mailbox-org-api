@@ -368,4 +368,11 @@ class APIClient:
         api_response = self.api_request('context.list', {'account':account})
         return api_response
 
-    def search(self, search_string: str) -> dict:        """        Function to search for accounts, domains and email addresses        :param search_string: the query to search by        :return: the response for the request        """        api_response = self.api_request('search', {'search':search_string})        return api_response
+    def search(self, search_string: str) -> dict:
+        """
+        Function to search for accounts, domains and email addresses
+        :param search_string: the query to search by
+        :return: the response for the request
+        """
+        api_response = self.api_request('search', {'search':search_string})
+        return api_response
