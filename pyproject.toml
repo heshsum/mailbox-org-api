@@ -1,0 +1,22 @@
+[project]
+name = "mailbox-api-client_heshsum"
+version = "0.1"
+authors = [
+  { name="Hendrik Schlange", email="mail@heshsum.de" },
+]
+description = "A library to access the mailbox.org Business API."
+readme = "README.md"
+requires-python = ">=3.8"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+]
+
+[project.urls]
+Homepage = "https://github.com/heshsum/mailbox-api-client"
+Issues = "https://github.com/heshsum/mailbox-api-client/issues"
+
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
