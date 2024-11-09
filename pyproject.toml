@@ -1,5 +1,5 @@
 [project]
-name = "mailbox-api-client_heshsum"
+name = "mailbox-api-client"
 version = "0.1"
 authors = [
   { name="Hendrik Schlange", email="mail@heshsum.de" },
