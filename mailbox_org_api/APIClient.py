@@ -255,13 +255,14 @@ class APIClient:
                                                     'inboxsave':inboxsave, 'forwards':forwards, 'memo':memo,
                                                     'language':language, 'uid_extern':uid_extern})
 
-    def mail_get(self, mail: str):
+    def mail_get(self, mail: str, include_quota_usage: bool = False) -> dict:
         """
         Function to retrieve a mail address
         :param mail: the mail to retrieve
+        :param include_quota_usage: True if the quota usage should be included in the request
         :return the response for the request
         """
-        return self.api_request('mail.get', {'mail':mail})
+        return self.api_request('mail.get', {'mail':mail, 'include_quota_usage':include_quota_usage})
 
     def mail_set(self, mail: str, attributes: dict):
         """
