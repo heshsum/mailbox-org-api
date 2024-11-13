@@ -333,6 +333,15 @@ class APIClient:
         """
         return self.api_request('mail.setForwards', {'mail':mail, 'forwards':forwards})
 
+    def mail_set_aliases(self, mail: str, aliases: list) -> dict:
+        """
+        Function to set mail aliases
+        :param mail: the mail to set the aliases for
+        :param aliases: a list of aliases to set
+        :return: the response for the request
+        """
+        return self.api_request('mail.setAliases', {'mail':mail, 'aliases':aliases})
+
     def mail_del(self, mail: str) -> dict:
         """
         Function to delete a mail
