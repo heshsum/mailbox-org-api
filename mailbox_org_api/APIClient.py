@@ -292,6 +292,15 @@ class APIClient:
         """
         return self.api_request('mail.set', {'mail':mail, 'password':password})
 
+    def mail_set_password_require_reset(self, mail: str, password: str) -> dict:
+        """
+        Function to set a new password for a mail and force the user to set a new password on the next login
+        :param mail: the mail to set the password for
+        :param password: the password to set
+        :return: the response for the request
+        """
+        return self.api_request('mail.set', {'mail': mail, 'password': password, 'require_reset': True})
+
     def mail_capabilities_set(self, mail: str, capabilties: dict) -> dict:
         """
         Function to set a domain capabilities
