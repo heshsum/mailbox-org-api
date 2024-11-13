@@ -331,7 +331,7 @@ class APIClient:
         :param forwards: a list of addresses to forwards mails to
         :return: the response for the request
         """
-        return self.api_request('mail.setForwards', {'mail':mail, 'forwards':forwards})
+        return self.api_request('mail.set', {'mail':mail, 'forwards':forwards})
 
     def mail_set_aliases(self, mail: str, aliases: list) -> dict:
         """
@@ -340,7 +340,8 @@ class APIClient:
         :param aliases: a list of aliases to set
         :return: the response for the request
         """
-        return self.api_request('mail.setAliases', {'mail':mail, 'aliases':aliases})
+        return self.api_request('mail.set', {'mail':mail, 'aliases':aliases})
+
     def mail_set_state(self, mail: str, active: bool) -> dict:
         """
         Function to activate or deactivate a mail
