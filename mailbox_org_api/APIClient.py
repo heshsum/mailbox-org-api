@@ -324,6 +324,15 @@ class APIClient:
             params.update({attribute: capabilties[attribute]})
         return self.api_request('mail.capabilities.set', params)
 
+    def mail_set_forwards(self, mail: str, forwards: list) -> dict:
+        """
+        Function to set mail forwards
+        :param mail: the mail to set the forwards for
+        :param forwards: a list of addresses to forwards mails to
+        :return: the response for the request
+        """
+        return self.api_request('mail.setForwards', {'mail':mail, 'forwards':forwards})
+
     def mail_del(self, mail: str) -> dict:
         """
         Function to delete a mail
