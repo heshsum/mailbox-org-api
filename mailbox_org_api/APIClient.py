@@ -310,20 +310,6 @@ class APIClient:
         """
         return self.api_request('mail.set', {'mail':mail, 'plan':plan})
 
-    def mail_capabilities_set(self, mail: str, capabilties: dict) -> dict:
-        """
-        Function to set a domain capabilities
-        :param mail: the mail to set the capabilities for
-        :param capabilties: a list of capabilities to set for the domain
-        :return: the API response
-        """
-        params = {'mail': mail}
-        for attribute in capabilties:
-            if attribute not in mail_capabilities:
-                raise ValueError(attribute, 'not found')
-            params.update({attribute: capabilties[attribute]})
-        return self.api_request('mail.capabilities.set', params)
-
     def mail_set_forwards(self, mail: str, forwards: list) -> dict:
         """
         Function to set mail forwards
@@ -350,6 +336,20 @@ class APIClient:
         :return: the response for the request
         """
         return self.api_request('mail.set', {'mail':mail, 'active':active})
+
+    def mail_capabilities_set(self, mail: str, capabilties: dict) -> dict:
+        """
+        Function to set a domain capabilities
+        :param mail: the mail to set the capabilities for
+        :param capabilties: a list of capabilities to set for the domain
+        :return: the API response
+        """
+        params = {'mail': mail}
+        for attribute in capabilties:
+            if attribute not in mail_capabilities:
+                raise ValueError(attribute, 'not found')
+            params.update({attribute: capabilties[attribute]})
+        return self.api_request('mail.capabilities.set', params)
 
     def mail_del(self, mail: str) -> dict:
         """
