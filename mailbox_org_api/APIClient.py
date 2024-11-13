@@ -341,6 +341,14 @@ class APIClient:
         :return: the response for the request
         """
         return self.api_request('mail.setAliases', {'mail':mail, 'aliases':aliases})
+    def mail_set_state(self, mail: str, active: bool) -> dict:
+        """
+        Function to activate or deactivate a mail
+        :param mail: the mail to set the status for
+        :param active: True if the mail should be active, False if it shall be deactivated
+        :return: the response for the request
+        """
+        return self.api_request('mail.set', {'mail':mail, 'active':active})
 
     def mail_del(self, mail: str) -> dict:
         """
