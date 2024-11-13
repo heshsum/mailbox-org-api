@@ -301,6 +301,15 @@ class APIClient:
         """
         return self.api_request('mail.set', {'mail': mail, 'password': password, 'require_reset': True})
 
+    def mail_set_plan(self, mail: str, plan: str) -> dict:
+        """
+        Function to set a new plan for a mail
+        :param mail: the mail to set the plan for
+        :param plan: the plan to set
+        :return: the response for the request
+        """
+        return self.api_request('mail.set', {'mail':mail, 'plan':plan})
+
     def mail_capabilities_set(self, mail: str, capabilties: dict) -> dict:
         """
         Function to set a domain capabilities
