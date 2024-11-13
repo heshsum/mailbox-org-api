@@ -283,6 +283,15 @@ class APIClient:
             params.update({attribute: attributes[attribute]})
         return self.api_request('mail.set', params)
 
+    def mail_set_password(self, mail: str, password: str) -> dict:
+        """
+        Function to set a new password for a mail
+        :param mail: the mail to set the password for
+        :param password: the password to set
+        :return: the response for the request
+        """
+        return self.api_request('mail.set', {'mail':mail, 'password':password})
+
     def mail_capabilities_set(self, mail: str, capabilties: dict) -> dict:
         """
         Function to set a domain capabilities
