@@ -283,6 +283,60 @@ class APIClient:
             params.update({attribute: attributes[attribute]})
         return self.api_request('mail.set', params)
 
+    def mail_set_password(self, mail: str, password: str) -> dict:
+        """
+        Function to set a new password for a mail
+        :param mail: the mail to set the password for
+        :param password: the password to set
+        :return: the response for the request
+        """
+        return self.api_request('mail.set', {'mail':mail, 'password':password})
+
+    def mail_set_password_require_reset(self, mail: str, password: str) -> dict:
+        """
+        Function to set a new password for a mail and force the user to set a new password on the next login
+        :param mail: the mail to set the password for
+        :param password: the password to set
+        :return: the response for the request
+        """
+        return self.api_request('mail.set', {'mail': mail, 'password': password, 'require_reset': True})
+
+    def mail_set_plan(self, mail: str, plan: str) -> dict:
+        """
+        Function to set a new plan for a mail
+        :param mail: the mail to set the plan for
+        :param plan: the plan to set
+        :return: the response for the request
+        """
+        return self.api_request('mail.set', {'mail':mail, 'plan':plan})
+
+    def mail_set_forwards(self, mail: str, forwards: list) -> dict:
+        """
+        Function to set mail forwards
+        :param mail: the mail to set the forwards for
+        :param forwards: a list of addresses to forwards mails to
+        :return: the response for the request
+        """
+        return self.api_request('mail.set', {'mail':mail, 'forwards':forwards})
+
+    def mail_set_aliases(self, mail: str, aliases: list) -> dict:
+        """
+        Function to set mail aliases
+        :param mail: the mail to set the aliases for
+        :param aliases: a list of aliases to set
+        :return: the response for the request
+        """
+        return self.api_request('mail.set', {'mail':mail, 'aliases':aliases})
+
+    def mail_set_state(self, mail: str, active: bool) -> dict:
+        """
+        Function to activate or deactivate a mail
+        :param mail: the mail to set the status for
+        :param active: True if the mail should be active, False if it shall be deactivated
+        :return: the response for the request
+        """
+        return self.api_request('mail.set', {'mail':mail, 'active':active})
+
     def mail_capabilities_set(self, mail: str, capabilties: dict) -> dict:
         """
         Function to set a domain capabilities
