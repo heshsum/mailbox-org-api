@@ -118,30 +118,30 @@ class APIClient:
         """
         return self.api_request('hello.innerworld', {})
 
-    def account_add(self, account_name: str) -> dict:
+    def account_add(self, account: str) -> dict:
         """
         Function to create a new account
-        :param account_name: the account name to create
+        :param account: the account name to create
         :return: the response from the mailbox.org Business API
         """
-        return self.api_request('account.add', {'account_name':account_name})
+        return self.api_request('account.add', {'account':account})
 
-    def account_get(self, account_name: str) -> dict:
+    def account_get(self, account: str) -> dict:
         """
         Function to get a specific account
-        :param account_name: the account name to get
+        :param account: the account name to get
         :return: the response from the mailbox.org Business API
         """
-        return self.api_request('account.get', {'account_name':account_name})
+        return self.api_request('account.get', {'account':account})
 
-    def account_set(self, account_name: str, attributes: dict) -> dict:
+    def account_set(self, account: str, attributes: dict) -> dict:
         """
         Function to update a specific account
-        :param account_name: the account name to update
+        :param account: the account name to update
         :param attributes: the attributes to update
         :return: the response from the mailbox.org Business API
         """
-        params = {'account':account_name}
+        params = {'account':account}
         for attribute in attributes:
             print('Attribute:', attribute)
             if attribute not in account_set_arguments:
@@ -153,13 +153,13 @@ class APIClient:
             params.update({attribute: attributes[attribute]})
         return self.api_request('account.set', params)
 
-    def account_del(self, account_name: str) -> dict:
+    def account_del(self, account: str) -> dict:
         """
         Function to delete a specific account
-        :param account_name: the account name to delete
+        :param account: the account name to delete
         :return: the response from the mailbox.org Business API
         """
-        return self.api_request('account.del', {'account_name':account_name})
+        return self.api_request('account.del', {'account':account})
 
     def domain_list(self, account: str) -> dict:
         """
