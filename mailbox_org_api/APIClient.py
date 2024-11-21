@@ -161,6 +161,9 @@ class APIClient:
         """
         return self.api_request('account.del', {'account':account})
 
+    def account_invoice_list(self, account: str) -> dict:
+        return self.api_request('account.invoice.list', {'account':account})
+
     def domain_list(self, account: str) -> dict:
         """
         Function to list all domains
