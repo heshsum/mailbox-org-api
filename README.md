@@ -1,12 +1,18 @@
-# mailbox-api-client
+# mailbox-org-api
 A library to access the mailbox.org Business API.
 
 ## Motivation and purpose 
 The goal is to provide a comprehensive library that can easily be used to integrate the business features at mailbox.org.
 
-## Installation 
-```python
-pip install git+https://github.com/heshsum/mailbox-api-client
+## Installation
+### Using pip:
+```bash
+pip install mailbox-org-api
+```
+
+### Directly from source:
+```bash
+pip install git+https://github.com/heshsum/mailbox-org-api
 ```
 
 ## Usage

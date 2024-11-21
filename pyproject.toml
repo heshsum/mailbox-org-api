@@ -1,6 +1,6 @@
 [project]
-name = "mailbox-api-client"
-version = "0.1"
+name = "mailbox-org-api"
+version = "0.2.2"
 authors = [
   { name="Hendrik Schlange", email="mail@heshsum.de" },
 ]
@@ -14,8 +14,8 @@ classifiers = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/heshsum/mailbox-api-client"
-Issues = "https://github.com/heshsum/mailbox-api-client/issues"
+Homepage = "https://github.com/heshsum/mailbox-org-api"
+Issues = "https://github.com/heshsum/mailbox-org-api/issues"
 
 [build-system]
 requires = ["setuptools>=61.0"]
