@@ -402,17 +402,17 @@ class APIClient:
         """
         Function to add a group
         :param name: the group name
-        :param display_name: the group's display name'
+        :param display_name: the group's display name
         :param mail_addresses_to_add: a list of mail addresses to add
         """
         return self.api_request('group.add', {'name':name, 'display_name':display_name,
                                               'mail_addresses_to_add':mail_addresses_to_add})
 
-    def group_set(self, name: str, display_name: str, mail_addresses_to_add: [], mail_addresses_to_remove: []) -> dict:
+    def group_set(self, name: str, display_name: str, mail_addresses_to_add: list, mail_addresses_to_remove: list) -> dict:
         """
         Function to modify a group
         :param name: the group name
-        :param display_name: the group's display name'
+        :param display_name: the group's display name
         :param mail_addresses_to_add: a list of mail addresses to add
         :param mail_addresses_to_remove: a list of mail addresses to remove
         """
@@ -423,7 +423,7 @@ class APIClient:
     def group_del(self, name: str) -> dict:
         """
         Function to delete a group
-        :param name: the group's name'
+        :param name: the group's name
         """
         return self.api_request('group.del', {'name':name})
 
