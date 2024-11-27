@@ -396,7 +396,7 @@ class APIClient:
         """
         Function to list all groups for an account
         """
-        return self.api_request('group.list')
+        return self.api_request('group.list', {})
 
     def group_add(self, name: str, display_name: str, mail_addresses_to_add: list) -> dict:
         """
