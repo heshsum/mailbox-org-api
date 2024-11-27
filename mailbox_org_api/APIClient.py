@@ -455,6 +455,25 @@ class APIClient:
         """
         return self.api_request('mail.externaluid', {'mail':mail})
 
+    def mail_backup_list(self, mail: str) -> dict:
+        """
+        Function to list all backups for a given mail
+        :param mail: the mail to list backups for
+        :return: the response for the request - a list of backups
+        """
+        return self.api_request('mail.backup.list', {'mail':mail})
+
+    def mail_backup_import(self, mail: str, id: str, time: str, filter: str) -> dict:
+        """
+        Function to import a backup for a mail
+        :param mail: the mail to import
+        :param id: the id of the backup
+        :param time: the time of the backup
+        :param filter: the filter of the backup - "all" or an IMAP foldername
+        """
+        return self.api_request('mail.backup.import',
+                                {'mail':mail, 'id':id, 'time':time, 'filter':filter})
+
     def group_list(self) -> dict:
         """
         Function to list all groups for an account
