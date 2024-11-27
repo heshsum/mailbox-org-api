@@ -392,6 +392,41 @@ class APIClient:
         """
         return self.api_request('mail.externaluid', {'mail':mail})
 
+    def group_list(self) -> dict:
+        """
+        Function to list all groups for an account
+        """
+        return self.api_request('group.list', {})
+
+    def group_add(self, name: str, display_name: str, mail_addresses_to_add: list) -> dict:
+        """
+        Function to add a group
+        :param name: the group name
+        :param display_name: the group's display name
+        :param mail_addresses_to_add: a list of mail addresses to add
+        """
+        return self.api_request('group.add', {'name':name, 'display_name':display_name,
+                                              'mail_addresses_to_add':mail_addresses_to_add})
+
+    def group_set(self, name: str, display_name: str, mail_addresses_to_add: list, mail_addresses_to_remove: list) -> dict:
+        """
+        Function to modify a group
+        :param name: the group name
+        :param display_name: the group's display name
+        :param mail_addresses_to_add: a list of mail addresses to add
+        :param mail_addresses_to_remove: a list of mail addresses to remove
+        """
+        return self.api_request('group.set', {'name':name, 'display_name':display_name,
+                                              'mail_addresses_to_add':mail_addresses_to_add,
+                                              'mail_addresses_to_remove':mail_addresses_to_remove})
+
+    def group_del(self, name: str) -> dict:
+        """
+        Function to delete a group
+        :param name: the group's name
+        """
+        return self.api_request('group.delete', {'name':name})
+
     def context_list(self, account: str) -> dict:
         """
         Function to list all contexts of a given account
