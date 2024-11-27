@@ -425,7 +425,7 @@ class APIClient:
         Function to delete a group
         :param name: the group's name
         """
-        return self.api_request('group.del', {'name':name})
+        return self.api_request('group.delete', {'name':name})
 
     def context_list(self, account: str) -> dict:
         """
