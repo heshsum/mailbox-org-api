@@ -203,26 +203,23 @@ class APIClient:
                 return invoice['token']
         raise ValueError('Invoice not found')
 
-    def account_invoice_get_pdf(self, account: str, token: str) -> bytes:
+    def account_invoice_get_pdf(self, account: str, invoice_id: str) -> bytes:
         """
         Function to get a specific invoice as a PDf-file
         :param account: the account name
-        :param token: the token for the invoice
+        :param invoice_id: the invoice ID
         :return: the PDF as bytes
         """
         import base64
         import zlib
 
-        # Get the invoice data
-        response = self.api_request('account.invoice.get', {'account': account, 'token': token})
+        # Get the token and retrieve the invoice data
+        response = self.api_request('account.invoice.get',
+                                    {'account': account,
+                                     'token': self.account_invoice_get_token(account, invoice_id)})
 
-        # Get the Base64 encoded data and decode it Decode string to gzip
-        compressed_data = base64.b64decode(response['bin'])
-
-        # Decompress the gzipped data
-        decompressed_data = zlib.decompress(compressed_data)
-
-        return decompressed_data
+        # Take the Base64 encoded data (response['bin']), decode the Base 64, decompress the gz and return the bytes
+        return zlib.decompress(base64.b64decode(response['bin']))
 
     def domain_list(self, account: str) -> dict:
         """
