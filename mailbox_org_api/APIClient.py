@@ -162,7 +162,67 @@ class APIClient:
         return self.api_request('account.del', {'account':account})
 
     def account_invoice_list(self, account: str) -> dict:
+        """
+        Function to list all invoices for a specific account
+        :param account: the account name to list
+        :return: the response from the mailbox.org Business API
+        """
         return self.api_request('account.invoice.list', {'account':account})
+
+    def account_invoice_get(self, account: str, token: str) -> dict:
+        """
+        Function to get a specific of all invoices for an account
+        :param account: the account name
+        :param token: the token for the invoice
+        :return: the response from the mailbox.org Business API - the invoice as a Base64 encoded gzipped string
+        """
+        return self.api_request('account.invoice.get', {'account':account, 'token':token})
+
+    def account_invoice_get_list(self, account: str) -> list:
+        """
+        Function to get a list of all invoices for a specific account
+        """
+        response = self.api_request('account.invoice.list', {'account':account})
+        invoices = []
+
+        for invoice in response:
+            invoices.append(invoice['invoice_id'])
+
+        return invoices
+
+    def account_invoice_get_token(self, account: str, invoice_id: str) -> str:
+        """
+        Function to get the token for a specific invoices of an account
+        :param account: the account name
+        :param invoice_id: the id of the invoice
+        :return: the response from the mailbox.org Business API - the token to get the invoice
+        """
+        response = self.api_request('account.invoice.list', {'account': account})
+        for invoice in response:
+            if invoice['invoice_id'] == invoice_id:
+                return invoice['token']
+        raise ValueError('Invoice not found')
+
+    def account_invoice_get_pdf(self, account: str, token: str) -> bytes:
+        """
+        Function to get a specific invoice as a PDf-file
+        :param account: the account name
+        :param token: the token for the invoice
+        :return: the PDF as bytes
+        """
+        import base64
+        import zlib
+
+        # Get the invoice data
+        response = self.api_request('account.invoice.get', {'account': account, 'token': token})
+
+        # Get the Base64 encoded data and decode it Decode string to gzip
+        compressed_data = base64.b64decode(response['bin'])
+
+        # Decompress the gzipped data
+        decompressed_data = zlib.decompress(compressed_data)
+
+        return decompressed_data
 
     def domain_list(self, account: str) -> dict:
         """
