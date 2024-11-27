@@ -132,7 +132,6 @@ Usage
 invoice_id = 'BMBO-1234-24'
 with open(invoice_id + '.pdf', 'w') as file:
     file.write(api.account_invoice_get_pdf('account_name', invoice_id))
-    file.close()
 ```
 
 ## Here be dragons
