@@ -488,6 +488,31 @@ class APIClient:
         return self.api_request('mail.backup.import',
                                 {'mail':mail, 'id':id, 'time':time, 'filter':filter})
 
+    def mail_blacklist_list(self, mail: str) -> dict:
+        """
+        Function to list the mail blacklist for a given mail address
+        :param mail: the mail to list the blacklist for
+        :return: the response for the request - the blacklist of the mail
+        """
+        return self.api_request('mail.blacklist.list', {'mail':mail})
+
+    def mail_blacklist_add(self, mail: str, add_address: str) -> dict:
+        """
+        Function to add a mail to a blacklist of a mail address
+        :param mail: the mail of the owner of the blacklist
+        :param add_address: the address to add to the blacklist
+        """
+        return self.api_request('mail.blacklist.add', {'mail':mail, 'add_address':add_address})
+
+
+    def mail_blacklist_delete(self, mail: str, delete_address: str) -> dict:
+        """
+        Function to delete a mail from a blacklist
+        :param mail: the mail of the owner of the blacklist
+        :param delete_address: the address to delete from the blacklist
+        """
+        return self.api_request('mail.blacklist.remove', {'mail':mail, 'delete_address':delete_address})
+
     def group_list(self) -> dict:
         """
         Function to list all groups for an account
