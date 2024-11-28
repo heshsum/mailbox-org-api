@@ -25,14 +25,20 @@ class APIClient:
     Object for API Client
     """
 
-    def __init__(self):
+    def __init__(self, debug_output=False):
         # URL of the API
         self.url = "https://api.mailbox.org/v1/"
 
         # JSON RPC ID - a unique ID is required for each request during a session
         self.jsonrpc_id = 0
+
+        # This saves the access level of the user
         self.level = None
+
+        # Session ID when authenticating
         self.auth_id = None
+
+        self.debug_output = debug_output
 
     # Increment the request ID
     def get_jsonrpc_id(self):
@@ -53,16 +59,19 @@ class APIClient:
             "jsonrpc": "2.0",
             "id": self.get_jsonrpc_id()
         }
-        print('API request:\t', request)
+        if self.debug_output:
+            print('API request:\t', request)
 
         api_response = requests.post(
             self.url, data=json.dumps(request), headers=headers).json()
-        print('API full response:\t', api_response)
+        if self.debug_output:
+            print('API full response:\t', api_response)
 
         # Depending on the type of response the return changes.
         # If a successful result, only the result is returned
         if 'result' in api_response:
-            print('API result:\t', api_response['result'])
+            if self.debug_output:
+                print('API result:\t', api_response['result'])
             return api_response['result']
 
         # In case of an error, the error is returned
