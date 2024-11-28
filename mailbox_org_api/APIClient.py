@@ -283,6 +283,14 @@ class APIClient:
         """
         return self.api_request('domain.del', {'account':account, 'domain':domain})
 
+    def domain_validate_spf(self, domain: str) -> dict:
+        """
+        Function to validate the SPF entry of a domain
+        :param domain: the domain to validate
+        :return: the API response - information about the SPF config
+        """
+        return self.api_request('domain.validate.spf', {'domain':domain})
+
     def mail_list(self, domain) -> dict:
         """
         Function to list all mailboxes
