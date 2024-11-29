@@ -541,6 +541,33 @@ class APIClient:
                                               'mail_addresses_to_add':mail_addresses_to_add,
                                               'mail_addresses_to_remove':mail_addresses_to_remove})
 
+    def mail_passwordreset_listmethods(self, mail: str) -> dict:
+        """
+        Function to list all available password reset methods for a given mail
+        :param mail: the mail to query
+        :return: the response for the request - a list of available password reset methods
+        """
+        return self.api_request('mail.passwordreset.listmethods', {'mail':mail})
+
+    def mail_passwordreset_sendsms(self, mail: str, cell_phone: str) -> dict:
+        """
+        Function to send a password reset for a mail via SMS
+        :param mail: the mail to send the SMS for
+        :param cell_phone: the cell phone number of the mailbox
+        :return: the response for the request
+        """
+        return self.api_request('mail.passwordreset.sendsms',{'mail':mail, 'cell_phone':cell_phone})
+
+    def mail_passwordreset_setpassword(self, mail: str, token: str, password: str) -> dict:
+        """
+        Function to set a password reset for a mail using a token
+        :param mail: the mail to set the password for
+        :param token: the token to set the password
+        :param password: the new password to set
+        """
+        return self.api_request('mail.passwordreset.setpassword',
+                                {'mail':mail, 'token':token, 'password':password})
+
     def group_del(self, name: str) -> dict:
         """
         Function to delete a group
