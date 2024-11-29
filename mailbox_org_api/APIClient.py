@@ -488,6 +488,46 @@ class APIClient:
         return self.api_request('mail.backup.import',
                                 {'mail':mail, 'id':id, 'time':time, 'filter':filter})
 
+    def mail_spamprotect_get(self, mail: str) -> dict:
+        """
+        Function to retrieve the spam settings for a given mail
+        :param mail: the mail to get the spam settings for
+        :return: the response for the request - the spam settings
+        """
+        return self.api_request('mail.spamprotect.get', {'mail':mail})
+
+    def mail_spamprotect_set(self, mail: str, greylist: bool, smtp_plausibility: bool, rbl: bool,
+                             bypass_banned_checks: bool, tag2level: float, killlevel: str, route_to: str) -> dict:
+        """
+        Function to set the spam settings for a given mail
+        :param mail: the mail to set the spam settings for
+        :param greylist: (de-)activation of greylisting for the mail
+        :param smtp_plausibility: (de-)activation of SMTP plausibility checks for the mail
+        :param rbl: (de-)activation of Real-time Blacklist checks for the mail
+        :param bypass_banned_checks: (de-)activation of checks for executable files
+        :param tag2level: float value for the spam filter (e.g. 5.5). Will be rounded to 1 decimal place
+        :param killlevel: reject or redirection of spam mails. Allowed values: 'reject' or 'redirection'
+        :param route_to: folder to route spam to
+        """
+
+        if killlevel not in ('reject', 'route'):
+            raise ValueError('''Invalid value for killlevel. Only 'reject' or 'route' are allowed''')
+
+        def bool2str(state: bool) -> str:
+            """
+            Converts a boolean value to '1' if True, and '0' if False...
+            ...because that's how the mailbox.org API expects things.
+            """
+            if state:
+                return '1'
+            return '0'
+
+        return self.api_request('mail.spamprotect.set',
+                                {'greylist': bool2str(greylist),
+                                 'smtp_plausibility':bool2str(smtp_plausibility), 'rbl':bool2str(rbl),
+                                 'bypass_banned_checks':bool2str(bypass_banned_checks), 'tag2level':round(tag2level, 1),
+                                 'killlevel':killlevel, 'route_to':route_to})
+
     def group_list(self) -> dict:
         """
         Function to list all groups for an account
