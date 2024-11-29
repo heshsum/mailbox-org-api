@@ -629,3 +629,53 @@ class APIClient:
         :return: the response for the request
         """
         return self.api_request('search', {'search':search_string})
+
+    def mailinglist_list(self, account: str) -> dict:
+        """
+        Function to list all mailing lists for a given account
+        :param account: the account to list all mailing lists for
+        :return: a dict containing the list of mailing lists
+        """
+        return self.api_request('mailinglist.list', {'account':account})
+
+    def mailinglist_add(self, mailinglist: str, password: str, account: str, adminmail: str = None) -> dict:
+        """
+        Function to add a mailing list
+        :param mailinglist: the mailing list to add
+        :param password: the password of the mailing list
+        :param account: the account of the mailing list
+        :param adminmail: admin email address of the mailing list (optional)
+        :return: True if the mailing list was added, error code otherwise
+        """
+        return self.api_request('mailinglist.add', {'mailinglist':mailinglist, 'password':password,
+                                                'account':account, 'adminmail':adminmail})
+
+    def mailinglist_get(self, mailinglist: str, account: str) -> dict:
+        """
+        Function to get a mailing list
+        :param mailinglist: the mailing list to get
+        :param account: the account of the mailing list
+        :return: dict of the mailing list
+        """
+        return self.api_request('mailinglist.get', {'mailinglist':mailinglist, 'account':account})
+
+    def mailinglist_set(self, mailinglist: str, account: str, password: str = None, adminmail: str = None) -> dict:
+        """
+        Function to change a mailing list
+        :param mailinglist: the mailing list to change
+        :param password: the password of the mailing list
+        :param account: the account of the mailing list (optional)
+        :param adminmail: admin email address of the mailing list (optional)
+        :return: True if the mailing list was changed, error code otherwise
+        """
+        return self.api_request('mailinglist.set', {'mailinglist':mailinglist, 'account':account,
+                                                'password':password, 'adminmail':adminmail})
+
+    def mailinglist_delete(self, mailinglist: str, account: str) -> dict:
+        """
+        Function to delete a mailing list
+        :param mailinglist: the mailing list to delete
+        :param account: the account of the mailing list
+        :return: True if the mailing list was deleted, error code otherwise
+        """
+        return self.api_request('mailinglist.delete', {'mailinglist':mailinglist, 'account':account})
