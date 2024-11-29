@@ -513,15 +513,6 @@ class APIClient:
         if killlevel not in ('reject', 'route'):
             raise ValueError('''Invalid value for killlevel. Only 'reject' or 'route' are allowed''')
 
-        def bool2str(state: bool) -> str:
-            """
-            Converts a boolean value to '1' if True, and '0' if False...
-            ...because that's how the mailbox.org API expects things.
-            """
-            if state:
-                return '1'
-            return '0'
-
         return self.api_request('mail.spamprotect.set',
                                 {'greylist': bool2str(greylist),
                                  'smtp_plausibility':bool2str(smtp_plausibility), 'rbl':bool2str(rbl),
@@ -679,3 +670,12 @@ class APIClient:
         :return: True if the mailing list was deleted, error code otherwise
         """
         return self.api_request('mailinglist.delete', {'mailinglist':mailinglist, 'account':account})
+
+def bool2str(state: bool) -> str:
+    """
+    Converts a boolean value to '1' if True, and '0' if False...
+    ...because that's how the mailbox.org API expects things.
+    """
+    if state:
+        return '1'
+    return '0'
