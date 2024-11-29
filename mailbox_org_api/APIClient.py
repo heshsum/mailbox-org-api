@@ -528,6 +528,31 @@ class APIClient:
                                  'bypass_banned_checks':bool2str(bypass_banned_checks), 'tag2level':round(tag2level, 1),
                                  'killlevel':killlevel, 'route_to':route_to})
 
+    def mail_blacklist_list(self, mail: str) -> dict:
+        """
+        Function to list the mail blacklist for a given mail address
+        :param mail: the mail to list the blacklist for
+        :return: the response for the request - the blacklist of the mail
+        """
+        return self.api_request('mail.blacklist.list', {'mail':mail})
+
+    def mail_blacklist_add(self, mail: str, add_address: str) -> dict:
+        """
+        Function to add a mail to a blacklist of a mail address
+        :param mail: the mail of the owner of the blacklist
+        :param add_address: the address to add to the blacklist
+        """
+        return self.api_request('mail.blacklist.add', {'mail':mail, 'add_address':add_address})
+
+
+    def mail_blacklist_delete(self, mail: str, delete_address: str) -> dict:
+        """
+        Function to delete a mail from a blacklist
+        :param mail: the mail of the owner of the blacklist
+        :param delete_address: the address to delete from the blacklist
+        """
+        return self.api_request('mail.blacklist.remove', {'mail':mail, 'delete_address':delete_address})
+
     def group_list(self) -> dict:
         """
         Function to list all groups for an account
@@ -555,6 +580,33 @@ class APIClient:
         return self.api_request('group.set', {'name':name, 'display_name':display_name,
                                               'mail_addresses_to_add':mail_addresses_to_add,
                                               'mail_addresses_to_remove':mail_addresses_to_remove})
+
+    def mail_passwordreset_listmethods(self, mail: str) -> dict:
+        """
+        Function to list all available password reset methods for a given mail
+        :param mail: the mail to query
+        :return: the response for the request - a list of available password reset methods
+        """
+        return self.api_request('mail.passwordreset.listmethods', {'mail':mail})
+
+    def mail_passwordreset_sendsms(self, mail: str, cell_phone: str) -> dict:
+        """
+        Function to send a password reset for a mail via SMS
+        :param mail: the mail to send the SMS for
+        :param cell_phone: the cell phone number of the mailbox
+        :return: the response for the request
+        """
+        return self.api_request('mail.passwordreset.sendsms',{'mail':mail, 'cell_phone':cell_phone})
+
+    def mail_passwordreset_setpassword(self, mail: str, token: str, password: str) -> dict:
+        """
+        Function to set a password reset for a mail using a token
+        :param mail: the mail to set the password for
+        :param token: the token to set the password
+        :param password: the new password to set
+        """
+        return self.api_request('mail.passwordreset.setpassword',
+                                {'mail':mail, 'token':token, 'password':password})
 
     def group_del(self, name: str) -> dict:
         """
