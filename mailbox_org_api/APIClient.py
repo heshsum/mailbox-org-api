@@ -544,7 +544,6 @@ class APIClient:
         """
         return self.api_request('mail.blacklist.add', {'mail':mail, 'add_address':add_address})
 
-
     def mail_blacklist_delete(self, mail: str, delete_address: str) -> dict:
         """
         Function to delete a mail from a blacklist
