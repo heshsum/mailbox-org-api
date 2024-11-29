@@ -543,6 +543,29 @@ class APIClient:
         """
         return self.api_request('mail.blacklist.remove', {'mail':mail, 'delete_address':delete_address})
 
+    def mail_vacation_get(self, mail: str) -> dict:
+        """
+        Function to get the vacation notice for a given mail
+        :param mail: the mail to get the vacation notice for
+        :return: the vacation notice of the mail. Message, subject, body, additional addresses, start date, end date
+        """
+        return self.api_request('mail.vacation.get', {'mail':mail})
+
+    def mail_vacation_set(self, mail: str, subject: str, body: str, start_date: str, end_date: str,
+                          additional_mail_addresses: list = None) -> dict:
+        """
+        Function to set the vacation notice for a given mail
+        :param mail: the mail to get the vacation notice for
+        :param subject: the subject of the vacation notice
+        :param body: the body of the vacation notice (optional)
+        :param start_date: the start date of the vacation notice in format YYYY-MM-DD
+        :param end_date: the end date of the vacation notice in format YYYY-MM-DD
+        :param additional_mail_addresses: list of addresses to add to the vacation notice (optional)
+        """
+        return self.api_request('mail.vacation.set', {'mail':mail, 'subject':subject, 'body':body,
+                                                      'start_date':start_date, 'end_date':end_date,
+                                                      'additional_mail_addresses':additional_mail_addresses})
+
     def group_list(self) -> dict:
         """
         Function to list all groups for an account
