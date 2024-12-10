@@ -694,6 +694,64 @@ class APIClient:
         """
         return self.api_request('mailinglist.delete', {'mailinglist':mailinglist, 'account':account})
 
+    def additionalmailaccount_add(self, parent_mail: str, new_account_mail: str, new_account_password: str,
+                                  primary_address: str, mail_server: str = 'imap.mailbox.org', mail_port: int = 993,
+                                  mail_secure: bool = True, mail_starttls: bool = False,
+                                  transport_server: str = 'smtp.mailbox.org', transport_port: int = 465,
+                                  transport_secure: bool = True, transport_starttls: bool = False,
+                                  trash_folder: str = 'Trash', sent_folder: str = 'Sent', drafts_folder: str = 'Drafts',
+                                  spam_folder: str = 'Junk') -> dict:
+        """
+        Function to add an extra mail account to a mail address. Default values are the values of mailbox.org.
+        Order and syntax of the call deviate slightly from the mailbox.org API:
+        1. parent_mail is the first argument
+        2. mail server settings are grouped
+        3. transport server settings are grouped
+        4. Ports are integers
+        :param new_account_mail: the additional mail address to add
+        :param new_account_password: the password of the additional mail address
+        :param parent_mail: the mail address to add the additional mail account to
+        :param primary_address: the primary 'address from' for the additional mail address
+        :param mail_server: the IMAP server to use
+        :param mail_port: the port of the IMAP server
+        :param transport_server: the SMTP server to use
+        :param transport_port: the port of the SMTP server
+        :param mail_secure: whether to use SSL for IMAP
+        :param mail_starttls: whether to use STARTTLS for IMAP
+        :param transport_secure: whether to use SSL for SMTP
+        :param transport_starttls: whether to use STARTTLS for SMTP
+        :param trash_folder: name of the trash folder
+        :param sent_folder: name of the sent folder
+        :param drafts_folder: name of the drafts folder
+        :param spam_folder: name of the spam folder
+        :return: the response for the request - True if adding was successful, error code otherwise
+        """
+        return self.api_request('additionalmailaccount.add', {'new_account_mail': new_account_mail,
+                                                              'new_account_password': new_account_password,
+                                                              'parent_mail': parent_mail,
+                                                              'primary_address': primary_address,
+                                                              'mail_server': mail_server, 'mail_port': str(mail_port),
+                                                              'transport_server': transport_server,
+                                                              'transport_port': str(transport_port),
+                                                              'mail_secure': mail_secure,
+                                                              'mail_starttls': mail_starttls,
+                                                              'transport_secure': transport_secure,
+                                                              'transport_starttls': transport_starttls,
+                                                              'trash_folder': trash_folder,
+                                                              'sent_folder': sent_folder,
+                                                              'drafts_folder': drafts_folder,
+                                                              'spam_folder': spam_folder})
+
+    def additionalmailaccount_delete(self, parent_mail: str, account_mail: str) -> dict:
+        """
+        Function to delete an additional mail account
+        :param parent_mail: the mail address to delete
+        :param account_mail: the account to delete
+        :return: True if the account was deleted, error code otherwise
+        """
+        return self.api_request('additionalmailaccount.delete',
+                                {'parent_mail':parent_mail, 'account_mail':account_mail})
+
 def bool2str(state: bool) -> str:
     """
     Converts a boolean value to '1' if True, and '0' if False...
