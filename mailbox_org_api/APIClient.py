@@ -14,10 +14,13 @@ mail_set_arguments = {'password': str, 'password_hash': str, 'same_password_allo
                       'active': bool, 'title': str, 'birthday': str, 'position': str, 'department': str, 'company': str,
                       'street': str, 'postal_code': str, 'city': str, 'phone': str, 'fax': str, 'cell_phone': str,
                       'uid_extern': str, 'language': str}
-account_set_arguments = {'password': str, 'plan': str, 'memo': str, 'address_payment_first_name': str,
+account_set_arguments = {'password': str, 'plan': str, 'memo': str, 'address_main_first_name': str,
+                         'address_main_last_name':str, 'address_main_street	': str, 'address_main_zipcode': str,
+                         'address_main_town': str, 'address_main_country': str,	'address_payment_first_name': str,
                          'address_payment_last_name': str, 'address_payment_street': str,
                          'address_payment_zipcode': str, 'address_payment_town': str, 'company': str, 'bank_iban': str,
                          'bank_bic': str, 'bank_account_owner': str, 'av_contract_accept_name': str,
+                         'contact_mail': str, 'contact_mail_payment': str, 'contact_phone': str, 'contact_fax': str,
                          'tarifflimits': list, 'av_contract_professional_secrecy': bool}
 
 class APIClient:
