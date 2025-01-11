@@ -36,6 +36,12 @@ api_connection.auth(username, password)
 # Testing the session with hello.innerworld
 api_connection.hello_innerworld()
 
+# Changing an account
+api_connection.account_set('foo', {'payment_type':'invoice'})
+
+# Changing an inbox
+api_connection.mail_set('accountname', {'password':'alligator9'})
+
 # Closing the session
 api_connection.deauth()
 ```
