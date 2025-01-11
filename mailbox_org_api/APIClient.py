@@ -21,7 +21,7 @@ account_set_arguments = {'password': str, 'plan': str, 'memo': str, 'address_mai
                          'address_payment_zipcode': str, 'address_payment_town': str, 'company': str, 'bank_iban': str,
                          'bank_bic': str, 'bank_account_owner': str, 'av_contract_accept_name': str,
                          'contact_mail': str, 'contact_mail_payment': str, 'contact_phone': str, 'contact_fax': str,
-                         'tarifflimits': list, 'av_contract_professional_secrecy': bool}
+                         'tarifflimits': list, 'av_contract_professional_secrecy': bool, 'payment_type': str}
 
 class APIClient:
     """
@@ -162,6 +162,15 @@ class APIClient:
                 errormsg = ('Attribute ' + attribute + ' must be of type ' + str(account_set_arguments[attribute]) + '. '
                             + str(type(attributes[attribute])) + ' provided.')
                 raise TypeError(errormsg)
+            if attribute == 'payment_type':
+                if attributes[attribute] != 'dta' and attributes[attribute] != 'invoice':
+                    errormsg = '''Only payment types 'dta' and 'invoice' are supported.'''
+                    raise ValueError(errormsg)
+                if (attributes[attribute] == 'dta' and 'bank_account_owner' not in attributes
+                        and 'bank_iban' not in attributes and 'bank_bic' not in attributes):
+                    errormsg = '''When setting 'payment_type = dta', 'bank_account_owner', 'bank_iban' 
+                                and 'bank_bic' have to be provided'''
+                    raise ValueError(errormsg)
             params.update({attribute: attributes[attribute]})
         return self.api_request('account.set', params)
 
