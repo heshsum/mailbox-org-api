@@ -7,6 +7,7 @@ import requests
 headers = {'content-type': 'application/json'}
 domain_capabilities = ['MAIL_SPAMPROTECTION', 'MAIL_BLACKLIST', 'MAIL_BACKUPRECOVER', 'MAIL_PASSWORDRESET_SMS']
 mail_capabilities = ['MAIL_SPAMPROTECTION', 'MAIL_BLACKLIST', 'MAIL_BACKUPRECOVER', 'MAIL_OTP', 'MAIL_PASSWORDRESET_SMS']
+mail_list_sort_field = ['mail', 'first_name', 'last_name', 'status', 'domain', 'plan', 'type', 'creation_date']
 mail_set_arguments = {'password': str, 'password_hash': str, 'same_password_allowed': bool,
                       'require_password_reset': bool, 'plan': str, 'additional_mail_quota': str,
                       'additional_cloud_quota': str, 'first_name': str, 'last_name': str, 'inboxsave': bool,
@@ -312,12 +313,34 @@ class APIClient:
         """
         return self.api_request('domain.validate.spf', {'domain':domain})
 
-    def mail_list(self, domain) -> dict:
+    def mail_list(self, domain, details: bool = False, page_size: int = -1, page: int = -1, sort_field: str = None, sort_order: str = None) -> dict:
         """
         Function to list all mailboxes
+        :param domain: the domain to list
+        :param details: whether to show details or not
+        :param page_size: Optional pagination. Use value >1 to enable
+        :param page: Size of page for pagination. If 'page_size' is used this is mandatory to set >0
+        :param sort_field: the field to sort by. Possible values: mail, first_name, last_name, status, domain, plan, type, creation_date
+        :param sort_order: the order to sort by. Possible values: 'asc', 'desc'
         :return: the response from the mailbox.org Business API
         """
-        return self.api_request('mail.list', {'domain':domain})
+        params = {'domain':domain, 'details':details}
+        if page_size > 0:
+            if page < 1:
+                raise ValueError('''If 'page_size' is used, a 'page' value > 1 must be specified.''')
+            else:
+                params.update({'page':page, 'page_size':page_size})
+        if sort_field:
+            if sort_field not in mail_list_sort_field:
+                raise ValueError('Sort field not allowed.')
+            else:
+                params.update({'sort_field':sort_field})
+        if sort_order:
+            if sort_order not in ['asc', 'desc']:
+                raise ValueError('Sort order must be either "asc" or "desc".')
+            else:
+                params.update({'sort_order':sort_order})
+        return self.api_request('mail.list', params)
 
     def mail_add(self, mail:str, password: str, plan: str, first_name: str, last_name: str, inboxsave: bool = True,
                  forwards: list = None, memo: str = None, language: str = 'en_EN', uid_extern: str = None) -> dict:
