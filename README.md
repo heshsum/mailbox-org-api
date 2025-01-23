@@ -63,7 +63,7 @@ api_connection.mail_set_password('user@testmail.tech', 'theNewPassword')
 This function sends a `mail.set` command to set a user's password and require the user to change it upon the next login.
 
 Usage:
-```
+```python
 api_connection.mail_set_password('user@testmail.tech', 'theNewPassword')
 ```
 
@@ -73,7 +73,7 @@ The function will automatically set `'require_reset':True` when sending the requ
 This function sets the plan for an inbox.
 
 Usage:
-```
+```python
 api_connection.mail_set_plan('user@testmail.tech', 'standard')
 ```
 
@@ -82,7 +82,7 @@ api_connection.mail_set_plan('user@testmail.tech', 'standard')
 This function sets the forwards of an inbox.
 
 Usage:
-```
+```python
 api_connection.mail_set_forwards('user@testmail.tech', ['forward@testmail.tech', 'forward@testmail.tech'])
 ```
 
@@ -90,7 +90,7 @@ api_connection.mail_set_forwards('user@testmail.tech', ['forward@testmail.tech',
 This function sets the aliases of an inbox.
 
 Usage:
-```
+```python
 api_connection.mail_set_forwards('user@testmail.tech', ['alias1@testmail.tech', 'alias2@testmail.tech'])
 ```
 
@@ -98,7 +98,7 @@ api_connection.mail_set_forwards('user@testmail.tech', ['alias1@testmail.tech', 
 With this function an inbox can be (de-)activated. It sends a `mail.set` command with the `active` parameter.
 
 Usage:
-```
+```python
 # Deactivates an inbox
 api_connection.mail_set_state('user@testmail.tech', 'False')
 
@@ -111,7 +111,7 @@ This function makes retrieving a list of all invoices easier.
 It returns a list of all invoice id's for a given account.
 
 Usage:
-```
+```python
 api_connection.account_invoice_get_list('account_name')
 ```
 
@@ -120,7 +120,7 @@ In order to retrieve an invoice, a token is needed. Tokens change periodically.
 This function helps to get the token for a given invoice ID.
 
 Usage:
-```
+```python
 api_connection.account_invoice_get_token('BMBO-1234-24')
 ```
 
@@ -134,7 +134,7 @@ Invoices are provided as Based64 encoded gz Strings. This function
 6. returns the bytes of the actual PDF
 
 Usage
-```
+```python
 invoice_id = 'BMBO-1234-24'
 with open(invoice_id + '.pdf', 'w') as file:
     file.write(api.account_invoice_get_pdf('account_name', invoice_id))
