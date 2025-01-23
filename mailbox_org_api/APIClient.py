@@ -479,14 +479,17 @@ class APIClient:
         """
         return self.api_request('mail.apppassword.list', {'mail':mail})
 
-    def mail_apppassword_add(self, mail:str, memo:str) -> dict:
+    def mail_apppassword_add(self, mail:str, memo:str, imap_allowed:str = True, smtp_allowed:str = True) -> dict:
         """
         Function to generate a new mail app password for a mail
         :param mail: the mail to generate a new mail app password
         :param memo: memo of the app password
+        :param imap_allowed: True if the app password should be allowed to use an IMAP server. Default: True
+        :param smtp_allowed: True if the app password should be allowed to use an SMTP server. Default: True
         :return: the response for the request
         """
-        return self.api_request('mail.apppassword.add', {'mail':mail, 'memo':memo})
+        return self.api_request('mail.apppassword.add', {'mail':mail, 'memo':memo,
+                                                         imap_allowed:imap_allowed, 'smtp_allowed':smtp_allowed})
 
     def mail_apppassword_del(self, apppassword_id: int) -> dict:
         """
