@@ -488,13 +488,13 @@ class APIClient:
         """
         return self.api_request('mail.apppassword.add', {'mail':mail, 'memo':memo})
 
-    def mail_apppassword_delete(self, apppassword_id: int) -> dict:
+    def mail_apppassword_del(self, apppassword_id: int) -> dict:
         """
         Function to delete a mail app password
         :param apppassword_id: the id of the mail app password
         :return: the response for the request
         """
-        return self.api_request('mail.apppassword.delete', {'id':apppassword_id})
+        return self.api_request('mail.apppassword.del', {'id':apppassword_id})
 
     def mail_externaluid(self, mail: str) -> dict:
         """
