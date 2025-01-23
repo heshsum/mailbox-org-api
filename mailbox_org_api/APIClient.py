@@ -489,7 +489,7 @@ class APIClient:
         :return: the response for the request
         """
         return self.api_request('mail.apppassword.add', {'mail':mail, 'memo':memo,
-                                                         imap_allowed:imap_allowed, 'smtp_allowed':smtp_allowed})
+                                                         'imap_allowed':imap_allowed, 'smtp_allowed':smtp_allowed})
 
     def mail_apppassword_del(self, apppassword_id: int) -> dict:
         """
