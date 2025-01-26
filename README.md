@@ -136,8 +136,9 @@ Invoices are provided as Based64 encoded gz Strings. This function
 Usage
 ```python
 invoice_id = 'BMBO-1234-24'
+account_name = 'some_user'
 with open(invoice_id + '.pdf', 'w') as file:
-    file.write(api.account_invoice_get_pdf('account_name', invoice_id))
+    file.write(api_connection.account_invoice_get_pdf(account_name, invoice_id))
 ```
 
 ## Here be dragons
