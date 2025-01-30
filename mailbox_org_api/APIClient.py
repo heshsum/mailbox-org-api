@@ -733,7 +733,7 @@ class APIClient:
         return self.api_request('mailinglist.delete', {'mailinglist':mailinglist, 'account':account})
 
     def additionalmailaccount_add(self, parent_mail: str, new_account_mail: str, new_account_password: str,
-                                  primary_address: str, mail_server: str = 'imap.mailbox.org', mail_port: int = 993,
+                                  primary_address: str = None, mail_server: str = 'imap.mailbox.org', mail_port: int = 993,
                                   mail_secure: bool = True, mail_starttls: bool = False,
                                   transport_server: str = 'smtp.mailbox.org', transport_port: int = 465,
                                   transport_secure: bool = True, transport_starttls: bool = False,
