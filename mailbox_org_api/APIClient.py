@@ -22,7 +22,8 @@ account_set_arguments = {'password': str, 'plan': str, 'memo': str, 'address_mai
                          'address_payment_zipcode': str, 'address_payment_town': str, 'company': str, 'bank_iban': str,
                          'bank_bic': str, 'bank_account_owner': str, 'av_contract_accept_name': str,
                          'contact_mail': str, 'contact_mail_payment': str, 'contact_phone': str, 'contact_fax': str,
-                         'tarifflimits': list, 'av_contract_professional_secrecy': bool, 'payment_type': str}
+                         'tarifflimits': list, 'av_contract_professional_secrecy': bool, 'payment_type': str,
+                         'deletion_date': str}
 
 class APIClient:
     """
@@ -448,6 +449,17 @@ class APIClient:
         :return: the response for the request
         """
         return self.api_request('mail.set', {'mail':mail, 'active':active})
+
+    def mail_set_deletion_date(self, mail: str, deletion_date: str) -> dict:
+        """
+        Function to delete an inbox at a given date.
+        To unset, use mail_set_state and set 'active = True'
+        :param mail: the mail to delete
+        :param deletion_date: the date to delete the mail on
+        :return: the response for the request
+        """
+        return self.api_request('mail.set', {'mail': mail, 'deletion_date': deletion_date,
+                                'active': False})
 
     def mail_capabilities_set(self, mail: str, capabilties: dict) -> dict:
         """
