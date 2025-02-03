@@ -14,7 +14,7 @@ mail_set_arguments = {'password': str, 'password_hash': str, 'same_password_allo
                       'forwards': list, 'aliases': list, 'alternate_mail': str, 'memo': str, 'allow_nets': str,
                       'active': bool, 'title': str, 'birthday': str, 'position': str, 'department': str, 'company': str,
                       'street': str, 'postal_code': str, 'city': str, 'phone': str, 'fax': str, 'cell_phone': str,
-                      'uid_extern': str, 'language': str}
+                      'uid_extern': str, 'language': str, 'deletion_date': str}
 account_set_arguments = {'password': str, 'plan': str, 'memo': str, 'address_main_first_name': str,
                          'address_main_last_name':str, 'address_main_street	': str, 'address_main_zipcode': str,
                          'address_main_town': str, 'address_main_country': str,	'address_payment_first_name': str,
@@ -22,8 +22,7 @@ account_set_arguments = {'password': str, 'plan': str, 'memo': str, 'address_mai
                          'address_payment_zipcode': str, 'address_payment_town': str, 'company': str, 'bank_iban': str,
                          'bank_bic': str, 'bank_account_owner': str, 'av_contract_accept_name': str,
                          'contact_mail': str, 'contact_mail_payment': str, 'contact_phone': str, 'contact_fax': str,
-                         'tarifflimits': list, 'av_contract_professional_secrecy': bool, 'payment_type': str,
-                         'deletion_date': str}
+                         'tarifflimits': list, 'av_contract_professional_secrecy': bool, 'payment_type': str}
 
 class APIClient:
     """
