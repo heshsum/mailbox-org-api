@@ -15,6 +15,16 @@ mail_set_arguments = {'password': str, 'password_hash': str, 'same_password_allo
                       'active': bool, 'title': str, 'birthday': str, 'position': str, 'department': str, 'company': str,
                       'street': str, 'postal_code': str, 'city': str, 'phone': str, 'fax': str, 'cell_phone': str,
                       'uid_extern': str, 'language': str, 'deletion_date': str}
+
+# Allowed paramters as documented here: https://api.mailbox.org/v1/doc/methods/index.html#account-add
+account_add_arguments = {'tarifflimits': dict, 'memo': str, 'contact_mail': str, 'contact_phone': str,
+                         'contact_fax': str, 'contact_mobile': str, 'company': str, 'ustid': str,
+                         'address_main_salutation': str, 'address_main_first_name': str, 'address_main_last_name': str,
+                         'address_main_street': str, 'address_main_zipcode': str, 'address_main_town': str,
+                         'address_main_country': str, 'address_payment_same_as_main': bool,
+                         'address_payment_first_name': str, 'address_payment_last_name': str,
+                         'address_payment_street': str, 'address_payment_zipcode': str, 'address_payment_town': str,
+                         'address_payment_country': str, 'max_mailinglist': int, 'language': str}
 account_set_arguments = {'password': str, 'plan': str, 'memo': str, 'address_main_first_name': str,
                          'address_main_last_name':str, 'address_main_street	': str, 'address_main_zipcode': str,
                          'address_main_town': str, 'address_main_country': str,	'address_payment_first_name': str,
@@ -131,13 +141,26 @@ class APIClient:
         """
         return self.api_request('hello.innerworld', {})
 
-    def account_add(self, account: str) -> dict:
+    def account_add(self, account: str, password: str, plan: str, attributes: dict) -> dict:
         """
         Function to create a new account
         :param account: the account name to create
+        :param password: the password of the account
+        :param plan: the plan of the account
+        :param attributes: other the attributes of the account
         :return: the response from the mailbox.org Business API
         """
-        return self.api_request('account.add', {'account':account})
+        params = {'account': account, 'password': password, 'plan': plan}
+        for attribute in attributes:
+            print('Attribute:', attribute)
+            if attribute not in account_add_arguments:
+                raise ValueError(attribute, 'not found')
+            if type(attributes[attribute]) != account_add_arguments[attribute]:
+                errormsg = ('Attribute ' + attribute + ' must be of type ' + str(account_add_arguments[attribute]) + '. '
+                            + str(type(attributes[attribute])) + ' provided.')
+                raise TypeError(errormsg)
+            params.update({attribute: attributes[attribute]})
+        return self.api_request('account.add', params)
 
     def account_get(self, account: str) -> dict:
         """
