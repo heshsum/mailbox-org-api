@@ -1,6 +1,9 @@
+from datetime import datetime
+
+
 class Mail:
     def __init__(self, mail: str):
-        self._mail = mail
+        self.mail = mail
         self.password = None
         self.password_hash = None
         self.same_password_allowed = None
@@ -30,9 +33,11 @@ class Mail:
         self.cell_phone = None
         self.uid_extern = None
         self.language = None
+        self.capabilities = None
+        self.creation_date = None
 
         @property
-        def mail(self: Mail) -> str:
+        def mail(self) -> str:
             return self._mail
 
         @mail.setter
@@ -264,7 +269,24 @@ class Mail:
         def language(self, language: str):
             self._language = language
 
-    def __str__(self):
-        for property in self:
+        @property
+        def capabilities(self) -> list:
+            return self._capabilities
 
-        return self.firstName + " " + self.lastName
+        @capabilities.setter
+        def capabilities(self, capabilities: list):
+            self._capabilities = capabilities
+
+        @property
+        def creation_date(self) -> str:
+            return self._creation_date
+
+        @creation_date.setter
+        def creation_date(self, creation_date: str):
+            self._creation_date = creation_date
+
+    def __str__(self):
+        str = ""
+        for attr in dir(self):
+            str.join("obj.%s = %r" % (attr, getattr(self, attr)))
+        return str

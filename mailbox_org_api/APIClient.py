@@ -4,6 +4,8 @@ Module for the BMBO API client
 import json
 import requests
 
+from mailbox_org_api.Mail import Mail
+
 headers = {'content-type': 'application/json'}
 domain_capabilities = ['MAIL_SPAMPROTECTION', 'MAIL_BLACKLIST', 'MAIL_BACKUPRECOVER', 'MAIL_PASSWORDRESET_SMS']
 mail_capabilities = ['MAIL_SPAMPROTECTION', 'MAIL_BLACKLIST', 'MAIL_BACKUPRECOVER', 'MAIL_OTP', 'MAIL_PASSWORDRESET_SMS']
@@ -398,6 +400,15 @@ class APIClient:
         :return the response for the request
         """
         return self.api_request('mail.get', {'mail':mail, 'include_quota_usage':include_quota_usage})
+
+    def mail_get_object(self, mail:str) -> Mail:
+        result = self.api_request('mail.get', {'mail':mail, 'include_quota_usage':False})
+        object = Mail(mail)
+        for key, value in result.items():
+            print('Key:', key, 'Value:', value)
+            result[key] = value
+            print(object)
+        return object
 
     def mail_set(self, mail: str, attributes: dict):
         """
