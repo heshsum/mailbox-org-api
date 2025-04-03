@@ -644,6 +644,13 @@ class APIClient:
         """
         return self.api_request('group.list', {})
 
+    def group_get(self, group_id: int) -> dict:
+        """
+        Function to get a group from the account
+        :param group_id: the id of the group to get
+        """
+        return self.api_request('group.get', {'group_id':group_id})
+
     def group_add(self, name: str, display_name: str, mail_addresses_to_add: list) -> dict:
         """
         Function to add a group
