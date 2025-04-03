@@ -586,10 +586,10 @@ class APIClient:
             raise ValueError('''Invalid value for killlevel. Only 'reject' or 'route' are allowed''')
 
         return self.api_request('mail.spamprotect.set',
-                                {'greylist': bool2str(greylist),
+                                {'mail':mail, 'greylist': bool2str(greylist),
                                  'smtp_plausibility':bool2str(smtp_plausibility), 'rbl':bool2str(rbl),
                                  'bypass_banned_checks':bool2str(bypass_banned_checks), 'tag2level':round(tag2level, 1),
-                                 'killlevel':killlevel, 'route_to':route_to})
+                                 'killevel':killlevel, 'route_to':route_to})
 
     def mail_blacklist_list(self, mail: str) -> dict:
         """
