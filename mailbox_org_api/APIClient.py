@@ -9,7 +9,7 @@ domain_capabilities = ['MAIL_SPAMPROTECTION', 'MAIL_BLACKLIST', 'MAIL_BACKUPRECO
 mail_capabilities = ['MAIL_SPAMPROTECTION', 'MAIL_BLACKLIST', 'MAIL_BACKUPRECOVER', 'MAIL_OTP', 'MAIL_PASSWORDRESET_SMS']
 mail_list_sort_field = ['mail', 'first_name', 'last_name', 'status', 'domain', 'plan', 'type', 'creation_date']
 mail_set_arguments = {'password': str, 'password_hash': str, 'same_password_allowed': bool,
-                      'require_password_reset': bool, 'plan': str, 'additional_mail_quota': str,
+                      'require_reset_password': bool, 'plan': str, 'additional_mail_quota': str,
                       'additional_cloud_quota': str, 'first_name': str, 'last_name': str, 'inboxsave': bool,
                       'forwards': list, 'aliases': list, 'alternate_mail': str, 'memo': str, 'allow_nets': str,
                       'active': bool, 'title': str, 'birthday': str, 'position': str, 'department': str, 'company': str,
