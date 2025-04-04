@@ -656,6 +656,14 @@ class APIClient:
         """
         return self.api_request('group.get', {'group_id':group_id})
 
+    def group_del(self, name: str) -> dict:
+        """
+        Function to delete a group
+        :param name: the group's name
+        :return: mailbox API response - True if the group was deleted, False otherwise
+        """
+        return self.api_request('group.delete', {'name':name})
+
     def group_add(self, name: str, display_name: str, mail_addresses_to_add: list) -> dict:
         """
         Function to add a group
@@ -707,13 +715,6 @@ class APIClient:
         """
         return self.api_request('mail.passwordreset.setpassword',
                                 {'mail':mail, 'token':token, 'password':password})
-
-    def group_del(self, name: str) -> dict:
-        """
-        Function to delete a group
-        :param name: the group's name
-        """
-        return self.api_request('group.delete', {'name':name})
 
     def context_list(self, account: str) -> dict:
         """
