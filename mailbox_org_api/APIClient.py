@@ -537,7 +537,7 @@ class APIClient:
         """
         Function to get a mail using an external UID
         :param mail: the mail to get
-        :return: the response for the request
+        :return: mailbox API response - an array with the mail details
         """
         return self.api_request('mail.externaluid', {'mail':mail})
 
@@ -545,7 +545,7 @@ class APIClient:
         """
         Function to list all backups for a given mail
         :param mail: the mail to list backups for
-        :return: the response for the request - a list of backups
+        :return: mailbox API response - an array with the backup numbers and dates
         """
         return self.api_request('mail.backup.list', {'mail':mail})
 
@@ -556,6 +556,7 @@ class APIClient:
         :param id: the id of the backup
         :param time: the time of the backup
         :param filter: the filter of the backup - "all" or an IMAP foldername
+        :return: mailbox API response - an array with the backup numbers and dates
         """
         return self.api_request('mail.backup.import',
                                 {'mail':mail, 'id':id, 'time':time, 'filter':filter})
@@ -564,7 +565,7 @@ class APIClient:
         """
         Function to retrieve the spam settings for a given mail
         :param mail: the mail to get the spam settings for
-        :return: the response for the request - the spam settings
+        :return: mailbox API response - an array with the spam settings
         """
         return self.api_request('mail.spamprotect.get', {'mail':mail})
 
