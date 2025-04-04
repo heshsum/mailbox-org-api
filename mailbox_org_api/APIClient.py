@@ -670,6 +670,20 @@ class APIClient:
             if group['name'] == group_name:
                 matched_groups.append(group['id'])
         return matched_groups
+
+    def group_get_by_name(self, group_name: str) -> list:
+        """
+        Function to get a group from the account by the group name.
+        The name is not unique.
+        :param group_name: the name to search for
+        :return: a list of groups with their details
+        """
+        ids = self.group_get_ids_by_name(group_name)
+        groups = []
+        for id in ids:
+            groups.append(self.group_get(id))
+        return groups
+
     def group_del(self, name: str) -> dict:
         """
         Function to delete a group
