@@ -5,9 +5,17 @@ import json
 import requests
 
 headers = {'content-type': 'application/json'}
+
+# Domain capabilities as documented here: https://api.mailbox.org/v1/doc/methods/index.html#domain-capabilities-set
 domain_capabilities = ['MAIL_SPAMPROTECTION', 'MAIL_BLACKLIST', 'MAIL_BACKUPRECOVER', 'MAIL_PASSWORDRESET_SMS']
+
+# Capabilities as documented here: https://api.mailbox.org/v1/doc/methods/index.html#mail-capabilities-set
 mail_capabilities = ['MAIL_SPAMPROTECTION', 'MAIL_BLACKLIST', 'MAIL_BACKUPRECOVER', 'MAIL_OTP', 'MAIL_PASSWORDRESET_SMS']
+
+# Allowed sort fields as documented here: https://api.mailbox.org/v1/doc/methods/index.html#mail-list
 mail_list_sort_field = ['mail', 'first_name', 'last_name', 'status', 'domain', 'plan', 'type', 'creation_date']
+
+# Allowed parameters as documented here: https://api.mailbox.org/v1/doc/methods/index.html#mail-set
 mail_set_arguments = {'password': str, 'password_hash': str, 'same_password_allowed': bool,
                       'require_reset_password': bool, 'plan': str, 'additional_mail_quota': str,
                       'additional_cloud_quota': str, 'first_name': str, 'last_name': str, 'inboxsave': bool,
