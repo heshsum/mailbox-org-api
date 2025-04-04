@@ -24,7 +24,7 @@ mail_set_arguments = {'password': str, 'password_hash': str, 'same_password_allo
                       'street': str, 'postal_code': str, 'city': str, 'phone': str, 'fax': str, 'cell_phone': str,
                       'uid_extern': str, 'language': str, 'deletion_date': str}
 
-# Allowed paramters as documented here: https://api.mailbox.org/v1/doc/methods/index.html#account-add
+# Allowed parameters as documented here: https://api.mailbox.org/v1/doc/methods/index.html#account-add
 account_add_arguments = {'tarifflimits': dict, 'memo': str, 'contact_mail': str, 'contact_phone': str,
                          'contact_fax': str, 'contact_mobile': str, 'company': str, 'ustid': str,
                          'address_main_salutation': str, 'address_main_first_name': str, 'address_main_last_name': str,
@@ -33,6 +33,8 @@ account_add_arguments = {'tarifflimits': dict, 'memo': str, 'contact_mail': str,
                          'address_payment_first_name': str, 'address_payment_last_name': str,
                          'address_payment_street': str, 'address_payment_zipcode': str, 'address_payment_town': str,
                          'address_payment_country': str, 'max_mailinglist': int, 'language': str}
+
+# Allowed parameters as documented here: https://api.mailbox.org/v1/doc/methods/index.html#account-set
 account_set_arguments = {'password': str, 'plan': str, 'memo': str, 'address_main_first_name': str,
                          'address_main_last_name':str, 'address_main_street	': str, 'address_main_zipcode': str,
                          'address_main_town': str, 'address_main_country': str,	'address_payment_first_name': str,
