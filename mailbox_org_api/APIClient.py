@@ -15,8 +15,8 @@ mail_capabilities = ['MAIL_SPAMPROTECTION', 'MAIL_BLACKLIST', 'MAIL_BACKUPRECOVE
 # Allowed sort fields as documented here: https://api.mailbox.org/v1/doc/methods/index.html#mail-list
 mail_list_sort_field = ['mail', 'first_name', 'last_name', 'status', 'domain', 'plan', 'type', 'creation_date']
 
-# Allowed parameters as documented here: https://api.mailbox.org/v1/doc/methods/index.html#mail-set
-mail_set_arguments = {'password': str, 'password_hash': str, 'same_password_allowed': bool,
+# Allowed attributes as documented here: https://api.mailbox.org/v1/doc/methods/index.html#mail-set
+mail_set_attributes = {'password': str, 'password_hash': str, 'same_password_allowed': bool,
                       'require_reset_password': bool, 'plan': str, 'additional_mail_quota': str,
                       'additional_cloud_quota': str, 'first_name': str, 'last_name': str, 'inboxsave': bool,
                       'forwards': list, 'aliases': list, 'alternate_mail': str, 'memo': str, 'allow_nets': str,
@@ -24,8 +24,8 @@ mail_set_arguments = {'password': str, 'password_hash': str, 'same_password_allo
                       'street': str, 'postal_code': str, 'city': str, 'phone': str, 'fax': str, 'cell_phone': str,
                       'uid_extern': str, 'language': str, 'deletion_date': str}
 
-# Allowed parameters as documented here: https://api.mailbox.org/v1/doc/methods/index.html#account-add
-account_add_arguments = {'tarifflimits': dict, 'memo': str, 'contact_mail': str, 'contact_phone': str,
+# Allowed attributes as documented here: https://api.mailbox.org/v1/doc/methods/index.html#account-add
+account_add_attributes = {'tarifflimits': dict, 'memo': str, 'contact_mail': str, 'contact_phone': str,
                          'contact_fax': str, 'contact_mobile': str, 'company': str, 'ustid': str,
                          'address_main_salutation': str, 'address_main_first_name': str, 'address_main_last_name': str,
                          'address_main_street': str, 'address_main_zipcode': str, 'address_main_town': str,
@@ -34,8 +34,8 @@ account_add_arguments = {'tarifflimits': dict, 'memo': str, 'contact_mail': str,
                          'address_payment_street': str, 'address_payment_zipcode': str, 'address_payment_town': str,
                          'address_payment_country': str, 'max_mailinglist': int, 'language': str}
 
-# Allowed parameters as documented here: https://api.mailbox.org/v1/doc/methods/index.html#account-set
-account_set_arguments = {'password': str, 'plan': str, 'memo': str, 'address_main_first_name': str,
+# Allowed attributes as documented here: https://api.mailbox.org/v1/doc/methods/index.html#account-set
+account_set_attributes = {'password': str, 'plan': str, 'memo': str, 'address_main_first_name': str,
                          'address_main_last_name':str, 'address_main_street	': str, 'address_main_zipcode': str,
                          'address_main_town': str, 'address_main_country': str,	'address_payment_first_name': str,
                          'address_payment_last_name': str, 'address_payment_street': str,
@@ -162,11 +162,18 @@ class APIClient:
         """
         params = {'account': account, 'password': password, 'plan': plan}
         for attribute in attributes:
-            print('Attribute:', attribute)
-            if attribute not in account_add_arguments:
+            if self.debug_output:
+                print('Attribute:', attribute)
+
+            # Checking list of given attributes against list of available araguments
+            if attribute not in account_add_attributes:
+                # If attribute not found, throw error
                 raise ValueError(attribute, 'not found')
-            if type(attributes[attribute]) != account_add_arguments[attribute]:
-                errormsg = ('Attribute ' + attribute + ' must be of type ' + str(account_add_arguments[attribute]) + '. '
+
+            # Check if type of attribute matches the type in the list of allowed attributes
+            if type(attributes[attribute]) != account_add_attributes[attribute]:
+                # If attribute type
+                errormsg = ('Attribute ' + attribute + ' must be of type ' + str(account_add_attributes[attribute]) + '. '
                             + str(type(attributes[attribute])) + ' provided.')
                 raise TypeError(errormsg)
             params.update({attribute: attributes[attribute]})
@@ -189,22 +196,34 @@ class APIClient:
         """
         params = {'account':account}
         for attribute in attributes:
-            print('Attribute:', attribute)
-            if attribute not in account_set_arguments:
+            if self.debug_output:
+                print('Attribute:', attribute)
+
+            # Checking given attribute against list of available attribute
+            if attribute not in account_set_attributes:
+                # If attribute not found, throw error
                 raise ValueError(attribute, 'not found')
-            if type(attributes[attribute]) != account_set_arguments[attribute]:
-                errormsg = ('Attribute ' + attribute + ' must be of type ' + str(account_set_arguments[attribute]) + '. '
+
+            # Checking type of given attribute against types in list of available attributes
+            if type(attributes[attribute]) != account_set_attributes[attribute]:
+                # If type does not match, throw error
+                errormsg = ('Attribute ' + attribute + ' must be of type ' + str(account_set_attributes[attribute]) + '. '
                             + str(type(attributes[attribute])) + ' provided.')
                 raise TypeError(errormsg)
+
+            # Check for attribute payment_type and if it matches the allowed values
             if attribute == 'payment_type':
                 if attributes[attribute] != 'dta' and attributes[attribute] != 'invoice':
                     errormsg = '''Only payment types 'dta' and 'invoice' are supported.'''
                     raise ValueError(errormsg)
-                if (attributes[attribute] == 'dta' and 'bank_account_owner' not in attributes
-                        and 'bank_iban' not in attributes and 'bank_bic' not in attributes):
+
+                # Check if 'dta' was provided and the other payment information is available as well
+                if (attributes[attribute] == 'dta' and ('bank_account_owner' not in attributes
+                        or 'bank_iban' not in attributes or 'bank_bic' not in attributes)):
                     errormsg = '''When setting 'payment_type = dta', 'bank_account_owner', 'bank_iban' 
                                 and 'bank_bic' have to be provided'''
                     raise ValueError(errormsg)
+            # If all attributes are okay, add them to the request
             params.update({attribute: attributes[attribute]})
         return self.api_request('account.set', params)
 
@@ -418,13 +437,23 @@ class APIClient:
         """
         params = {'mail':mail}
         for attribute in attributes:
-            print('Attribute:', attribute)
-            if attribute not in mail_set_arguments:
+            if self.debug_output:
+                print('Attribute:', attribute)
+
+            # Checking given parameter against list of available parameters
+            if attribute not in mail_set_attributes:
+                # If parameter not found -> throw error
                 raise ValueError(attribute, 'not found')
-            if type(attributes[attribute]) != mail_set_arguments[attribute]:
-                errormsg = ('Attribute ' + attribute + ' must be of type ' + str(mail_set_arguments[attribute]) + '. '
+
+            # Checking type of given parameter against types in list of available parameters
+            if type(attributes[attribute]) != mail_set_attributes[attribute]:
+
+                # If type does not match, throw error
+                errormsg = ('Attribute ' + attribute + ' must be of type ' + str(mail_set_attributes[attribute]) + '. '
                             + str(type(attributes[attribute])) + ' provided.')
                 raise TypeError(errormsg)
+
+            # If all checks are okay, add parameter to list of attributes in the API call
             params.update({attribute: attributes[attribute]})
         return self.api_request('mail.set', params)
 
