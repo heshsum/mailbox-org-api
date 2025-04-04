@@ -658,6 +658,18 @@ class APIClient:
         """
         return self.api_request('group.get', {'group_id':group_id})
 
+    def group_get_ids_by_name(self, group_name: str) -> list:
+        """
+        Function to get group ids by group name. The name is not unique.
+        :param group_name: the name to search for
+        :return: a list of group ids
+        """
+        groups = self.group_list()
+        matched_groups = []
+        for group in groups:
+            if group['name'] == group_name:
+                matched_groups.append(group['id'])
+        return matched_groups
     def group_del(self, name: str) -> dict:
         """
         Function to delete a group
