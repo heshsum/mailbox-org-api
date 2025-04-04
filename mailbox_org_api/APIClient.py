@@ -580,6 +580,7 @@ class APIClient:
         :param tag2level: float value for the spam filter (e.g. 5.5). Will be rounded to 1 decimal place
         :param killlevel: reject or redirection of spam mails. Allowed values: 'reject' or 'redirection'
         :param route_to: folder to route spam to
+        :return: mailbox API response - an array with the spam settings
         """
 
         if killlevel not in ('reject', 'route'):
@@ -595,7 +596,7 @@ class APIClient:
         """
         Function to list the mail blacklist for a given mail address
         :param mail: the mail to list the blacklist for
-        :return: the response for the request - the blacklist of the mail
+        :return: mailbox API response - an array with the complete blacklist of the mail
         """
         return self.api_request('mail.blacklist.list', {'mail':mail})
 
@@ -604,6 +605,7 @@ class APIClient:
         Function to add a mail to a blacklist of a mail address
         :param mail: the mail of the owner of the blacklist
         :param add_address: the address to add to the blacklist
+        :return: mailbox API response - an array with the complete blacklist of the mail
         """
         return self.api_request('mail.blacklist.add', {'mail':mail, 'add_address':add_address})
 
@@ -612,6 +614,7 @@ class APIClient:
         Function to delete a mail from a blacklist
         :param mail: the mail of the owner of the blacklist
         :param delete_address: the address to delete from the blacklist
+        :return: mailbox API response - an array with the complete blacklist of the mail
         """
         return self.api_request('mail.blacklist.remove', {'mail':mail, 'delete_address':delete_address})
 
@@ -619,7 +622,7 @@ class APIClient:
         """
         Function to get the vacation notice for a given mail
         :param mail: the mail to get the vacation notice for
-        :return: the vacation notice of the mail. Message, subject, body, additional addresses, start date, end date
+        :return: mailbox API response - the vacation notice of the mail
         """
         return self.api_request('mail.vacation.get', {'mail':mail})
 
@@ -633,6 +636,7 @@ class APIClient:
         :param start_date: the start date of the vacation notice in format YYYY-MM-DD
         :param end_date: the end date of the vacation notice in format YYYY-MM-DD
         :param additional_mail_addresses: list of addresses to add to the vacation notice (optional)
+        :return: mailbox API response - array with result 'true' of the request, code and message in case of an error
         """
         return self.api_request('mail.vacation.set', {'mail':mail, 'subject':subject, 'body':body,
                                                       'start_date':start_date, 'end_date':end_date,
@@ -641,6 +645,7 @@ class APIClient:
     def group_list(self) -> dict:
         """
         Function to list all groups for an account
+        :return: mailbox API response - the list of groups
         """
         return self.api_request('group.list', {})
 
@@ -657,6 +662,7 @@ class APIClient:
         :param name: the group name
         :param display_name: the group's display name
         :param mail_addresses_to_add: a list of mail addresses to add
+        :return: mailbox API response - True if the group was added, False otherwise
         """
         return self.api_request('group.add', {'name':name, 'display_name':display_name,
                                               'mail_addresses_to_add':mail_addresses_to_add})
@@ -668,6 +674,7 @@ class APIClient:
         :param display_name: the group's display name
         :param mail_addresses_to_add: a list of mail addresses to add
         :param mail_addresses_to_remove: a list of mail addresses to remove
+        :return: mailbox API response - True if the group was edited, False otherwise
         """
         return self.api_request('group.set', {'name':name, 'display_name':display_name,
                                               'mail_addresses_to_add':mail_addresses_to_add,
@@ -677,7 +684,7 @@ class APIClient:
         """
         Function to list all available password reset methods for a given mail
         :param mail: the mail to query
-        :return: the response for the request - a list of available password reset methods
+        :return: mailbox API response - a list of available password reset methods
         """
         return self.api_request('mail.passwordreset.listmethods', {'mail':mail})
 
@@ -686,7 +693,7 @@ class APIClient:
         Function to send a password reset for a mail via SMS
         :param mail: the mail to send the SMS for
         :param cell_phone: the cell phone number of the mailbox
-        :return: the response for the request
+        :return: mailbox API response - True if the SMS was sent, False otherwise
         """
         return self.api_request('mail.passwordreset.sendsms',{'mail':mail, 'cell_phone':cell_phone})
 
@@ -696,6 +703,7 @@ class APIClient:
         :param mail: the mail to set the password for
         :param token: the token to set the password
         :param password: the new password to set
+        :return: mailbox API response - True if the password was set, False otherwise
         """
         return self.api_request('mail.passwordreset.setpassword',
                                 {'mail':mail, 'token':token, 'password':password})
@@ -711,7 +719,7 @@ class APIClient:
         """
         Function to list all contexts of a given account
         :param account: the account to list all contexts for
-        :return: the response for the request
+        :return: mailbox API response - an array with key 'context id' and value 'associated domains'
         """
         return self.api_request('context.list', {'account':account})
 
@@ -719,7 +727,7 @@ class APIClient:
         """
         Function to search for accounts, domains and email addresses
         :param search_string: the query to search by
-        :return: the response for the request
+        :return: the mailbox API response for the request - an array with results for accounts, domains and mailboxes
         """
         return self.api_request('search', {'search':search_string})
 
@@ -748,7 +756,7 @@ class APIClient:
         Function to get a mailing list
         :param mailinglist: the mailing list to get
         :param account: the account of the mailing list
-        :return: dict of the mailing list
+        :return: the mailbox API response for the request - a dict of the mailing list
         """
         return self.api_request('mailinglist.get', {'mailinglist':mailinglist, 'account':account})
 
@@ -759,7 +767,7 @@ class APIClient:
         :param password: the password of the mailing list
         :param account: the account of the mailing list (optional)
         :param adminmail: admin email address of the mailing list (optional)
-        :return: True if the mailing list was changed, error code otherwise
+        :return: the mailbox API response for the request - True if the mailing list was changed, error code otherwise
         """
         return self.api_request('mailinglist.set', {'mailinglist':mailinglist, 'account':account,
                                                 'password':password, 'adminmail':adminmail})
@@ -769,7 +777,7 @@ class APIClient:
         Function to delete a mailing list
         :param mailinglist: the mailing list to delete
         :param account: the account of the mailing list
-        :return: True if the mailing list was deleted, error code otherwise
+        :return: the mailbox API response for the request - True if the mailing list was deleted, error code otherwise
         """
         return self.api_request('mailinglist.delete', {'mailinglist':mailinglist, 'account':account})
 
