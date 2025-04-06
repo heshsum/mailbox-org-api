@@ -289,4 +289,4 @@ class Mail:
         str = ""
         for attr in dir(self):
             str.join("obj.%s = %r" % (attr, getattr(self, attr)))
-        return str
+        return str    def __str__(self) -> str:        print_string = ''        # Get object attributes as a dict in order to iterate        for k, v in self.__dict__.items():            # Add each attribute to the String.            # As the attribute name is '_attribute', remove the leading character            print_string += f'{k[1:]}: {v}\n'        return print_string
