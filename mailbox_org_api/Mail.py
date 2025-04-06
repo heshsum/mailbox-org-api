@@ -1,6 +1,3 @@
-from datetime import datetime
-
-
 class Mail:
     def __init__(self, mail: str):
         self.mail = mail
