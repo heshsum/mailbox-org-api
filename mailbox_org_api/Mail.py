@@ -190,4 +190,111 @@ class Mail:
     def position(self) -> str:
         return self._position
 
-    @position.setter    def position(self, position: str):        self._position = position    @property    def department(self) -> str:        return self._department    @department.setter    def department(self, department: str):        self._department = department    @property    def company(self) -> str:        return self._company    @company.setter    def company(self, company: str):        self._company = company    @property    def street(self) -> str:        return self._street    @street.setter    def street(self, street: str):        self._street = street    @property    def postal_code(self) -> str:        return self._postal_code    @postal_code.setter    def postal_code(self, postal_code: str):        self._postal_code = postal_code    @property    def city(self) -> str:        return self._city    @city.setter    def city(self, city: str):        self._city = city    @property    def phone(self) -> str:        return self._phone    @phone.setter    def phone(self, phone: str):        self._phone = phone    @property    def fax(self) -> str:        return self._fax    @fax.setter    def fax(self, fax: str):        self._fax = fax    @property    def cell_phone(self) -> str:        return self._cell_phone    @cell_phone.setter    def cell_phone(self, cell_phone: str):        self._cell_phone = cell_phone    @property    def uid_extern(self) -> str:        return self._uid_extern    @uid_extern.setter    def uid_extern(self, uid_extern: str):        self._uid_extern = uid_extern    @property    def language(self) -> str:        return self._language    @language.setter    def language(self, language: str):        self._language = language    @property    def capabilities(self) -> list:        return self._capabilities    @capabilities.setter    def capabilities(self, capabilities: list):        self._capabilities = capabilities    @property    def creation_date(self) -> str:        return self._creation_date    @creation_date.setter    def creation_date(self, creation_date: str):        self._creation_date = creation_date    def __str__(self) -> str:        print_string = ''        # Get object attributes as a dict in order to iterate        for k, v in self.__dict__.items():            # Add each attribute to the String.            # As the attribute name is '_attribute', remove the leading character            print_string += f'{k[1:]}: {v}\n'        return print_string
+    @position.setter
+    def position(self, position: str):
+        self._position = position
+
+    @property
+    def department(self) -> str:
+        return self._department
+
+    @department.setter
+    def department(self, department: str):
+        self._department = department
+
+    @property
+    def company(self) -> str:
+        return self._company
+
+    @company.setter
+    def company(self, company: str):
+        self._company = company
+
+    @property
+    def street(self) -> str:
+        return self._street
+
+    @street.setter
+    def street(self, street: str):
+        self._street = street
+
+    @property
+    def postal_code(self) -> str:
+        return self._postal_code
+
+    @postal_code.setter
+    def postal_code(self, postal_code: str):
+        self._postal_code = postal_code
+
+    @property
+    def city(self) -> str:
+        return self._city
+
+    @city.setter
+    def city(self, city: str):
+        self._city = city
+
+    @property
+    def phone(self) -> str:
+        return self._phone
+
+    @phone.setter
+    def phone(self, phone: str):
+        self._phone = phone
+
+    @property
+    def fax(self) -> str:
+        return self._fax
+
+    @fax.setter
+    def fax(self, fax: str):
+        self._fax = fax
+
+    @property
+    def cell_phone(self) -> str:
+        return self._cell_phone
+
+    @cell_phone.setter
+    def cell_phone(self, cell_phone: str):
+        self._cell_phone = cell_phone
+
+    @property
+    def uid_extern(self) -> str:
+        return self._uid_extern
+
+    @uid_extern.setter
+    def uid_extern(self, uid_extern: str):
+        self._uid_extern = uid_extern
+
+    @property
+    def language(self) -> str:
+        return self._language
+
+    @language.setter
+    def language(self, language: str):
+        self._language = language
+
+    @property
+    def capabilities(self) -> list:
+        return self._capabilities
+
+    @capabilities.setter
+    def capabilities(self, capabilities: list):
+        self._capabilities = capabilities
+
+    @property
+    def creation_date(self) -> str:
+        return self._creation_date
+
+    @creation_date.setter
+    def creation_date(self, creation_date: str):
+        self._creation_date = creation_date
+
+    def __str__(self) -> str:
+        print_string = ''
+        # Get object attributes as a dict in order to iterate
+        for k, v in self.__dict__.items():
+            # Add each attribute to the String.
+            # As the attribute name is '_attribute', remove the leading character
+            print_string += f'{k[1:]}: {v}\n'
+        return print_string
