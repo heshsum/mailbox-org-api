@@ -405,9 +405,11 @@ class APIClient:
         result = self.api_request('mail.get', {'mail':mail, 'include_quota_usage':False})
         object = Mail(mail)
         for key, value in result.items():
-            print('Key:', key, 'Value:', value)
+            if self.debug_output:
+                print('Key:', key, 'Value:', value)
             result[key] = value
-            print(object)
+            if self.debug_output:
+                print(object)
         return object
 
     def mail_set(self, mail: str, attributes: dict):
