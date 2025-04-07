@@ -202,3 +202,21 @@ def test_mail_creation_date():
     creation_date = '1980-12-31 00:00:00'
     mail.creation_date = creation_date
     assert mail.creation_date == creation_date
+
+def test_mail_uid():
+    mail = Mail.Mail(mail_address)
+    uid = 'test uid'
+    mail.uid = uid
+    assert mail.uid == uid
+
+def test_mail_type():
+    mail = Mail.Mail(mail_address)
+    type = 'inbox'
+    mail.type = type
+    assert mail.type == type
+
+def test_mail_plansavailable():
+    mail = Mail.Mail(mail_address)
+    plansavailable = ['light', 'standard', 'premium']
+    mail.plansavailable = plansavailable
+    assert mail.plansavailable == plansavailable
