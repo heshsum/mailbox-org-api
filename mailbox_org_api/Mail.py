@@ -306,8 +306,8 @@ class Mail:
         return self._type
 
     @type.setter
-    def type(self, type: str):
-        self._type = type
+    def type(self, inbox_type: str):
+        self._type = inbox_type
 
     @property
     def plansavailable(self) -> list:
