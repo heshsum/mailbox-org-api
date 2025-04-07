@@ -154,7 +154,8 @@ class APIClient:
         """
         params = {'account': account, 'password': password, 'plan': plan}
         for attribute in attributes:
-            print('Attribute:', attribute)
+            if self.debug_output:
+                print('Attribute:', attribute)
             if attribute not in account_add_arguments:
                 raise ValueError(attribute, 'not found')
             if type(attributes[attribute]) != account_add_arguments[attribute]:
@@ -181,7 +182,8 @@ class APIClient:
         """
         params = {'account':account}
         for attribute in attributes:
-            print('Attribute:', attribute)
+            if self.debug_output:
+                print('Attribute:', attribute)
             if attribute not in account_set_arguments:
                 raise ValueError(attribute, 'not found')
             if type(attributes[attribute]) != account_set_arguments[attribute]:
@@ -421,7 +423,8 @@ class APIClient:
         """
         params = {'mail':mail}
         for attribute in attributes:
-            print('Attribute:', attribute)
+            if self.debug_output:
+                print('Attribute:', attribute)
             if attribute not in mail_set_arguments:
                 raise ValueError(attribute, 'not found')
             if type(attributes[attribute]) != mail_set_arguments[attribute]:
