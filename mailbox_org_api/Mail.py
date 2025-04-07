@@ -1,37 +1,40 @@
 class Mail:
     def __init__(self, mail: str):
-        self.mail = mail
-        self.password = None
-        self.password_hash = None
-        self.same_password_allowed = None
-        self.require_password_reset = None
-        self.plan = None
-        self.additional_mail_quota = None
-        self.additional_cloud_quota = None
-        self.first_name = None
-        self.last_name = None
-        self.inboxsave = None
-        self.forwards = None
-        self.aliases = None
-        self.alternate_mail = None
-        self.memo = None
-        self.allow_nets = None
-        self.active = None
-        self.title = None
-        self.birthday = None
-        self.position = None
-        self.department = None
-        self.company = None
-        self.street = None
-        self.postal_code = None
-        self.city = None
-        self.phone = None
-        self.fax = None
-        self.cell_phone = None
-        self.uid_extern = None
-        self.language = None
-        self.capabilities = None
-        self.creation_date = None
+        self._mail = mail
+        self._password = None
+        self._password_hash = None
+        self._same_password_allowed = None
+        self._require_password_reset = None
+        self._plan = None
+        self._additional_mail_quota = None
+        self._additional_cloud_quota = None
+        self._first_name = None
+        self._last_name = None
+        self._inboxsave = None
+        self._forwards = None
+        self._aliases = None
+        self._alternate_mail = None
+        self._memo = None
+        self._allow_nets = None
+        self._active = None
+        self._title = None
+        self._birthday = None
+        self._position = None
+        self._department = None
+        self._company = None
+        self._street = None
+        self._postal_code = None
+        self._city = None
+        self._phone = None
+        self._fax = None
+        self._cell_phone = None
+        self._uid_extern = None
+        self._language = None
+        self._capabilities = None
+        self._creation_date = None
+        self._uid = None
+        self._type = None
+        self._plansavailable = []
 
     @property
     def mail(self) -> str:
@@ -289,6 +292,30 @@ class Mail:
     @creation_date.setter
     def creation_date(self, creation_date: str):
         self._creation_date = creation_date
+
+    @property
+    def uid(self) -> str:
+        return self._uid
+
+    @uid.setter
+    def uid(self, uid: str):
+        self._uid = uid
+
+    @property
+    def type(self) -> str:
+        return self._type
+
+    @type.setter
+    def type(self, type: str):
+        self._type = type
+
+    @property
+    def plansavailable(self) -> list:
+        return self._plansavailable
+
+    @plansavailable.setter
+    def plansavailable(self, plansavailable: list):
+        self._plansavailable = plansavailable
 
     def __str__(self) -> str:
         print_string = ''
