@@ -8,10 +8,18 @@ from mailbox_org_api.Account import Account
 from mailbox_org_api.Mail import Mail
 
 headers = {'content-type': 'application/json'}
+
+# Domain capabilities as documented here: https://api.mailbox.org/v1/doc/methods/index.html#domain-capabilities-set
 domain_capabilities = ['MAIL_SPAMPROTECTION', 'MAIL_BLACKLIST', 'MAIL_BACKUPRECOVER', 'MAIL_PASSWORDRESET_SMS']
+
+# Capabilities as documented here: https://api.mailbox.org/v1/doc/methods/index.html#mail-capabilities-set
 mail_capabilities = ['MAIL_SPAMPROTECTION', 'MAIL_BLACKLIST', 'MAIL_BACKUPRECOVER', 'MAIL_OTP', 'MAIL_PASSWORDRESET_SMS']
+
+# Allowed sort fields as documented here: https://api.mailbox.org/v1/doc/methods/index.html#mail-list
 mail_list_sort_field = ['mail', 'first_name', 'last_name', 'status', 'domain', 'plan', 'type', 'creation_date']
-mail_set_arguments = {'password': str, 'password_hash': str, 'same_password_allowed': bool,
+
+# Allowed attributes as documented here: https://api.mailbox.org/v1/doc/methods/index.html#mail-set
+mail_set_attributes = {'password': str, 'password_hash': str, 'same_password_allowed': bool,
                       'require_reset_password': bool, 'plan': str, 'additional_mail_quota': str,
                       'additional_cloud_quota': str, 'first_name': str, 'last_name': str, 'inboxsave': bool,
                       'forwards': list, 'aliases': list, 'alternate_mail': str, 'memo': str, 'allow_nets': str,
@@ -19,8 +27,9 @@ mail_set_arguments = {'password': str, 'password_hash': str, 'same_password_allo
                       'street': str, 'postal_code': str, 'city': str, 'phone': str, 'fax': str, 'cell_phone': str,
                       'uid_extern': str, 'language': str, 'deletion_date': str}
 
-# Allowed paramters as documented here: https://api.mailbox.org/v1/doc/methods/index.html#account-add
-account_add_arguments = {'tarifflimits': dict, 'memo': str, 'contact_mail': str, 'contact_phone': str,
+# Allowed attributes as documented here: https://api.mailbox.org/v1/doc/methods/index.html#account-add
+account_add_attributes = {'tarifflimits': dict, 'memo': str, 'contact_mail': str, 'contact_phone': str,
+
                          'contact_fax': str, 'contact_mobile': str, 'company': str, 'ustid': str,
                          'address_main_salutation': str, 'address_main_first_name': str, 'address_main_last_name': str,
                          'address_main_street': str, 'address_main_zipcode': str, 'address_main_town': str,
@@ -28,7 +37,10 @@ account_add_arguments = {'tarifflimits': dict, 'memo': str, 'contact_mail': str,
                          'address_payment_first_name': str, 'address_payment_last_name': str,
                          'address_payment_street': str, 'address_payment_zipcode': str, 'address_payment_town': str,
                          'address_payment_country': str, 'max_mailinglist': int, 'language': str}
-account_set_arguments = {'password': str, 'plan': str, 'memo': str, 'address_main_first_name': str,
+
+# Allowed attributes as documented here: https://api.mailbox.org/v1/doc/methods/index.html#account-set
+account_set_attributes = {'password': str, 'plan': str, 'memo': str, 'address_main_first_name': str,
+
                          'address_main_last_name':str, 'address_main_street	': str, 'address_main_zipcode': str,
                          'address_main_town': str, 'address_main_country': str,	'address_payment_first_name': str,
                          'address_payment_last_name': str, 'address_payment_street': str,
@@ -157,10 +169,16 @@ class APIClient:
         for attribute in attributes:
             if self.debug_output:
                 print('Attribute:', attribute)
-            if attribute not in account_add_arguments:
+
+            # Checking list of given attributes against list of available araguments
+            if attribute not in account_add_attributes:
+                # If attribute not found, throw error
                 raise ValueError(attribute, 'not found')
-            if type(attributes[attribute]) != account_add_arguments[attribute]:
-                errormsg = ('Attribute ' + attribute + ' must be of type ' + str(account_add_arguments[attribute]) + '. '
+
+            # Check if type of attribute matches the type in the list of allowed attributes
+            if type(attributes[attribute]) != account_add_attributes[attribute]:
+                # If attribute type
+                errormsg = ('Attribute ' + attribute + ' must be of type ' + str(account_add_attributes[attribute]) + '. '
                             + str(type(attributes[attribute])) + ' provided.')
                 raise TypeError(errormsg)
             params.update({attribute: attributes[attribute]})
@@ -193,21 +211,29 @@ class APIClient:
         for attribute in attributes:
             if self.debug_output:
                 print('Attribute:', attribute)
-            if attribute not in account_set_arguments:
+            # Checking given attribute against list of available attribute
+            if attribute not in account_set_attributes:
+                # If attribute not found, throw error
                 raise ValueError(attribute, 'not found')
-            if type(attributes[attribute]) != account_set_arguments[attribute]:
-                errormsg = ('Attribute ' + attribute + ' must be of type ' + str(account_set_arguments[attribute]) + '. '
+
+            # Checking type of given attribute against types in list of available attributes
+            if type(attributes[attribute]) != account_set_attributes[attribute]:
+                # If type does not match, throw error
+                errormsg = ('Attribute ' + attribute + ' must be of type ' + str(account_set_attributes[attribute]) + '. '
                             + str(type(attributes[attribute])) + ' provided.')
                 raise TypeError(errormsg)
+            # Check for attribute payment_type and if it matches the allowed values
             if attribute == 'payment_type':
                 if attributes[attribute] != 'dta' and attributes[attribute] != 'invoice':
                     errormsg = '''Only payment types 'dta' and 'invoice' are supported.'''
                     raise ValueError(errormsg)
-                if (attributes[attribute] == 'dta' and 'bank_account_owner' not in attributes
-                        and 'bank_iban' not in attributes and 'bank_bic' not in attributes):
+                # Check if 'dta' was provided and the other payment information is available as well
+                if (attributes[attribute] == 'dta' and ('bank_account_owner' not in attributes
+                        or 'bank_iban' not in attributes or 'bank_bic' not in attributes)):
                     errormsg = '''When setting 'payment_type = dta', 'bank_account_owner', 'bank_iban' 
                                 and 'bank_bic' have to be provided'''
                     raise ValueError(errormsg)
+            # If all attributes are okay, add them to the request
             params.update({attribute: attributes[attribute]})
         return self.api_request('account.set', params)
 
@@ -431,12 +457,20 @@ class APIClient:
         for attribute in attributes:
             if self.debug_output:
                 print('Attribute:', attribute)
-            if attribute not in mail_set_arguments:
+            # Checking given parameter against list of available parameters
+            if attribute not in mail_set_attributes:
+                # If parameter not found -> throw error
                 raise ValueError(attribute, 'not found')
-            if type(attributes[attribute]) != mail_set_arguments[attribute]:
-                errormsg = ('Attribute ' + attribute + ' must be of type ' + str(mail_set_arguments[attribute]) + '. '
+
+            # Checking type of given parameter against types in list of available parameters
+            if type(attributes[attribute]) != mail_set_attributes[attribute]:
+
+                # If type does not match, throw error
+                errormsg = ('Attribute ' + attribute + ' must be of type ' + str(mail_set_attributes[attribute]) + '. '
                             + str(type(attributes[attribute])) + ' provided.')
                 raise TypeError(errormsg)
+
+            # If all checks are okay, add parameter to list of attributes in the API call
             params.update({attribute: attributes[attribute]})
         return self.api_request('mail.set', params)
 
@@ -559,7 +593,7 @@ class APIClient:
         """
         Function to get a mail using an external UID
         :param mail: the mail to get
-        :return: the response for the request
+        :return: mailbox API response - an array with the mail details
         """
         return self.api_request('mail.externaluid', {'mail':mail})
 
@@ -567,7 +601,7 @@ class APIClient:
         """
         Function to list all backups for a given mail
         :param mail: the mail to list backups for
-        :return: the response for the request - a list of backups
+        :return: mailbox API response - an array with the backup numbers and dates
         """
         return self.api_request('mail.backup.list', {'mail':mail})
 
@@ -578,6 +612,7 @@ class APIClient:
         :param id: the id of the backup
         :param time: the time of the backup
         :param filter: the filter of the backup - "all" or an IMAP foldername
+        :return: mailbox API response - an array with the backup numbers and dates
         """
         return self.api_request('mail.backup.import',
                                 {'mail':mail, 'id':id, 'time':time, 'filter':filter})
@@ -586,7 +621,7 @@ class APIClient:
         """
         Function to retrieve the spam settings for a given mail
         :param mail: the mail to get the spam settings for
-        :return: the response for the request - the spam settings
+        :return: mailbox API response - an array with the spam settings
         """
         return self.api_request('mail.spamprotect.get', {'mail':mail})
 
@@ -602,22 +637,23 @@ class APIClient:
         :param tag2level: float value for the spam filter (e.g. 5.5). Will be rounded to 1 decimal place
         :param killlevel: reject or redirection of spam mails. Allowed values: 'reject' or 'redirection'
         :param route_to: folder to route spam to
+        :return: mailbox API response - an array with the spam settings
         """
 
         if killlevel not in ('reject', 'route'):
             raise ValueError('''Invalid value for killlevel. Only 'reject' or 'route' are allowed''')
 
         return self.api_request('mail.spamprotect.set',
-                                {'greylist': bool2str(greylist),
+                                {'mail':mail, 'greylist': bool2str(greylist),
                                  'smtp_plausibility':bool2str(smtp_plausibility), 'rbl':bool2str(rbl),
                                  'bypass_banned_checks':bool2str(bypass_banned_checks), 'tag2level':round(tag2level, 1),
-                                 'killlevel':killlevel, 'route_to':route_to})
+                                 'killevel':killlevel, 'route_to':route_to})
 
     def mail_blacklist_list(self, mail: str) -> dict:
         """
         Function to list the mail blacklist for a given mail address
         :param mail: the mail to list the blacklist for
-        :return: the response for the request - the blacklist of the mail
+        :return: mailbox API response - an array with the complete blacklist of the mail
         """
         return self.api_request('mail.blacklist.list', {'mail':mail})
 
@@ -626,6 +662,7 @@ class APIClient:
         Function to add a mail to a blacklist of a mail address
         :param mail: the mail of the owner of the blacklist
         :param add_address: the address to add to the blacklist
+        :return: mailbox API response - an array with the complete blacklist of the mail
         """
         return self.api_request('mail.blacklist.add', {'mail':mail, 'add_address':add_address})
 
@@ -634,6 +671,7 @@ class APIClient:
         Function to delete a mail from a blacklist
         :param mail: the mail of the owner of the blacklist
         :param delete_address: the address to delete from the blacklist
+        :return: mailbox API response - an array with the complete blacklist of the mail
         """
         return self.api_request('mail.blacklist.remove', {'mail':mail, 'delete_address':delete_address})
 
@@ -641,7 +679,7 @@ class APIClient:
         """
         Function to get the vacation notice for a given mail
         :param mail: the mail to get the vacation notice for
-        :return: the vacation notice of the mail. Message, subject, body, additional addresses, start date, end date
+        :return: mailbox API response - the vacation notice of the mail
         """
         return self.api_request('mail.vacation.get', {'mail':mail})
 
@@ -655,6 +693,7 @@ class APIClient:
         :param start_date: the start date of the vacation notice in format YYYY-MM-DD
         :param end_date: the end date of the vacation notice in format YYYY-MM-DD
         :param additional_mail_addresses: list of addresses to add to the vacation notice (optional)
+        :return: mailbox API response - array with result 'true' of the request, code and message in case of an error
         """
         return self.api_request('mail.vacation.set', {'mail':mail, 'subject':subject, 'body':body,
                                                       'start_date':start_date, 'end_date':end_date,
@@ -663,15 +702,25 @@ class APIClient:
     def group_list(self) -> dict:
         """
         Function to list all groups for an account
+        :return: mailbox API response - the list of groups
         """
         return self.api_request('group.list', {})
 
     def group_get(self, group_id: int) -> dict:
         """
-        Function to get a group from the account
+        Function to get a group from the account by the group id
         :param group_id: the id of the group to get
+        :return: mailbox API response - the list of groups of the account
         """
         return self.api_request('group.get', {'group_id':group_id})
+
+    def group_del(self, name: str) -> dict:
+        """
+        Function to delete a group
+        :param name: the group's name
+        :return: mailbox API response - True if the group was deleted, False otherwise
+        """
+        return self.api_request('group.delete', {'name':name})
 
     def group_add(self, name: str, display_name: str, mail_addresses_to_add: list) -> dict:
         """
@@ -679,6 +728,7 @@ class APIClient:
         :param name: the group name
         :param display_name: the group's display name
         :param mail_addresses_to_add: a list of mail addresses to add
+        :return: mailbox API response - True if the group was added, False otherwise
         """
         return self.api_request('group.add', {'name':name, 'display_name':display_name,
                                               'mail_addresses_to_add':mail_addresses_to_add})
@@ -690,6 +740,7 @@ class APIClient:
         :param display_name: the group's display name
         :param mail_addresses_to_add: a list of mail addresses to add
         :param mail_addresses_to_remove: a list of mail addresses to remove
+        :return: mailbox API response - True if the group was edited, False otherwise
         """
         return self.api_request('group.set', {'name':name, 'display_name':display_name,
                                               'mail_addresses_to_add':mail_addresses_to_add,
@@ -699,7 +750,7 @@ class APIClient:
         """
         Function to list all available password reset methods for a given mail
         :param mail: the mail to query
-        :return: the response for the request - a list of available password reset methods
+        :return: mailbox API response - a list of available password reset methods
         """
         return self.api_request('mail.passwordreset.listmethods', {'mail':mail})
 
@@ -708,7 +759,7 @@ class APIClient:
         Function to send a password reset for a mail via SMS
         :param mail: the mail to send the SMS for
         :param cell_phone: the cell phone number of the mailbox
-        :return: the response for the request
+        :return: mailbox API response - True if the SMS was sent, False otherwise
         """
         return self.api_request('mail.passwordreset.sendsms',{'mail':mail, 'cell_phone':cell_phone})
 
@@ -718,22 +769,16 @@ class APIClient:
         :param mail: the mail to set the password for
         :param token: the token to set the password
         :param password: the new password to set
+        :return: mailbox API response - True if the password was set, False otherwise
         """
         return self.api_request('mail.passwordreset.setpassword',
                                 {'mail':mail, 'token':token, 'password':password})
-
-    def group_del(self, name: str) -> dict:
-        """
-        Function to delete a group
-        :param name: the group's name
-        """
-        return self.api_request('group.delete', {'name':name})
 
     def context_list(self, account: str) -> dict:
         """
         Function to list all contexts of a given account
         :param account: the account to list all contexts for
-        :return: the response for the request
+        :return: mailbox API response - an array with key 'context id' and value 'associated domains'
         """
         return self.api_request('context.list', {'account':account})
 
@@ -741,7 +786,7 @@ class APIClient:
         """
         Function to search for accounts, domains and email addresses
         :param search_string: the query to search by
-        :return: the response for the request
+        :return: the mailbox API response for the request - an array with results for accounts, domains and mailboxes
         """
         return self.api_request('search', {'search':search_string})
 
@@ -770,7 +815,7 @@ class APIClient:
         Function to get a mailing list
         :param mailinglist: the mailing list to get
         :param account: the account of the mailing list
-        :return: dict of the mailing list
+        :return: the mailbox API response for the request - a dict of the mailing list
         """
         return self.api_request('mailinglist.get', {'mailinglist':mailinglist, 'account':account})
 
@@ -781,7 +826,7 @@ class APIClient:
         :param password: the password of the mailing list
         :param account: the account of the mailing list (optional)
         :param adminmail: admin email address of the mailing list (optional)
-        :return: True if the mailing list was changed, error code otherwise
+        :return: the mailbox API response for the request - True if the mailing list was changed, error code otherwise
         """
         return self.api_request('mailinglist.set', {'mailinglist':mailinglist, 'account':account,
                                                 'password':password, 'adminmail':adminmail})
@@ -791,7 +836,7 @@ class APIClient:
         Function to delete a mailing list
         :param mailinglist: the mailing list to delete
         :param account: the account of the mailing list
-        :return: True if the mailing list was deleted, error code otherwise
+        :return: the mailbox API response for the request - True if the mailing list was deleted, error code otherwise
         """
         return self.api_request('mailinglist.delete', {'mailinglist':mailinglist, 'account':account})
 
