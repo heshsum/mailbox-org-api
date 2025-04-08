@@ -1,8 +1,7 @@
-from mailbox_org_api import APIClient, Mail
+from mailbox_org_api import Mail
 import unittest
 
 mail_address = 'tests@tests.tests'
-
 
 class TestMail(unittest.TestCase):
 
