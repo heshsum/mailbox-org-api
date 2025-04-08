@@ -288,8 +288,19 @@ class APIClient:
 
         for invoice in response:
             invoices.append(invoice['invoice_id'])
-
         return invoices
+
+    def account_invoice_get_list_open(self, account: str) -> list:
+        """
+        Function to get a list of all invoice id's with status 'open' for a specific account'
+        """
+        all_invoices = self.account_invoice_get_list(account)
+        open_invoices = []
+        
+        for invoice in all_invoices:
+            if invoice['status'] == 'open':
+                open_invoices.append(invoice)
+        return open_invoices
 
     def account_invoice_get_token(self, account: str, invoice_id: str) -> str:
         """
