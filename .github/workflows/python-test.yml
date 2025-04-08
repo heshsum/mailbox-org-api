@@ -1,5 +1,10 @@
 name: Python Test
+
 on: [push]
+
+permissions:
+  contents: read
+
 jobs:
   build:
     runs-on: ubuntu-latest
