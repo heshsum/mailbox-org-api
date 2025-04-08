@@ -1,15 +1,21 @@
 from mailbox_org_api import APIClient, Mail
 import unittest
-mail_address = 'test@test.test'
+
+mail_address = 'tests@tests.tests'
+
 
 class TestMail(unittest.TestCase):
 
-
-
+    def test_init(self):
+        mail = Mail.Mail(mail_address)
+        self.assertEqual(mail.mail, mail_address)
 
     def test_mail_address(self):
         mail = Mail.Mail(mail_address)
         self.assertEqual(mail.mail, mail_address)
+        test_address = 'test2@tests.tests'
+        mail.mail = test_address
+        self.assertEqual(mail.mail, test_address)
 
     def test_mail_password(self):
         mail = Mail.Mail(mail_address)
@@ -252,11 +258,4 @@ class TestMail(unittest.TestCase):
 if __name__ == '__main__':
     unittest.main()
 
-
-
-
-
-
 account = 'test_account'
-
-
