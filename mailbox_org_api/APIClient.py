@@ -433,7 +433,7 @@ class APIClient:
         return self.api_request('mail.list', params)
 
     def mail_add(self, mail:str, password: str, plan: str, first_name: str, last_name: str, inboxsave: bool = True,
-                 forwards: list = None, memo: str = None, language: str = 'en_EN', uid_extern: str = None) -> dict:
+                 forwards: list = None, memo: str = None, language: str = 'en_US', uid_extern: str = None) -> dict:
         """
         Function to add a mail
         :param mail: the mail to add
