@@ -6,6 +6,7 @@ import requests
 
 from mailbox_org_api.Account import Account
 from mailbox_org_api.Mail import Mail
+from mailbox_org_api.Invoice import Invoice
 
 headers = {'content-type': 'application/json'}
 
@@ -255,12 +256,28 @@ class APIClient:
 
     def account_invoice_get(self, account: str, token: str) -> dict:
         """
-        Function to get a specific of all invoices for an account
+        Function to get a specific invoice for an account
         :param account: the account name
         :param token: the token for the invoice
         :return: the response from the mailbox.org Business API - the invoice as a Base64 encoded gzipped string
         """
         return self.api_request('account.invoice.get', {'account':account, 'token':token})
+
+    def account_invoice_get_object(self, account: str, invoice_id: str) -> Invoice:
+        """
+        Function to get a specific invoice object for an account
+        :param account: the account name
+        :param invoice_id: the id of the invoice
+        :return: the invoice as an Invoice object
+        """
+        list = self.account_invoice_list(account)
+        invoice = Invoice(account, invoice_id)
+        for element in list:
+            if element['invoice_id'] == invoice_id:
+                invoice.date = element['date']
+                invoice.status = element['status']
+                invoice.token = element['token']
+        return invoice
 
     def account_invoice_get_list(self, account: str) -> list:
         """
