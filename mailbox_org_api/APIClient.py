@@ -4,6 +4,9 @@ Module for the BMBO API client
 import json
 import requests
 
+from mailbox_org_api.Account import Account
+from mailbox_org_api.Mail import Mail
+
 headers = {'content-type': 'application/json'}
 
 # Domain capabilities as documented here: https://api.mailbox.org/v1/doc/methods/index.html#domain-capabilities-set
@@ -26,6 +29,7 @@ mail_set_attributes = {'password': str, 'password_hash': str, 'same_password_all
 
 # Allowed attributes as documented here: https://api.mailbox.org/v1/doc/methods/index.html#account-add
 account_add_attributes = {'tarifflimits': dict, 'memo': str, 'contact_mail': str, 'contact_phone': str,
+
                          'contact_fax': str, 'contact_mobile': str, 'company': str, 'ustid': str,
                          'address_main_salutation': str, 'address_main_first_name': str, 'address_main_last_name': str,
                          'address_main_street': str, 'address_main_zipcode': str, 'address_main_town': str,
@@ -36,6 +40,7 @@ account_add_attributes = {'tarifflimits': dict, 'memo': str, 'contact_mail': str
 
 # Allowed attributes as documented here: https://api.mailbox.org/v1/doc/methods/index.html#account-set
 account_set_attributes = {'password': str, 'plan': str, 'memo': str, 'address_main_first_name': str,
+
                          'address_main_last_name':str, 'address_main_street	': str, 'address_main_zipcode': str,
                          'address_main_town': str, 'address_main_country': str,	'address_payment_first_name': str,
                          'address_payment_last_name': str, 'address_payment_street': str,
@@ -187,6 +192,14 @@ class APIClient:
         """
         return self.api_request('account.get', {'account':account})
 
+    def account_get_object(self, account:str) -> Account:
+        result = self.api_request('account.get', {'account': account})
+        account_object = Account(account)
+        for k, v in result.items():
+            if v:
+                setattr(account_object, k, v)
+        return account_object
+
     def account_set(self, account: str, attributes: dict) -> dict:
         """
         Function to update a specific account
@@ -198,7 +211,6 @@ class APIClient:
         for attribute in attributes:
             if self.debug_output:
                 print('Attribute:', attribute)
-
             # Checking given attribute against list of available attribute
             if attribute not in account_set_attributes:
                 # If attribute not found, throw error
@@ -210,13 +222,11 @@ class APIClient:
                 errormsg = ('Attribute ' + attribute + ' must be of type ' + str(account_set_attributes[attribute]) + '. '
                             + str(type(attributes[attribute])) + ' provided.')
                 raise TypeError(errormsg)
-
             # Check for attribute payment_type and if it matches the allowed values
             if attribute == 'payment_type':
                 if attributes[attribute] != 'dta' and attributes[attribute] != 'invoice':
                     errormsg = '''Only payment types 'dta' and 'invoice' are supported.'''
                     raise ValueError(errormsg)
-
                 # Check if 'dta' was provided and the other payment information is available as well
                 if (attributes[attribute] == 'dta' and ('bank_account_owner' not in attributes
                         or 'bank_iban' not in attributes or 'bank_bic' not in attributes)):
@@ -428,6 +438,14 @@ class APIClient:
         """
         return self.api_request('mail.get', {'mail':mail, 'include_quota_usage':include_quota_usage})
 
+    def mail_get_object(self, mail:str) -> Mail:
+        result = self.api_request('mail.get', {'mail':mail, 'include_quota_usage':False})
+        mail_object = Mail(mail)
+        for k, v in result.items():
+            if v:
+                setattr(mail_object, k, v)
+        return mail_object
+
     def mail_set(self, mail: str, attributes: dict):
         """
         Function to update a mail
@@ -439,7 +457,6 @@ class APIClient:
         for attribute in attributes:
             if self.debug_output:
                 print('Attribute:', attribute)
-
             # Checking given parameter against list of available parameters
             if attribute not in mail_set_attributes:
                 # If parameter not found -> throw error
