@@ -4,6 +4,7 @@ Module for the BMBO API client
 import json
 import requests
 
+from mailbox_org_api.Account import Account
 from mailbox_org_api.Mail import Mail
 
 headers = {'content-type': 'application/json'}
@@ -172,6 +173,14 @@ class APIClient:
         :return: the response from the mailbox.org Business API
         """
         return self.api_request('account.get', {'account':account})
+
+    def account_get_object(self, account:str) -> Account:
+        result = self.api_request('account.get', {'account': account})
+        account_object = Account(account)
+        for k, v in result.items():
+            if v:
+                setattr(account_object, k, v)
+        return account_object
 
     def account_set(self, account: str, attributes: dict) -> dict:
         """
