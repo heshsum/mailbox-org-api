@@ -742,13 +742,13 @@ class APIClient:
         """
         return self.api_request('group.get', {'group_id':group_id})
 
-    def group_del(self, name: str) -> dict:
+    def group_del(self, group_id: int) -> dict:
         """
         Function to delete a group
-        :param name: the group's name
+        :param group_id: the group's id of the group to delete
         :return: mailbox API response - True if the group was deleted, False otherwise
         """
-        return self.api_request('group.delete', {'name':name})
+        return self.api_request('group.del', {'group_id':group_id})
 
     def group_add(self, name: str, display_name: str, mail_addresses_to_add: list) -> dict:
         """
