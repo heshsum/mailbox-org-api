@@ -433,7 +433,8 @@ class APIClient:
         return self.api_request('mail.list', params)
 
     def mail_add(self, mail:str, password: str, plan: str, first_name: str, last_name: str, inboxsave: bool = True,
-                 forwards: list = None, memo: str = None, language: str = 'en_US', uid_extern: str = None) -> dict:
+                 forwards: list = None, memo: str = None, language: str = 'en_US', skip_welcome_mail = False,
+                 uid_extern: str = None) -> dict:
         """
         Function to add a mail
         :param mail: the mail to add
@@ -445,6 +446,7 @@ class APIClient:
         :param forwards: List of addresses to forwards mails to
         :param memo: Memo of the mail
         :param language: the language of the mail in locale format
+        :param skip_welcome_mail: True if the welcome mail should be skipped, False if it should be sent
         :param uid_extern: the external UID of the mail
         :return: the response for the request
         """
@@ -455,7 +457,8 @@ class APIClient:
         return self.api_request('mail.add',{'mail':mail, 'password':password, 'plan':plan,
                                                     'first_name':first_name, 'last_name':last_name,
                                                     'inboxsave':inboxsave, 'forwards':forwards, 'memo':memo,
-                                                    'language':language, 'uid_extern':uid_extern})
+                                                    'language':language, 'skip_welcome_mail':skip_welcome_mail,
+                                                    'uid_extern':uid_extern})
 
     def mail_get(self, mail: str, include_quota_usage: bool = False) -> dict:
         """
