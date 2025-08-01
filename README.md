@@ -25,25 +25,42 @@ username = 'foo'
 password = 'bar'
 
 # Initializing
-api_connection = APIClient.APIClient()
+api = APIClient.APIClient()
 
 # Testing with hello.world
-api_connection.hello_world()
+api.hello_world()
 
 # Creating a new API session
-api_connection.auth(username, password)
+api.auth(username, password)
 
 # Testing the session with hello.innerworld
-api_connection.hello_innerworld()
+api.hello_innerworld()
 
-# Changing an account
-api_connection.account_set('foo', {'payment_type':'invoice'})
+# Changing account settings
+api.account_set('foo', {'payment_type':'invoice'})
 
-# Changing an inbox
-api_connection.mail_set('accountname', {'password':'alligator9'})
+# Creating an inbox
+api.mail_add('foo@bar.com', 's3cr3tp4ssw0rd', 'standard', 'First Name', 'Last Name')
+
+# Here are some examples for helper functions provided by this package
+
+# Changing an inbox password
+api.mail_set_password('foo@bar.com', 'an0th3rS3cr3t')
+
+# Changing an inbox plan
+api.mail_set_plan('foo@bar.com', 'premium')
+
+# Deactivating an inbox
+api.mail_set_state('foo@bar.com', False)
+
+# Changing alias addresses
+api.mail_set_aliases('foo@bar.com', ['alias1@bar.com', 'alias2@bar.com'])
+
+# Changing forward addresses
+api.mail_set_forwards('foo@bar.com', ['forward1@bar.com', 'forward2@bar.com'])
 
 # Closing the session
-api_connection.deauth()
+api.deauth()
 ```
 
 The implemented functions follow the naming scheme of the API, but with underscores instead of points (e.g. `mail_add()` for of `mail.add`).
@@ -56,7 +73,7 @@ This is a function to send a `mail.set`command and set a user's password.
 
 Usage:
 ```
-api_connection.mail_set_password('user@testmail.tech', 'theNewPassword')
+api.mail_set_password('user@testmail.tech', 'theNewPassword')
 ```
 
 ### mail_set_password_require_reset
@@ -64,7 +81,7 @@ This function sends a `mail.set` command to set a user's password and require th
 
 Usage:
 ```python
-api_connection.mail_set_password('user@testmail.tech', 'theNewPassword')
+api.mail_set_password('user@testmail.tech', 'theNewPassword')
 ```
 
 The function will automatically set `'require_reset':True` when sending the request.
@@ -74,7 +91,7 @@ This function sets the plan for an inbox.
 
 Usage:
 ```python
-api_connection.mail_set_plan('user@testmail.tech', 'standard')
+api.mail_set_plan('user@testmail.tech', 'standard')
 ```
 
 
@@ -83,7 +100,7 @@ This function sets the forwards of an inbox.
 
 Usage:
 ```python
-api_connection.mail_set_forwards('user@testmail.tech', ['forward@testmail.tech', 'forward@testmail.tech'])
+api.mail_set_forwards('user@testmail.tech', ['forward@testmail.tech', 'forward@testmail.tech'])
 ```
 
 ### mail_set_aliases
@@ -91,7 +108,7 @@ This function sets the aliases of an inbox.
 
 Usage:
 ```python
-api_connection.mail_set_forwards('user@testmail.tech', ['alias1@testmail.tech', 'alias2@testmail.tech'])
+api.mail_set_forwards('user@testmail.tech', ['alias1@testmail.tech', 'alias2@testmail.tech'])
 ```
 
 ### mail_set_state
@@ -100,10 +117,10 @@ With this function an inbox can be (de-)activated. It sends a `mail.set` command
 Usage:
 ```python
 # Deactivates an inbox
-api_connection.mail_set_state('user@testmail.tech', 'False')
+api.mail_set_state('user@testmail.tech', 'False')
 
 # Activates an inbox
-api_connection.mail_set_state('user@testmail.tech', 'True')
+api.mail_set_state('user@testmail.tech', 'True')
 ```
 
 ### account_invoice_get_list
@@ -112,7 +129,7 @@ It returns a list of all invoice id's for a given account.
 
 Usage:
 ```python
-api_connection.account_invoice_get_list('account_name')
+api.account_invoice_get_list('account_name')
 ```
 
 ### account_invoice_get_token
@@ -121,7 +138,7 @@ This function helps to get the token for a given invoice ID.
 
 Usage:
 ```python
-api_connection.account_invoice_get_token('BMBO-1234-24')
+api.account_invoice_get_token('BMBO-1234-24')
 ```
 
 ### account_invoice_get_pdf
@@ -138,7 +155,7 @@ Usage
 invoice_id = 'BMBO-1234-24'
 account_name = 'some_user'
 with open(invoice_id + '.pdf', 'w') as file:
-    file.write(api_connection.account_invoice_get_pdf(account_name, invoice_id))
+    file.write(api.account_invoice_get_pdf(account_name, invoice_id))
 ```
 
 ## Here be dragons
