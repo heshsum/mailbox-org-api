@@ -16,7 +16,10 @@ pip install git+https://github.com/heshsum/mailbox-org-api
 ```
 
 ## Usage
-Basic usage is fairly straightforward:
+Basic usage is fairly straightforward. The naming scheme of the functions is similar to the naming at mailbox.org,
+but instead of points, it uses underscores (e.g. instead of `mail.add` it's `mail_add`).  
+Additionally, some helper functions for common or more complicated tasks are included to make life a bit easier, 
+e.g. for changing plans, password and to retrieve invoices.  
 
 ```python
 from mailbox_org_api import APIClient
@@ -62,8 +65,6 @@ api.mail_set_forwards('foo@bar.com', ['forward1@bar.com', 'forward2@bar.com'])
 # Closing the session
 api.deauth()
 ```
-
-The implemented functions follow the naming scheme of the API, but with underscores instead of points (e.g. `mail_add()` for of `mail.add`).
 
 ## Common tasks
 mailbox_org_api includes a number of helper functions to make common tasks simpler. These include:
