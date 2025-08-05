@@ -93,7 +93,11 @@ class APIClient:
             print('API request:\t', request)
 
         api_response = requests.post(
-            self.url, data=json.dumps(request), headers=headers).json()
+            self.url, data=json.dumps(request), headers=headers)
+        try:
+            api_response = api_response.json()
+        except Exception as error:
+            print('Non-JSON response received.\nFull response:\t', api_response)
         if self.debug_output:
             print('API full response:\t', api_response)
 
