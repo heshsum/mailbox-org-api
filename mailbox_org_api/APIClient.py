@@ -276,9 +276,9 @@ class APIClient:
         :param invoice_id: the id of the invoice
         :return: the invoice as an Invoice object
         """
-        list = self.account_invoice_list(account)
+        invoice_list = self.account_invoice_list(account)
         invoice = Invoice(account, invoice_id)
-        for element in list:
+        for element in invoice_list:
             if element['invoice_id'] == invoice_id:
                 invoice.date = element['date']
                 invoice.status = element['status']
