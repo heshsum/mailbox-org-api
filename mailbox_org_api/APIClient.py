@@ -298,7 +298,7 @@ class APIClient:
 
     def account_invoice_get_list_open(self, account: str) -> list:
         """
-        Function to get a list of all invoice id's with status 'open' for a specific account'
+        Function to get a list of all invoice id's with status 'open' for a specific account
         """
         all_invoices = self.account_invoice_get_list(account)
         open_invoices = []
