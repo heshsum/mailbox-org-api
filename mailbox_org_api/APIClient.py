@@ -768,15 +768,20 @@ class APIClient:
         return self.api_request('group.add', {'name':name, 'display_name':display_name,
                                               'mail_addresses_to_add':mail_addresses_to_add})
 
-    def group_set(self, group_id: int, display_name: str, mail_addresses_to_add: list, mail_addresses_to_remove: list) -> dict:
+    def group_set(self, group_id: int, display_name: str, mail_addresses_to_add: list = None,
+                  mail_addresses_to_remove: list = None) -> dict:
         """
-        Function to modify a group
+        Function to modify a group. Either mail_addresses_to_add or mail_addresses_to_remove have to be specified.
         :param group_id: the group's id of the group to modify
         :param display_name: the group's display name
-        :param mail_addresses_to_add: a list of mail addresses to add
-        :param mail_addresses_to_remove: a list of mail addresses to remove
+        :param mail_addresses_to_add: a list of mail addresses to add. Defaults to None
+        :param mail_addresses_to_remove: a list of mail addresses to remove. Defaults to None
         :return: mailbox API response - True if the group was edited, False otherwise
         """
+        # If mail_addresses_to_add and mail_addresses_to_remove are both empty, raise error
+        if mail_addresses_to_add is None and mail_addresses_to_remove is None:
+            raise ValueError('mail_addresses_to_add or mail_addresses_to_remove are required')
+
         return self.api_request('group.set', {'group_id':group_id, 'display_name':display_name,
                                               'mail_addresses_to_add':mail_addresses_to_add,
                                               'mail_addresses_to_remove':mail_addresses_to_remove})
