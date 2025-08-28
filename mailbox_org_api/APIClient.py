@@ -409,7 +409,8 @@ class APIClient:
         """
         return self.api_request('domain.validate.spf', {'domain':domain})
 
-    def mail_list(self, domain, details: bool = False, page_size: int = -1, page: int = -1, sort_field: str = None, sort_order: str = None) -> dict:
+    def mail_list(self, domain, details: bool = False, page_size: int = -1, page: int = -1, sort_field: str = None,
+                  sort_order: str = None) -> dict:
         """
         Function to list all mailboxes
         :param domain: the domain to list
