@@ -124,6 +124,7 @@ class APIClient:
         Function to authenticate and create a new API session
         :param username: the username
         :param password: the password
+        return: the API response for the request
         """
         api_response = self.api_request('auth', {'user':username, 'pass':password})
         if api_response['session']:
