@@ -3,6 +3,7 @@ Module for the BMBO API client
 """
 import json
 import requests
+from requests import RequestException
 
 from mailbox_org_api.Account import Account
 from mailbox_org_api.Mail import Mail
@@ -96,8 +97,9 @@ class APIClient:
             self.url, data=json.dumps(request), headers=headers)
         try:
             api_response = api_response.json()
-        except Exception as error:
-            print('Non-JSON response received.\nFull response:\t', api_response)
+        except RequestException as error:
+            print('Non-JSON response received.\nFull response:\t', api_response,
+                  '\nError:', {error})
         if self.debug_output:
             print('API full response:\t', api_response)
 
