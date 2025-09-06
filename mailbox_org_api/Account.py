@@ -36,8 +36,8 @@ class Account:
     def type(self):
         return self._type
     @type.setter
-    def type(self, type: str):
-        self._type = type
+    def type(self, account_type: str):
+        self._type = account_type
     @property
     def status(self):
         return self._status

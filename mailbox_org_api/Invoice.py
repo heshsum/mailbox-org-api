@@ -19,8 +19,8 @@ class Invoice:
         return self._invoice_id
 
     @invoice_id.setter
-    def invoice_id(self, id: str):
-        self._invoice_id = id
+    def invoice_id(self, invoice_id: str):
+        self._invoice_id = invoice_id
 
     @property
     def status(self):
