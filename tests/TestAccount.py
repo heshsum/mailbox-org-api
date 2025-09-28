@@ -4,7 +4,7 @@ import unittest
 account_name = 'heiner.hansen'
 
 
-class TestAcccount(unittest.TestCase):
+class TestAccount(unittest.TestCase):
 
     def test_account(self):
         account = Account.Account(account_name)
