@@ -644,17 +644,17 @@ class APIClient:
         """
         return self.api_request('mail.backup.list', {'mail':mail})
 
-    def mail_backup_import(self, mail: str, id: str, time: str, filter: str) -> dict:
+    def mail_backup_import(self, mail: str, backup_id: str, time: str, backup_filter: str) -> dict:
         """
         Function to import a backup for a mail
         :param mail: the mail to import
-        :param id: the id of the backup
+        :param backup_id: the id of the backup
         :param time: the time of the backup
-        :param filter: the filter of the backup - "all" or an IMAP foldername
+        :param backup_filter: the filter of the backup - "all" or an IMAP foldername
         :return: mailbox API response - an array with the backup numbers and dates
         """
         return self.api_request('mail.backup.import',
-                                {'mail':mail, 'id':id, 'time':time, 'filter':filter})
+                                {'mail':mail, 'id':backup_id, 'time':time, 'filter':backup_filter})
 
     def mail_spamprotect_get(self, mail: str) -> dict:
         """
