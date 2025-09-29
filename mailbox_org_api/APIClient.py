@@ -5,6 +5,7 @@ import json
 import requests
 from requests import RequestException
 
+from mailbox_org_api.APIError import APIError
 from mailbox_org_api.Account import Account
 from mailbox_org_api.Mail import Mail
 from mailbox_org_api.Invoice import Invoice
@@ -112,12 +113,11 @@ class APIClient:
 
         # In case of an error, the error is returned
         elif 'error' in api_response:
-            print(api_response['error'])
-            return api_response['error']
+            error_data = api_response['error']
+            raise APIError(message=error_data.get('message'), code=error_data.get('code'))
 
         # If neither a success nor an error, the full response if returned
-        else:
-            return api_response
+        return api_response
 
     def auth(self, username, password) -> dict:
         """
