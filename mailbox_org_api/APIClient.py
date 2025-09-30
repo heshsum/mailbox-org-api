@@ -734,9 +734,14 @@ class APIClient:
         :param additional_mail_addresses: list of addresses to add to the vacation notice (optional)
         :return: mailbox API response - array with result 'true' of the request, code and message in case of an error
         """
-        return self.api_request('mail.vacation.set', {'mail':mail, 'subject':subject, 'body':body,
-                                                      'start_date':start_date, 'end_date':end_date,
-                                                      'additional_mail_addresses':additional_mail_addresses})
+        params = {'mail':mail, 'subject':subject, 'body':body,'start_date':start_date, 'end_date':end_date,
+                  'additional_mail_addresses':additional_mail_addresses}
+
+        # If no additional_mail_addresses are given, remove the parameter from the request
+        if not additional_mail_addresses:
+            params.pop('additional_mail_addresses')
+
+        return self.api_request('mail.vacation.set', params)
 
     def group_list(self) -> dict:
         """
