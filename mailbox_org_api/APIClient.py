@@ -339,7 +339,8 @@ class APIClient:
         # Get the token and retrieve the invoice data
         response = self.api_request('account.invoice.get',
                                     {'account': account,
-                                     'token': self.account_invoice_get_token(account, invoice_id)})
+                                     'token': self.account_invoice_get_token(account, invoice_id),
+                                     'type':'pdf'})
 
         # Take the Base64 encoded data (response['bin']), decode the Base 64, decompress the gz and return the bytes
         return zlib.decompress(base64.b64decode(response['bin']))
