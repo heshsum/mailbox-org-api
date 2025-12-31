@@ -32,7 +32,6 @@ mail_set_attributes = {'password': str, 'password_hash': str, 'same_password_all
 
 # Allowed attributes as documented here: https://api.mailbox.org/v1/doc/methods/index.html#account-add
 account_add_attributes = {'tarifflimits': dict, 'memo': str, 'contact_mail': str, 'contact_phone': str,
-
                          'contact_fax': str, 'contact_mobile': str, 'company': str, 'ustid': str,
                          'address_main_salutation': str, 'address_main_first_name': str, 'address_main_last_name': str,
                          'address_main_street': str, 'address_main_zipcode': str, 'address_main_town': str,
