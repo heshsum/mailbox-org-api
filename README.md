@@ -1,8 +1,10 @@
 # mailbox-org-api
-A library to access the mailbox.org Business API.
+A library to access the [mailbox Business API](https://api.mailbox.org).
 
 ## Motivation and purpose 
-The goal is to provide a comprehensive library that can easily be used to integrate the business features at mailbox.org.
+The goal is to provide a comprehensive, easy to use library to integrate the business features of mailbox.  
+Primarily, the library should mirror all calls and features of the mailbox API.  
+As a secondary goal, the library should implement helper functions for common tasks.
 
 ## Installation
 ### Using pip:
