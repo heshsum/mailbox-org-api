@@ -379,10 +379,23 @@ class APIClient:
         :return: the API response
         """
         params = {'domain': domain}
-        for element in capabilities:
-            if element not in domain_capabilities:
-                break
-            params.update({element: capabilities[element]})
+
+        for attribute in capabilities:
+            if self.debug_output:
+                print('Attribute:', attribute)
+            # Checking given attribute against list of available capabilities
+            if attribute not in domain_capabilities:
+                # If attribute not found, throw error
+                raise ValueError(attribute, 'not found')
+
+            # Checking type of given attribute against types in list of available attributes
+            if type(capabilities[attribute]) != domain_capabilities[attribute]:
+                # If type does not match, throw error
+                errormsg = ('Attribute ' + attribute + ' must be of type ' + str(account_set_attributes[attribute]) + '. '
+                            + str(type(capabilities[attribute])) + ' provided.')
+                raise TypeError(errormsg)
+
+            params.update({attribute: capabilities[attribute]})
         return self.api_request('domain.capabilities.set', params)
 
     def domain_set(self, domain: str, attributes: dict) -> dict:
