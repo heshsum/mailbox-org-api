@@ -4,6 +4,8 @@ class Account:
         self._account = None
         self._type = None
         self._status = None
+        self._plan = None
+        self._old_customer = None
         self._language = None
         self._company = None
         self._ustid = None
@@ -16,52 +18,80 @@ class Account:
         self._av_contract = {}
         self._tarifflimits = {}
         self._dta_allowed = None
-        self._old_customer = None
-        self._plan = None
         self._payment_type = None
 
     @property
     def name(self):
         return self._name
+
     @name.setter
     def name(self, name: str):
         self._name = name
+
     @property
     def account(self):
         return self._account
+
     @account.setter
     def account(self, account: str):
         self._account = account
+
     @property
     def type(self):
         return self._type
+
     @type.setter
     def type(self, account_type: str):
         self._type = account_type
+
     @property
     def status(self):
         return self._status
+
     @status.setter
     def status(self, status: str):
         self._status = status
+
+    @property
+    def plan(self):
+        return self._plan
+
+    @plan.setter
+    def plan(self, plan: str):
+        self._plan = plan
+
+    @property
+    def old_customer(self):
+        return self._old_customer
+
+    @old_customer.setter
+    def old_customer(self, old_customer: bool):
+        self._old_customer = old_customer
+
     @property
     def language(self):
         return self._language
+
     @language.setter
     def language(self, language: str):
         self._language = language
+
     @property
     def company(self):
         return self._company
+
     @company.setter
     def company(self, company: str):
         self._company = company
+
     @property
     def ustid(self):
         return self._ustid
+
     @ustid.setter
     def ustid(self, ustid: str):
         self._ustid = ustid
+
     @property
     def address_main(self):
         return self._address_main
@@ -97,18 +127,23 @@ class Account:
     @property
     def monthly_fee(self):
         return self._monthly_fee
+
     @monthly_fee.setter
     def monthly_fee(self, monthly_fee: float):
         self._monthly_fee = monthly_fee
+
     @property
     def invoice_type(self):
         return self._invoice_type
+
     @invoice_type.setter
     def invoice_type(self, invoice_type: str):
         self._invoice_type = invoice_type
+
     @property
     def av_contract(self):
         return self._av_contract
+
     @av_contract.setter
     def av_contract(self, av_contract: dict):
         self._av_contract = av_contract
@@ -130,29 +165,12 @@ class Account:
         self._dta_allowed = dta_allowed
 
     @property
-    def old_customer(self):
-        return self._old_customer
-
-    @old_customer.setter
-    def old_customer(self, old_customer: bool):
-        self._old_customer = old_customer
-
-    @property
-    def plan(self):
-        return self._plan
-
-    @plan.setter
-    def plan(self, plan: str):
-        self._plan = plan
-
-    @property
     def payment_type(self):
         return self._payment_type
 
     @payment_type.setter
     def payment_type(self, payment_type: str):
         self._payment_type = payment_type
-
 
     def __str__(self) -> str:
         print_string = ''
