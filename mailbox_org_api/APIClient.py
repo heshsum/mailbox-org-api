@@ -370,7 +370,7 @@ class APIClient:
         """
         Function to set a domain capabilities
         :param domain: the domain to set the capabilities for
-        :param capabilties: a list of capabilities to set for the domain
+        :param capabilities: a list of capabilities to set for the domain
         :return: the API response
         """
         params = {'domain': domain}
