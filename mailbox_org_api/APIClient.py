@@ -366,7 +366,7 @@ class APIClient:
         """
         return self.api_request('domain.get',{'domain':domain})
 
-    def domain_capabilities_set(self, domain: str, capabilties: dict) -> dict:
+    def domain_capabilities_set(self, domain: str, capabilities: dict) -> dict:
         """
         Function to set a domain capabilities
         :param domain: the domain to set the capabilities for
@@ -374,10 +374,10 @@ class APIClient:
         :return: the API response
         """
         params = {'domain': domain}
-        for element in capabilties:
+        for element in capabilities:
             if element not in domain_capabilities:
                 break
-            params.update({element: capabilties[element]})
+            params.update({element: capabilities[element]})
         return self.api_request('domain.capabilities.set', params)
 
     def domain_set(self, domain: str, attributes: dict) -> dict:
