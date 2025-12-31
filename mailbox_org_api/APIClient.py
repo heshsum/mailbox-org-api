@@ -273,11 +273,16 @@ class APIClient:
         """
         Function to get a specific invoice object for an account
         :param account: the account name
-        :param invoice_id: the id of the invoice
+        :param invoice_id: the id of the invoice to request
         :return: the invoice as an Invoice object
         """
+        # Get all invoices for the account
         invoice_list = self.account_invoice_list(account)
+
+        # Initialize the Invoice object
         invoice = Invoice(account, invoice_id)
+
+        # Retrieve the other data for the invoice from the invoice list
         for element in invoice_list:
             if element['invoice_id'] == invoice_id:
                 invoice.date = element['date']
