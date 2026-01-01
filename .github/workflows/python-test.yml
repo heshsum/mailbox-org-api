@@ -31,3 +31,11 @@ jobs:
         with:
           name: py-coverage-data
           path: .qodana/code-coverage
+      - name: Qodana Scan
+        uses: JetBrains/qodana-action@main
+        env:
+          QODANA_TOKEN: ${{ secrets.QODANA_TOKEN_2036613503 }}
+          QODANA_ENDPOINT: 'https://qodana.cloud'
+        with:
+          args: "-i,PYTHON/py,--linter,jetbrains/qodana-python:latest"
+          pr-mode: false
