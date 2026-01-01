@@ -2,9 +2,6 @@ name: Python Test
 
 on: [push]
 
-permissions:
-  contents: read
-
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -22,3 +19,14 @@ jobs:
       - name: Test with pytest
         run: |
           python -m unittest discover -s ./tests  -p 'Test*.py'
+
+      - name: Run tests with coverage
+        run: |
+            coverage run -m unittest
+            coverage xml -o .qodana/code-coverage/coverage.xml
+
+      - name: Archive coverage data
+        uses: actions/upload-artifact@v4
+        with:
+          name: py-coverage-data
+          path: .qodana/code-coverage
