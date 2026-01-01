@@ -3,6 +3,9 @@ from mailbox_org_api.APIError import APIError
 import unittest
 import os
 
+api_test_user = os.environ['API_TEST_USER']
+api_test_pass = os.environ['API_TEST_PASS']
+
 class TestAPIClient(unittest.TestCase):
     def test_headers(self):
         client = APIClient.APIClient()
