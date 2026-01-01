@@ -1,7 +1,9 @@
 """
-Module for the BMBO API client
+Module for the mailbox Business API client
 """
 import json
+from warnings import deprecated
+
 import requests
 from requests import RequestException
 
@@ -326,6 +328,7 @@ class APIClient:
                 return invoice['token']
         raise ValueError('Invoice not found')
 
+    @deprecated('Use account_invoice_get_file instead')
     def account_invoice_get_pdf(self, account: str, invoice_id: str) -> bytes:
         """
         Function to get a specific invoice as a PDf-file
@@ -333,6 +336,19 @@ class APIClient:
         :param invoice_id: the invoice ID
         :return: the PDF as bytes
         """
+        return self.account_invoice_get_file(account, invoice_id, 'pdf')
+
+    def account_invoice_get_file(self, account: str, invoice_id: str, file_type: str) -> bytes:
+        """
+        Function to get a specific invoice as a PDf-file
+        :param account: the account name
+        :param invoice_id: the invoice ID
+        :param file_type: The file type to return. Valid: csv, pdf and xml
+        :return: the file as bytes
+        """
+        if file_type not in ('csv', 'pdf', 'xml'):
+            raise ValueError(file_type, 'is not a valid file type. Valid: csv, pdf and xml')
+
         import base64
         import zlib
 
@@ -340,7 +356,7 @@ class APIClient:
         response = self.api_request('account.invoice.get',
                                     {'account': account,
                                      'token': self.account_invoice_get_token(account, invoice_id),
-                                     'type':'pdf'})
+                                     'type': file_type})
 
         # Take the Base64 encoded data (response['bin']), decode the Base 64, decompress the gz and return the bytes
         return zlib.decompress(base64.b64decode(response['bin']))
