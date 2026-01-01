@@ -347,7 +347,7 @@ class APIClient:
         :return: the file as bytes
         """
         if file_type not in ('csv', 'pdf', 'xml'):
-            raise ValueError(file_type, 'not valid file type. Valid: csv, pdf and xml')
+            raise ValueError(file_type, 'is not a valid file type. Valid: csv, pdf and xml')
 
         import base64
         import zlib
