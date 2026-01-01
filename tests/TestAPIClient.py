@@ -1,6 +1,7 @@
 from mailbox_org_api import APIClient
-import unittest
 from mailbox_org_api.APIError import APIError
+import unittest
+import os
 
 class TestAPIClient(unittest.TestCase):
     def test_headers(self):
