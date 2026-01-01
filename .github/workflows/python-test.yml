@@ -3,7 +3,7 @@ name: Python Test
 on: [push]
 
 permissions:
-  contents: write
+  contents: read
 
 jobs:
   build:
@@ -22,20 +22,3 @@ jobs:
       - name: Run tests with pytest
         run: |
           python -m unittest discover -s ./tests  -p 'Test*.py'
-      - name: Run tests with coverage
-        run: |
-          coverage run -m unittest discover -s ./tests  -p 'Test*.py'
-          coverage xml -o .qodana/code-coverage/coverage.xml
-      - name: Archive coverage data
-        uses: actions/upload-artifact@v4
-        with:
-          name: py-coverage-data
-          path: .qodana/code-coverage
-      - name: Qodana Scan
-        uses: JetBrains/qodana-action@main
-        env:
-          QODANA_TOKEN: ${{ secrets.QODANA_TOKEN_2036613503 }}
-          QODANA_ENDPOINT: 'https://qodana.cloud'
-        with:
-          args: "-i,PYTHON/py,--linter,jetbrains/qodana-python:latest"
-          pr-mode: false
