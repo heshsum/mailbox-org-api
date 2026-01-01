@@ -23,3 +23,81 @@ class TestAPIClient(unittest.TestCase):
         api = APIClient.APIClient()
         with self.assertRaises(APIError):
             api.auth('wröng_üser?', 'wröng_pässwörd!')
+
+    def test_login(self):
+        api = APIClient.APIClient()
+        self.assertEqual(api.jsonrpc_id, 0)
+        api.auth(api_test_user, api_test_pass)
+        self.assertNotEqual(api.auth_id, None)
+        self.assertEqual(api.level, 'account')
+        self.assertEqual(api.jsonrpc_id, 1)
+
+    def test_account_get(self):
+        api = APIClient.APIClient()
+        api.auth(api_test_user, api_test_pass)
+        account = api.account_get(api_test_user)
+        self.assertEqual('test_bmbo_api', account['account'])
+        self.assertEqual(account['type'], 'BMBO')
+        self.assertEqual(account['status'], 'aktiv')
+        self.assertEqual(account['language'], 'de_DE')
+        self.assertEqual(account['plan'], 'basic')
+        self.assertEqual(account['company'], 'test_bmbo_api')
+        self.assertEqual(account['ustid'], 'DE1234567')
+
+    def test_account_get_object(self):
+        api = APIClient.APIClient()
+        api.auth(api_test_user, api_test_pass)
+        account = api.account_get_object(api_test_user)
+        self.assertEqual(account.account, 'test_bmbo_api')
+        self.assertEqual(account.type, 'BMBO')
+        self.assertEqual(account.status, 'aktiv')
+        self.assertEqual(account.language, 'de_DE')
+        self.assertEqual(account.plan, 'basic')
+        self.assertEqual(account.company, 'test_bmbo_api')
+        self.assertEqual(account.ustid, 'DE1234567')
+
+    def test_account_invoice_list(self):
+        api = APIClient.APIClient()
+        api.auth(api_test_user, api_test_pass)
+        invoices = api.account_invoice_list(api_test_user)
+        self.assertEqual(2, len(invoices))
+        self.assertEqual('BMBO-83002-25', invoices[0]['invoiceNumber'])
+        self.assertEqual('2025-10-30', invoices[0]['date'])
+        self.assertEqual(0, invoices[0]['amount'])
+        self.assertEqual('invoice', invoices[0]['paymentType'])
+        self.assertEqual('storniert', invoices[0]['status'])
+        self.assertEqual(['csv', 'pdf', 'xml'], invoices[0]['availableDownloadFileTypes'])
+        self.assertEqual('BMBO-83002-25', invoices[0]['invoice_id'])
+        self.assertIsNotNone(invoices[0]['token'])
+
+    def test_domain_list(self):
+        api = APIClient.APIClient()
+        api.auth(api_test_user, api_test_pass)
+        self.assertGreater(len(api.domain_list(api_test_user)), 0)
+
+    def test_domain_get(self):
+        api = APIClient.APIClient()
+        api.auth(api_test_user, api_test_pass)
+        domains = api.domain_list(api_test_user)
+        self.assertEqual('testbmboapi.internal', domains[0]['domain'])
+        self.assertIsNotNone(domains[0]['count_mails'])
+
+    def test_mail_list(self):
+        api = APIClient.APIClient()
+        api.auth(api_test_user, api_test_pass)
+        domain = api.domain_list(api_test_user)[0]['domain']
+        mails = api.mail_list(domain)
+        self.assertGreater(len(mails), 0)
+
+    def test_mail_get(self):
+        api = APIClient.APIClient()
+        api.auth(api_test_user, api_test_pass)
+        domain = api.domain_list(api_test_user)[0]['domain']
+        mails = api.mail_list(domain)
+        mail = mails[0]
+        self.assertIn('@testbmboapi.internal', mail['mail'])
+        self.assertIn(api_test_user, mail['parent_uid'])
+        self.assertIn(domain, mail['domain'])
+        self.assertIn('inbox', mail['type'])
+        self.assertIsNotNone(mail['creation_date'])
+
