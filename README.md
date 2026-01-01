@@ -1,3 +1,5 @@
+[![Python Test](https://github.com/heshsum/mailbox-org-api/actions/workflows/python-test.yml/badge.svg?branch=main)](https://github.com/heshsum/mailbox-org-api/actions/workflows/python-test.yml)
+
 # mailbox-org-api
 A library to access the [mailbox Business API](https://api.mailbox.org).
 
