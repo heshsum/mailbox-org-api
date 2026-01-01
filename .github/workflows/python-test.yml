@@ -24,7 +24,7 @@ jobs:
         run: |
             coverage run -m unittest discover -s ./tests  -p 'Test*.py'
             coverage xml -o .qodana/code-coverage/coverage.xml
-            working-directory: PYTHON/py
+        working-directory: PYTHON/py
 
       - name: Archive coverage data
         uses: actions/upload-artifact@v4
