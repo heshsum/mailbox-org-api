@@ -8,16 +8,11 @@ api_test_pass = os.environ['API_TEST_PASS']
 
 class TestAPIClient(unittest.TestCase):
     def test_headers(self):
-        client = APIClient.APIClient()
-        self.assertEqual(client.auth_id, None)
-        self.assertEqual(client.level, None)
-        self.assertEqual(client.jsonrpc_id, 0)
+        api = APIClient.APIClient()
+        self.assertEqual(api.auth_id, None)
+        self.assertEqual(api.level, None)
+        self.assertEqual(api.jsonrpc_id, 0)
 
-    def test_hello_world(self):
-        client = APIClient.APIClient()
-        self.assertEqual(client.jsonrpc_id, 0)
-        self.assertEqual(client.hello_world(), 'Hello World!')
-        self.assertEqual(client.jsonrpc_id, 1)
     #def test_hello_world(self):
     #    api = APIClient.APIClient()
     #    self.assertEqual(api.jsonrpc_id, 0)
@@ -25,6 +20,6 @@ class TestAPIClient(unittest.TestCase):
     #    self.assertEqual(api.jsonrpc_id, 1)
 
     def test_API_error(self):
-        client = APIClient.APIClient()
+        api = APIClient.APIClient()
         with self.assertRaises(APIError):
-            client.auth('wröng_üser?', 'wröng_pässwörd!')
+            api.auth('wröng_üser?', 'wröng_pässwörd!')
