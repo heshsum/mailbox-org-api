@@ -92,8 +92,7 @@ class APIClient:
             "id": self.get_jsonrpc_id()
         }
         if self.debug_output:
-            # In order to not print sensitive information (such as passwords),
-            # a deep copy of the request is created and information redacted
+            # Print the full request but redact sensitive information (passwords).
 
             # On import copy module if needed
             import copy
@@ -101,9 +100,11 @@ class APIClient:
             print_request = copy.deepcopy(request)
 
             # Check if any parameter is 'password' or 'pass'.
-            # If so, replace the logged value with 'xxx'
+            # Check explicit for these strings as not to interfere with possible other
+            # parameters containing a substring.
             for param in print_request['params']:
                 if param == 'password' or param == 'pass':
+                    # If True, replace the logged value with 'xxx'
                     print_request['params'][param] = 'xxx'
 
             # Print the clean version of the request
