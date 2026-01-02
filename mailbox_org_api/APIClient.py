@@ -93,7 +93,7 @@ class APIClient:
             "id": self.get_jsonrpc_id()
         }
         if self.debug_output:
-            print('API request:\t', request)
+            print('API full request:\t', request)
 
         api_response = requests.post(
             self.url, data=json.dumps(request), headers=headers)
