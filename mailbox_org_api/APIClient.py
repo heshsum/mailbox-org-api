@@ -44,7 +44,6 @@ account_add_attributes = {'tarifflimits': dict, 'memo': str, 'contact_mail': str
 
 # Allowed attributes as documented here: https://api.mailbox.org/v1/doc/methods/index.html#account-set
 account_set_attributes = {'password': str, 'plan': str, 'memo': str, 'address_main_first_name': str,
-
                          'address_main_last_name':str, 'address_main_street	': str, 'address_main_zipcode': str,
                          'address_main_town': str, 'address_main_country': str,	'address_payment_first_name': str,
                          'address_payment_last_name': str, 'address_payment_street': str,
