@@ -92,7 +92,22 @@ class APIClient:
             "id": self.get_jsonrpc_id()
         }
         if self.debug_output:
-            print('API full request:\t', request)
+            # In order to not print sensitive information (such as passwords),
+            # a deep copy of the request is created and information redacted
+
+            # On import copy module if needed
+            import copy
+            # Create a deep copy of the dict, as not to overwrite information on the original
+            print_request = copy.deepcopy(request)
+
+            # Check if any parameter is 'password' or 'pass'.
+            # If so, replace the logged value with 'xxx'
+            for param in print_request['params']:
+                if param == 'password' or param == 'pass':
+                    print_request['params'][param] = 'xxx'
+
+            # Print the clean version of the request
+            print('API full request:\t', print_request)
 
         api_response = requests.post(
             self.url, data=json.dumps(request), headers=headers)
