@@ -95,9 +95,16 @@ class TestAPIClient(unittest.TestCase):
         domain = api.domain_list(api_test_user)[0]['domain']
         mails = api.mail_list(domain)
         mail = mails[0]
-        self.assertIn('@testbmboapi.internal', mail['mail'])
+        self.assertIn('@' + domain, mail['mail'])
         self.assertIn(api_test_user, mail['parent_uid'])
         self.assertIn(domain, mail['domain'])
         self.assertIn('inbox', mail['type'])
+        self.assertIsNotNone(mail['memo'])
+        self.assertIsNotNone(mail['forwards'])
+        self.assertIsNotNone(mail['aliases'])
+        self.assertIsNotNone(mail['capabilities'])
+        self.assertEqual(['MAIL_BLACKLIST', 'MAIL_SPAMPROTECTION', 'MAIL_PASSWORDRESET_SMS', 'MAIL_BACKUPRECOVER'],
+                         mail['possible_capabilities'])
+        self.assertIn(mail['plan'], ['premium', 'standard', 'light'])
         self.assertIsNotNone(mail['creation_date'])
 
