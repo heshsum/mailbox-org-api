@@ -96,7 +96,7 @@ class TestAPIClient(unittest.TestCase):
         mails = api.mail_list(domain)
         mail = mails[0]
         self.assertIn('@' + domain, mail['mail'])
-        self.assertIn(api_test_user, mail['parent_uid'])
+        self.assertEqual(api_test_user, mail['parent_uid'])
         self.assertIn(domain, mail['domain'])
         self.assertIn('inbox', mail['type'])
         self.assertIsNotNone(mail['memo'])
