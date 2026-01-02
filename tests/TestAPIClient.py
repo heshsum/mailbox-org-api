@@ -87,7 +87,20 @@ class TestAPIClient(unittest.TestCase):
         api.auth(api_test_user, api_test_pass)
         domain = api.domain_list(api_test_user)[0]['domain']
         mails = api.mail_list(domain)
-        self.assertGreater(len(mails), 0)
+        self.assertIsNotNone(mails)
+        self.assertIsNotNone(mails[0]['mail'])
+        self.assertIn('@' + domain, mails[0]['mail'])
+        self.assertEqual(mails[0]['parent_uid'], api_test_user)
+        self.assertIsNotNone(mails[0]['domain'])
+        self.assertIsNotNone(mails[0]['type'])
+        self.assertIsNotNone(mails[0]['memo'])
+        self.assertIsNotNone(mails[0]['forwards'])
+        self.assertIsNotNone(mails[0]['aliases'])
+        self.assertIsNotNone(mails[0]['capabilities'])
+        self.assertEqual(['MAIL_BLACKLIST', 'MAIL_SPAMPROTECTION', 'MAIL_PASSWORDRESET_SMS', 'MAIL_BACKUPRECOVER'],
+                         mails[0]['possible_capabilities'])
+        self.assertIn(mails[0]['plan'], ['premium', 'standard', 'light'])
+        self.assertIsNotNone(mails[0]['creation_date'])
 
     def test_mail_get(self):
         api = APIClient.APIClient()
@@ -96,7 +109,7 @@ class TestAPIClient(unittest.TestCase):
         mails = api.mail_list(domain)
         mail = mails[0]
         self.assertIn('@' + domain, mail['mail'])
-        self.assertIn(api_test_user, mail['parent_uid'])
+        self.assertEqual(api_test_user, mail['parent_uid'])
         self.assertIn(domain, mail['domain'])
         self.assertIn('inbox', mail['type'])
         self.assertIsNotNone(mail['memo'])
