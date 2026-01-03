@@ -2,9 +2,14 @@ from mailbox_org_api import APIClient
 from mailbox_org_api.APIError import APIError
 import unittest
 import os
+import time
 
 api_test_user = os.environ['API_TEST_USER']
 api_test_pass = os.environ['API_TEST_PASS']
+
+# Create a unique ID String by using the Unix time,
+# converted to int (to get rid of the decimal) and then to String
+test_id = str(int(time.time()))
 
 class TestAPIClient(unittest.TestCase):
     def test_headers(self):
@@ -121,3 +126,15 @@ class TestAPIClient(unittest.TestCase):
         self.assertIn(mail['plan'], ['premium', 'standard', 'light'])
         self.assertIsNotNone(mail['creation_date'])
 
+    def test_mail_externaluid(self):
+        api = APIClient.APIClient(debug_output=True)
+        api.auth(api_test_user, api_test_pass)
+        domain = api.domain_list(api_test_user)[0]['domain']
+        mails = api.mail_list(domain)
+        mail = mails[0]['mail']
+
+        # Setting the external uid
+        api.mail_set(mail, {'uid_extern': test_id})
+        returned_mail = api.mail_externaluid(api_test_user, test_id)
+
+        self.assertEqual(returned_mail['mail'], mail)
