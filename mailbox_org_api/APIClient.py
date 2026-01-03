@@ -677,13 +677,13 @@ class APIClient:
         """
         return self.api_request('mail.apppassword.del', {'id':apppassword_id})
 
-    def mail_externaluid(self, mail: str) -> dict:
+    def mail_externaluid(self, account: str, uid_extern: str) -> dict:
         """
         Function to get a mail using an external UID
         :param mail: the mail to get
         :return: mailbox API response - an array with the mail details
         """
-        return self.api_request('mail.externaluid', {'mail':mail})
+        return self.api_request('mail.externaluid', {'account':account, 'uid_extern':uid_extern})
 
     def mail_backup_list(self, mail: str) -> dict:
         """
