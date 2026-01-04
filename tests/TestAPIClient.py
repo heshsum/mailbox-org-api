@@ -82,7 +82,11 @@ class TestAPIClient(unittest.TestCase):
     def test_domain_list(self):
         api = APIClient.APIClient()
         api.auth(api_test_user, api_test_pass)
-        self.assertGreater(len(api.domain_list(api_test_user)), 0)
+        domains = api.domain_list(api_test_user)
+        for domain in domains:
+            self.assertIsNotNone(domain['domain'], domain['count_mails'])
+            self.assertIsInstance(domain['domain'], str)
+            self.assertIsInstance(domain['count_mails'], int)
         api.deauth()
 
     def test_domain_get(self):
