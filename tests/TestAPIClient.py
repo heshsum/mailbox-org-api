@@ -36,6 +36,7 @@ class TestAPIClient(unittest.TestCase):
         self.assertNotEqual(api.auth_id, None)
         self.assertEqual(api.level, 'account')
         self.assertEqual(api.jsonrpc_id, 1)
+        api.deauth()
 
     def test_account_get(self):
         api = APIClient.APIClient()
@@ -48,6 +49,7 @@ class TestAPIClient(unittest.TestCase):
         self.assertEqual(account['plan'], 'basic')
         self.assertEqual(account['company'], 'test_bmbo_api')
         self.assertEqual(account['ustid'], 'DE1234567')
+        api.deauth()
 
     def test_account_get_object(self):
         api = APIClient.APIClient()
@@ -60,6 +62,7 @@ class TestAPIClient(unittest.TestCase):
         self.assertEqual(account.plan, 'basic')
         self.assertEqual(account.company, 'test_bmbo_api')
         self.assertEqual(account.ustid, 'DE1234567')
+        api.deauth()
 
     def test_account_invoice_list(self):
         api = APIClient.APIClient()
@@ -74,11 +77,13 @@ class TestAPIClient(unittest.TestCase):
         self.assertEqual(['csv', 'pdf', 'xml'], invoices[0]['availableDownloadFileTypes'])
         self.assertEqual('BMBO-83002-25', invoices[0]['invoice_id'])
         self.assertIsNotNone(invoices[0]['token'])
+        api.deauth()
 
     def test_domain_list(self):
         api = APIClient.APIClient()
         api.auth(api_test_user, api_test_pass)
         self.assertGreater(len(api.domain_list(api_test_user)), 0)
+        api.deauth()
 
     def test_domain_get(self):
         api = APIClient.APIClient()
@@ -86,6 +91,7 @@ class TestAPIClient(unittest.TestCase):
         domains = api.domain_list(api_test_user)
         self.assertEqual('testbmboapi.internal', domains[0]['domain'])
         self.assertIsNotNone(domains[0]['count_mails'])
+        api.deauth()
 
     def test_mail_list(self):
         api = APIClient.APIClient()
@@ -106,6 +112,7 @@ class TestAPIClient(unittest.TestCase):
                          mails[0]['possible_capabilities'])
         self.assertIn(mails[0]['plan'], ['premium', 'standard', 'light'])
         self.assertIsNotNone(mails[0]['creation_date'])
+        api.deauth()
 
     def test_mail_get(self):
         api = APIClient.APIClient()
@@ -125,6 +132,7 @@ class TestAPIClient(unittest.TestCase):
                          mail['possible_capabilities'])
         self.assertIn(mail['plan'], ['premium', 'standard', 'light'])
         self.assertIsNotNone(mail['creation_date'])
+        api.deauth()
 
     def test_mail_externaluid(self):
         api = APIClient.APIClient(debug_output=True)
@@ -138,6 +146,7 @@ class TestAPIClient(unittest.TestCase):
         returned_mail = api.mail_externaluid(api_test_user, test_id)
 
         self.assertEqual(returned_mail['mail'], mail)
+        api.deauth()
 
     def test_mail_set_state(self):
         api = APIClient.APIClient()
@@ -150,5 +159,4 @@ class TestAPIClient(unittest.TestCase):
         self.assertEqual(api.mail_get(mail)['active'], False)
         api.mail_set_state(mail, True)
         self.assertEqual(api.mail_get(mail)['active'], True)
-
         api.deauth()
