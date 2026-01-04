@@ -680,7 +680,8 @@ class APIClient:
     def mail_externaluid(self, account: str, uid_extern: str) -> dict:
         """
         Function to get a mail using an external UID
-        :param mail: the mail to get
+        :param account: the account to get a mail for
+        :param uid_extern: the external UID to get a mail for
         :return: mailbox API response - an array with the mail details
         """
         return self.api_request('mail.externaluid', {'account':account, 'uid_extern':uid_extern})
