@@ -138,3 +138,17 @@ class TestAPIClient(unittest.TestCase):
         returned_mail = api.mail_externaluid(api_test_user, test_id)
 
         self.assertEqual(returned_mail['mail'], mail)
+
+    def test_mail_set_state(self):
+        api = APIClient.APIClient()
+        api.auth(api_test_user, api_test_pass)
+        domain = api.domain_list(api_test_user)[0]['domain']
+        mails = api.mail_list(domain)
+        mail = mails[0]['mail']
+
+        api.mail_set_state(mail, False)
+        self.assertEqual(api.mail_get(mail)['active'], False)
+        api.mail_set_state(mail, True)
+        self.assertEqual(api.mail_get(mail)['active'], True)
+
+        api.deauth()
