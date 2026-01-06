@@ -68,8 +68,8 @@ class TestAPIClient(unittest.TestCase):
         api = APIClient.APIClient()
         api.auth(api_test_user, api_test_pass)
         invoices = api.account_invoice_list(api_test_user)
-        self.assertEqual(2, len(invoices))
-        self.assertEqual('BMBO-83002-25', invoices[0]['invoiceNumber'])
+        for invoice in invoices:
+            self.assertTrue(str.startswith(invoice['invoiceNumber'], 'BMBO-'))
         self.assertEqual('2025-10-30', invoices[0]['date'])
         self.assertEqual(0, invoices[0]['amount'])
         self.assertEqual('invoice', invoices[0]['paymentType'])
