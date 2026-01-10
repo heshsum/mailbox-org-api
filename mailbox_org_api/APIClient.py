@@ -7,6 +7,7 @@ from warnings import deprecated
 import requests
 from requests import RequestException
 
+import Options
 from mailbox_org_api.APIError import APIError
 from mailbox_org_api.Account import Account
 from mailbox_org_api.Mail import Mail
@@ -22,35 +23,6 @@ mail_capabilities = ['MAIL_SPAMPROTECTION', 'MAIL_BLACKLIST', 'MAIL_BACKUPRECOVE
 
 # Allowed sort fields as documented here: https://api.mailbox.org/v1/doc/methods/index.html#mail-list
 mail_list_sort_field = ['mail', 'first_name', 'last_name', 'status', 'domain', 'plan', 'type', 'creation_date']
-
-# Allowed attributes as documented here: https://api.mailbox.org/v1/doc/methods/index.html#mail-set
-mail_set_attributes = {'password': str, 'password_hash': str, 'same_password_allowed': bool,
-                      'require_reset_password': bool, 'plan': str, 'additional_mail_quota': str,
-                      'additional_cloud_quota': str, 'first_name': str, 'last_name': str, 'inboxsave': bool,
-                      'forwards': list, 'aliases': list, 'alternate_mail': str, 'memo': str, 'allow_nets': str,
-                      'active': bool, 'title': str, 'birthday': str, 'position': str, 'department': str, 'company': str,
-                      'street': str, 'postal_code': str, 'city': str, 'phone': str, 'fax': str, 'cell_phone': str,
-                      'uid_extern': str, 'language': str, 'deletion_date': str}
-
-# Allowed attributes as documented here: https://api.mailbox.org/v1/doc/methods/index.html#account-add
-account_add_attributes = {'tarifflimits': dict, 'memo': str, 'contact_mail': str, 'contact_phone': str,
-                         'contact_fax': str, 'contact_mobile': str, 'company': str, 'ustid': str,
-                         'address_main_salutation': str, 'address_main_first_name': str, 'address_main_last_name': str,
-                         'address_main_street': str, 'address_main_zipcode': str, 'address_main_town': str,
-                         'address_main_country': str, 'address_payment_same_as_main': bool,
-                         'address_payment_first_name': str, 'address_payment_last_name': str,
-                         'address_payment_street': str, 'address_payment_zipcode': str, 'address_payment_town': str,
-                         'address_payment_country': str, 'max_mailinglist': int, 'language': str}
-
-# Allowed attributes as documented here: https://api.mailbox.org/v1/doc/methods/index.html#account-set
-account_set_attributes = {'password': str, 'plan': str, 'memo': str, 'address_main_first_name': str,
-                         'address_main_last_name':str, 'address_main_street	': str, 'address_main_zipcode': str,
-                         'address_main_town': str, 'address_main_country': str,	'address_payment_first_name': str,
-                         'address_payment_last_name': str, 'address_payment_street': str,
-                         'address_payment_zipcode': str, 'address_payment_town': str, 'company': str, 'bank_iban': str,
-                         'bank_bic': str, 'bank_account_owner': str, 'av_contract_accept_name': str,
-                         'contact_mail': str, 'contact_mail_payment': str, 'contact_phone': str, 'contact_fax': str,
-                         'tarifflimits': list, 'av_contract_professional_secrecy': bool, 'payment_type': str}
 
 class APIClient:
     """
@@ -180,32 +152,22 @@ class APIClient:
         """
         return self.api_request('hello.innerworld', {})
 
-    def account_add(self, account: str, password: str, plan: str, attributes: dict) -> dict:
+    def account_add(self, account: str, password: str, plan: str, options: Options.AccountAddOptions) -> dict:
         """
-        Function to create a new account
-        :param account: the account name to create
-        :param password: the password of the account
+        Function to add a new account
+        :param account: the account name
+        :param password: the password
         :param plan: the plan of the account
-        :param attributes: other the attributes of the account
-        :return: the response from the mailbox.org Business API
+        :param options: the optional parameters of the account
+        :return: the response from the mailbox Business API
         """
+        # Adding required parameters
         params = {'account': account, 'password': password, 'plan': plan}
-        for attribute in attributes:
-            if self.debug_output:
-                print('Attribute:', attribute)
 
-            # Checking list of given attributes against list of available araguments
-            if attribute not in account_add_attributes:
-                # If attribute not found, throw error
-                raise ValueError(attribute, 'not found')
-
-            # Check if type of attribute matches the type in the list of allowed attributes
-            if type(attributes[attribute]) != account_add_attributes[attribute]:
-                # If attribute type
-                errormsg = ('Attribute ' + attribute + ' must be of type ' + str(account_add_attributes[attribute]) + '. '
-                            + str(type(attributes[attribute])) + ' provided.')
-                raise TypeError(errormsg)
-            params.update({attribute: attributes[attribute]})
+        # Adding optional parameters, filtering Nones
+        for k, v in options.items():
+            if v is not None:
+                params.update({k: v})
         return self.api_request('account.add', params)
 
     def account_get(self, account: str) -> dict:
@@ -224,41 +186,22 @@ class APIClient:
                 setattr(account_object, k, v)
         return account_object
 
-    def account_set(self, account: str, attributes: dict) -> dict:
+    def account_set(self, account: str, options: Options.AccountSetOptions) -> dict:
         """
         Function to update a specific account
         :param account: the account name to update
-        :param attributes: the attributes to update
+        :param options: the optional parameters of the account
         :return: the response from the mailbox.org Business API
         """
-        params = {'account':account}
-        for attribute in attributes:
-            if self.debug_output:
-                print('Attribute:', attribute)
-            # Checking given attribute against list of available attribute
-            if attribute not in account_set_attributes:
-                # If attribute not found, throw error
-                raise ValueError(attribute, 'not found')
 
-            # Checking type of given attribute against types in list of available attributes
-            if type(attributes[attribute]) != account_set_attributes[attribute]:
-                # If type does not match, throw error
-                errormsg = ('Attribute ' + attribute + ' must be of type ' + str(account_set_attributes[attribute]) + '. '
-                            + str(type(attributes[attribute])) + ' provided.')
-                raise TypeError(errormsg)
-            # Check for attribute payment_type and if it matches the allowed values
-            if attribute == 'payment_type':
-                if attributes[attribute] != 'dta' and attributes[attribute] != 'invoice':
-                    errormsg = '''Only payment types 'dta' and 'invoice' are supported.'''
-                    raise ValueError(errormsg)
-                # Check if 'dta' was provided and the other payment information is available as well
-                if (attributes[attribute] == 'dta' and ('bank_account_owner' not in attributes
-                        or 'bank_iban' not in attributes or 'bank_bic' not in attributes)):
-                    errormsg = '''When setting 'payment_type = dta', 'bank_account_owner', 'bank_iban' 
-                                and 'bank_bic' have to be provided'''
-                    raise ValueError(errormsg)
-            # If all attributes are okay, add them to the request
-            params.update({attribute: attributes[attribute]})
+        # Adding required parameters
+        params = {'account': account}
+
+        # Adding optional parameters, filtering Nones
+        for k, v in options.items():
+            if v is not None:
+                params.update({k: v})
+
         return self.api_request('account.set', params)
 
     def account_del(self, account: str) -> dict:
@@ -411,22 +354,14 @@ class APIClient:
         """
         params = {'domain': domain}
 
-        for attribute in capabilities:
+        for c in capabilities:
             if self.debug_output:
-                print('Attribute:', attribute)
+                print('Attribute:', c)
             # Checking given attribute against list of available capabilities
-            if attribute not in domain_capabilities:
+            if c not in domain_capabilities:
                 # If attribute not found, throw error
-                raise ValueError(attribute, 'not found')
-
-            # Checking type of given attribute against types in list of available attributes
-            if type(capabilities[attribute]) != domain_capabilities[attribute]:
-                # If type does not match, throw error
-                errormsg = ('Attribute ' + attribute + ' must be of type ' + str(account_set_attributes[attribute]) + '. '
-                            + str(type(capabilities[attribute])) + ' provided.')
-                raise TypeError(errormsg)
-
-            params.update({attribute: capabilities[attribute]})
+                raise ValueError(c, 'not found')
+            params.update({c: capabilities[c]})
         return self.api_request('domain.capabilities.set', params)
 
     def domain_set(self, domain: str, attributes: dict) -> dict:
@@ -490,8 +425,7 @@ class APIClient:
         return self.api_request('mail.list', params)
 
     def mail_add(self, mail:str, password: str, plan: str, first_name: str, last_name: str, inboxsave: bool = True,
-                 forwards: list = None, memo: str = None, language: str = 'en_US', skip_welcome_mail = False,
-                 uid_extern: str = None) -> dict:
+                 forwards: list = None, options: Options.MailAddOptions = None) -> dict:
         """
         Function to add a mail
         :param mail: the mail to add
@@ -501,21 +435,23 @@ class APIClient:
         :param last_name: the last name of the mail
         :param inboxsave: True if the mail should be saved into the inbox folder (relevant for forwards)
         :param forwards: List of addresses to forwards mails to
-        :param memo: Memo of the mail
-        :param language: the language of the mail in locale format
-        :param skip_welcome_mail: True if the welcome mail should be skipped, False if it should be sent
-        :param uid_extern: the external UID of the mail
+        :param options: Options for the mail add
         :return: the response for the request
         """
         if forwards is None:
             forwards = []
-        if memo is None:
-            memo = ''
-        return self.api_request('mail.add',{'mail':mail, 'password':password, 'plan':plan,
+
+        # Adding required parameters
+        params = {'mail':mail, 'password':password, 'plan':plan,
                                                     'first_name':first_name, 'last_name':last_name,
-                                                    'inboxsave':inboxsave, 'forwards':forwards, 'memo':memo,
-                                                    'language':language, 'skip_welcome_mail':skip_welcome_mail,
-                                                    'uid_extern':uid_extern})
+                                                    'inboxsave':inboxsave, 'forwards':forwards}
+
+        # Adding optional parameters, filtering Nones
+        for k, v in options.items():
+            if v is not None:
+                params.update({k:v})
+
+        return self.api_request('mail.add',params)
 
     def mail_get(self, mail: str, include_quota_usage: bool = False) -> dict:
         """
@@ -534,32 +470,22 @@ class APIClient:
                 setattr(mail_object, k, v)
         return mail_object
 
-    def mail_set(self, mail: str, attributes: dict):
+    def mail_set(self, mail: str, options: Options.MailSetOptions = None) -> dict:
         """
         Function to update a mail
-        :param mail: the mail to update
-        :param attributes: dict of the attributes to update
-        :return:
+        :return: the response for the request
         """
-        params = {'mail':mail}
-        for attribute in attributes:
-            if self.debug_output:
-                print('Attribute:', attribute)
-            # Checking given parameter against list of available parameters
-            if attribute not in mail_set_attributes:
-                # If parameter not found -> throw error
-                raise ValueError(attribute, 'not found')
+        if options.get('password') is not None and options.get('password_hash') is not None:
+            raise KeyError('You cannot specify both password and password_hash.')
 
-            # Checking type of given parameter against types in list of available parameters
-            if type(attributes[attribute]) != mail_set_attributes[attribute]:
+        # Adding required 'mail' parameter
+        params = {'mail:':mail}
 
-                # If type does not match, throw error
-                errormsg = ('Attribute ' + attribute + ' must be of type ' + str(mail_set_attributes[attribute]) + '. '
-                            + str(type(attributes[attribute])) + ' provided.')
-                raise TypeError(errormsg)
+        # Adding optional parameters, filtering Nones
+        for k, v in options.items():
+            if v is not None:
+                params.update({k:v})
 
-            # If all checks are okay, add parameter to list of attributes in the API call
-            params.update({attribute: attributes[attribute]})
         return self.api_request('mail.set', params)
 
     def mail_set_password(self, mail: str, password: str) -> dict:
