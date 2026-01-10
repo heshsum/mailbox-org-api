@@ -479,7 +479,7 @@ class APIClient:
             raise KeyError('You cannot specify both password and password_hash.')
 
         # Adding required 'mail' parameter
-        params = {'mail:':mail}
+        params = {'mail':mail}
 
         # Adding optional parameters, filtering Nones
         for k, v in options.items():
