@@ -146,7 +146,7 @@ class TestAPIClient(unittest.TestCase):
         mail = mails[0]['mail']
 
         # Setting the external uid
-        api.mail_set(mail, {'uid_extern': test_id})
+        api.mail_set(mail, uid_extern=test_id)
         returned_mail = api.mail_externaluid(api_test_user, test_id)
 
         self.assertEqual(returned_mail['mail'], mail)
