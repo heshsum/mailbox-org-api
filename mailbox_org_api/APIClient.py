@@ -3,7 +3,6 @@ Module for the mailbox Business API client
 """
 import json
 from warnings import deprecated
-
 import requests
 from requests import RequestException
 
@@ -534,32 +533,30 @@ class APIClient:
                 setattr(mail_object, k, v)
         return mail_object
 
-    def mail_set(self, mail: str, attributes: dict):
+    def mail_set(self, mail: str, **kwargs):
         """
         Function to update a mail
         :param mail: the mail to update
         :param attributes: dict of the attributes to update
         :return:
         """
+        if 'password' in kwargs and 'password_hash' in kwargs:
+          raise KeyError('''Simultaneous usage of 'password' and 'password_hash' not allowed.''')
+        
+        # Check for each argument in kwargs if it is a valid function parameter.
+        # Check key and type of value. Raise errors if a check fails.
+        for arg in kwargs:
+          if arg not in mail_set_attributes:
+            raise ValueError('Parameter', arg, 'not a valid parameter for mail_set')
+          
+          if type(arg) != mail_set_attributes[arg]:
+            raise TypeError('Attribute', attribute, 'must be of type', 
+              str(mail_set_attributes[attribute]) + '.', str(type(attributes[attribute])), 'given.')
+            
+        # After validation, build parameter list from mail and kwargs
         params = {'mail':mail}
-        for attribute in attributes:
-            if self.debug_output:
-                print('Attribute:', attribute)
-            # Checking given parameter against list of available parameters
-            if attribute not in mail_set_attributes:
-                # If parameter not found -> throw error
-                raise ValueError(attribute, 'not found')
-
-            # Checking type of given parameter against types in list of available parameters
-            if type(attributes[attribute]) != mail_set_attributes[attribute]:
-
-                # If type does not match, throw error
-                errormsg = ('Attribute ' + attribute + ' must be of type ' + str(mail_set_attributes[attribute]) + '. '
-                            + str(type(attributes[attribute])) + ' provided.')
-                raise TypeError(errormsg)
-
-            # If all checks are okay, add parameter to list of attributes in the API call
-            params.update({attribute: attributes[attribute]})
+        params.update({k: v for k, v in kwargs.items() if v is not None})
+        
         return self.api_request('mail.set', params)
 
     def mail_set_password(self, mail: str, password: str) -> dict:
