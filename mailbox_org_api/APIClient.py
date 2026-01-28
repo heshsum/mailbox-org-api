@@ -537,7 +537,8 @@ class APIClient:
         """
         Function to update a mail
         :param mail: the mail to update
-        :param attributes: dict of the attributes to update
+        :param kwargs: Optional arguments corresponding to API parameters (e.g., password, plan)
+                       See API documentation for full list.
         :return:
         """
         if 'password' in kwargs and 'password_hash' in kwargs:
