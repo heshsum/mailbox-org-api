@@ -64,6 +64,15 @@ class TestAPIClient(unittest.TestCase):
         self.assertEqual(account.ustid, 'DE1234567')
         api.deauth()
 
+    def test_account_set(self):
+        api = APIClient.APIClient()
+        api.auth(api_test_user, api_test_pass)
+        api.account_set(api_test_user, memo=test_id)
+        self.assertEqual(api.account_get(api_test_user)['memo'], test_id)
+        api.account_set(api_test_user, memo='')
+        self.assertEqual(api.account_get(api_test_user)['memo'], '')
+        api.deauth()
+
     def test_account_invoice_list(self):
         api = APIClient.APIClient()
         api.auth(api_test_user, api_test_pass)
