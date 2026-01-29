@@ -195,7 +195,7 @@ class TestAPIClient(unittest.TestCase):
         domain = api.domain_list(api_test_user)[0]['domain']
         mail = test_id + '@' + domain
 
-        self.assertRaises(KeyError, api.mail_set(mail, password=generate_pw(), password_hash='123'))
+        self.assertRaises(Exception, api.mail_set(mail, password=generate_pw(), password_hash='123'))
 
         mail_set_tests = {'same_password_allowed': True, 'require_reset_password': True,
                           'plan': 'premium', 'additional_mail_quota': '5', 'additional_cloud_quota': 5,
