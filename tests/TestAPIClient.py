@@ -201,3 +201,16 @@ class TestAPIClient(unittest.TestCase):
         api.mail_set_state(mail, True)
         self.assertEqual(api.mail_get(mail)['active'], True)
         api.deauth()
+
+    def test_mail_set_plan(self):
+        api = APIClient.APIClient()
+        api.auth(api_test_user, api_test_pass)
+        domain = api.domain_list(api_test_user)[0]['domain']
+        mails = api.mail_list(domain)
+        mail = mails[0]['mail']
+        plans = ['light', 'standard', 'premium']
+        for plan in plans:
+            api.mail_set_plan(mail, plan)
+            self.assertEqual(str(api.mail_get(mail)['plan']).lower(), plan)
+        api.deauth()
+
