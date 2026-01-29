@@ -44,7 +44,7 @@ api.auth(username, password)
 api.hello_innerworld()
 
 # Changing account settings
-api.account_set('foo', {'payment_type':'invoice'})
+api.account_set('foo', payment_type='invoice')
 
 # Creating an inbox
 api.mail_add('foo@bar.com', 's3cr3tp4ssw0rd', 'standard', 'First Name', 'Last Name')
