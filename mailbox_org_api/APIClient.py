@@ -197,7 +197,7 @@ class APIClient:
                 raise ValueError('Parameter', arg, 'not a valid parameter for account_set')
 
             # Check type for each argument
-            if type(arg) != account_add_attributes[arg]:
+            if type(kwargs[arg]) != account_add_attributes[arg]:
                 raise TypeError('Attribute', arg, 'must be of type', str(account_add_attributes[arg]) + '.',
                                 str(type(kwargs[arg])), 'given.')
 
@@ -238,7 +238,7 @@ class APIClient:
                 raise ValueError('Parameter', arg, 'not a valid parameter for account_set')
 
             # Check type for each argument
-            if type(arg) != account_set_attributes[arg]:
+            if type(kwargs[arg]) != account_set_attributes[arg]:
                 raise TypeError('Attribute', arg, 'must be of type', str(account_set_attributes[arg]) + '.',
                                 str(type(kwargs[arg])), 'given.')
 
@@ -533,7 +533,7 @@ class APIClient:
           if arg not in mail_set_attributes:
             raise ValueError('Parameter', arg, 'not a valid parameter for mail_set')
           
-          if type(arg) != mail_set_attributes[arg]:
+          if type(kwargs[arg]) != mail_set_attributes[arg]:
             raise TypeError('Attribute', arg, 'must be of type',
               str(mail_set_attributes[arg]) + '.', str(type(kwargs[arg])), 'given.')
             
