@@ -205,7 +205,8 @@ class TestAPIClient(unittest.TestCase):
                           'uid_extern': generate_pw(), 'language': 'de_DE'}
 
         for k, v in mail_set_tests.items():
-            self.assertEqual(api.mail_set(mail, **{k: v} ), api.mail_get(mail)[k])
+            api.mail_set(mail, **{k: v} )
+            self.assertEqual(api.mail_get(mail)[k], v)
         api.deauth()
 
 
