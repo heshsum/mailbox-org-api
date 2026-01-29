@@ -13,6 +13,11 @@ api_test_pass = os.environ['API_TEST_PASS']
 # converted to int (to get rid of the decimal) and then to String
 test_id = str(int(time.time()))
 
+def generate_pw():
+    alphabet = string.ascii_letters + string.digits
+    password = ''.join(secrets.choice(alphabet) for i in range(42))
+    return password
+
 class TestAPIClient(unittest.TestCase):
     def test_headers(self):
         api = APIClient.APIClient()
@@ -167,10 +172,7 @@ class TestAPIClient(unittest.TestCase):
         domain = api.domain_list(api_test_user)[0]['domain']
         mail_address = test_id + '@' + domain
 
-        alphabet = string.ascii_letters + string.digits
-        password = ''.join(secrets.choice(alphabet) for i in range(42))
-
-        api.mail_add(mail_address, password, 'standard', test_id, test_id)
+        api.mail_add(mail_address, generate_pw(), 'standard', test_id, test_id)
         self.assertEqual(api.mail_get(mail_address)['mail'], mail_address)
 
     def test_mail_externaluid(self):
