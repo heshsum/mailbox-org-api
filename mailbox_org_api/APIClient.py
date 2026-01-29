@@ -223,41 +223,30 @@ class APIClient:
                 setattr(account_object, k, v)
         return account_object
 
-    def account_set(self, account: str, attributes: dict) -> dict:
+    def account_set(self, account: str, **kwargs) -> dict:
         """
         Function to update a specific account
         :param account: the account name to update
-        :param attributes: the attributes to update
+        :param kwargs: Optional arguments corresponding to API parameters (e.g., payment_type)
+                                See API documentation for full list.
         :return: the response from the mailbox.org Business API
         """
-        params = {'account':account}
-        for attribute in attributes:
-            if self.debug_output:
-                print('Attribute:', attribute)
-            # Checking given attribute against list of available attribute
-            if attribute not in account_set_attributes:
-                # If attribute not found, throw error
-                raise ValueError(attribute, 'not found')
 
-            # Checking type of given attribute against types in list of available attributes
-            if type(attributes[attribute]) != account_set_attributes[attribute]:
-                # If type does not match, throw error
-                errormsg = ('Attribute ' + attribute + ' must be of type ' + str(account_set_attributes[attribute]) + '. '
-                            + str(type(attributes[attribute])) + ' provided.')
-                raise TypeError(errormsg)
-            # Check for attribute payment_type and if it matches the allowed values
-            if attribute == 'payment_type':
-                if attributes[attribute] != 'dta' and attributes[attribute] != 'invoice':
-                    errormsg = '''Only payment types 'dta' and 'invoice' are supported.'''
-                    raise ValueError(errormsg)
-                # Check if 'dta' was provided and the other payment information is available as well
-                if (attributes[attribute] == 'dta' and ('bank_account_owner' not in attributes
-                        or 'bank_iban' not in attributes or 'bank_bic' not in attributes)):
-                    errormsg = '''When setting 'payment_type = dta', 'bank_account_owner', 'bank_iban' 
-                                and 'bank_bic' have to be provided'''
-                    raise ValueError(errormsg)
-            # If all attributes are okay, add them to the request
-            params.update({attribute: attributes[attribute]})
+        # Check for each argument in kwargs if it is a valid function parameter.
+        for arg in kwargs:
+            # Check name of argument
+            if arg not in account_set_attributes:
+                raise ValueError('Parameter', arg, 'not a valid parameter for account_set')
+
+            # Check type for each argument
+            if type(arg) != account_set_attributes[arg]:
+                raise TypeError('Attribute', arg, 'must be of type', str(mail_set_attributes[arg]) + '.',
+                                str(type(kwargs[arg])), 'given.')
+
+        # After validation, build parameter list from mail and kwargs
+        params = {'account': account}
+        params.update({k: v for k, v in kwargs.items() if v is not None})
+
         return self.api_request('account.set', params)
 
     def account_del(self, account: str) -> dict:
