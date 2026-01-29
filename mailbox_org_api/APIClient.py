@@ -540,8 +540,8 @@ class APIClient:
             raise ValueError('Parameter', arg, 'not a valid parameter for mail_set')
           
           if type(arg) != mail_set_attributes[arg]:
-            raise TypeError('Attribute', attribute, 'must be of type', 
-              str(mail_set_attributes[attribute]) + '.', str(type(attributes[attribute])), 'given.')
+            raise TypeError('Attribute', arg, 'must be of type',
+              str(mail_set_attributes[arg]) + '.', str(type(kwargs[arg])), 'given.')
             
         # After validation, build parameter list from mail and kwargs
         params = {'mail':mail}
