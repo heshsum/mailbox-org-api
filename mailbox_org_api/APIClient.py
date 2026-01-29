@@ -389,31 +389,26 @@ class APIClient:
         """
         return self.api_request('domain.get',{'domain':domain})
 
-    def domain_capabilities_set(self, domain: str, capabilities: dict) -> dict:
+    def domain_capabilities_set(self, domain: str, **kwargs) -> dict:
         """
         Function to set a domain capabilities
         :param domain: the domain to set the capabilities for
-        :param capabilities: a list of capabilities to set for the domain
+        :param kwargs: Optional arguments corresponding to API parameters for capabilities.
+                       See API documentation for full list.
         :return: the API response
         """
+        for arg in kwargs:
+            if arg not in mail_set_attributes:
+                raise ValueError('Parameter', arg, 'not a valid parameter for domain_capabilities_set')
+
+            if type(kwargs[arg]) != mail_set_attributes[arg]:
+                raise TypeError('Parameter', arg, 'must be of type',
+                                str(mail_set_attributes[arg]) + '.', str(type(kwargs[arg])), 'given.')
+
+        # After validation, build parameter list from domain and kwargs
         params = {'domain': domain}
+        params.update({k: v for k, v in kwargs.items() if v is not None})
 
-        for attribute in capabilities:
-            if self.debug_output:
-                print('Attribute:', attribute)
-            # Checking given attribute against list of available capabilities
-            if attribute not in domain_capabilities:
-                # If attribute not found, throw error
-                raise ValueError(attribute, 'not found')
-
-            # Checking type of given attribute against types in list of available attributes
-            if type(capabilities[attribute]) != domain_capabilities[attribute]:
-                # If type does not match, throw error
-                errormsg = ('Attribute ' + attribute + ' must be of type ' + str(account_set_attributes[attribute]) + '. '
-                            + str(type(capabilities[attribute])) + ' provided.')
-                raise TypeError(errormsg)
-
-            params.update({attribute: capabilities[attribute]})
         return self.api_request('domain.capabilities.set', params)
 
     def domain_set(self, domain: str, attributes: dict) -> dict:
