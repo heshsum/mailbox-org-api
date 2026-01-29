@@ -3,6 +3,8 @@ from mailbox_org_api.APIError import APIError
 import unittest
 import os
 import time
+import secrets
+import string
 
 api_test_user = os.environ['API_TEST_USER']
 api_test_pass = os.environ['API_TEST_PASS']
@@ -10,6 +12,11 @@ api_test_pass = os.environ['API_TEST_PASS']
 # Create a unique ID String by using the Unix time,
 # converted to int (to get rid of the decimal) and then to String
 test_id = str(int(time.time()))
+
+def generate_pw():
+    alphabet = string.ascii_letters + string.digits
+    password = ''.join(secrets.choice(alphabet) for i in range(42))
+    return password
 
 class TestAPIClient(unittest.TestCase):
     def test_headers(self):
@@ -157,6 +164,16 @@ class TestAPIClient(unittest.TestCase):
         self.assertIn(mail['plan'], ['premium', 'standard', 'light'])
         self.assertIsNotNone(mail['creation_date'])
         api.deauth()
+
+    def test_mail_add(self):
+        api = APIClient.APIClient()
+        api.auth(api_test_user, api_test_pass)
+
+        domain = api.domain_list(api_test_user)[0]['domain']
+        mail_address = test_id + '@' + domain
+
+        api.mail_add(mail_address, generate_pw(), 'standard', test_id, test_id)
+        self.assertEqual(api.mail_get(mail_address)['mail'], mail_address)
 
     def test_mail_externaluid(self):
         api = APIClient.APIClient()
