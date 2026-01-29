@@ -159,7 +159,7 @@ class TestAPIClient(unittest.TestCase):
         api.deauth()
 
     def test_mail_externaluid(self):
-        api = APIClient.APIClient(debug_output=True)
+        api = APIClient.APIClient()
         api.auth(api_test_user, api_test_pass)
         domain = api.domain_list(api_test_user)[0]['domain']
         mails = api.mail_list(domain)
