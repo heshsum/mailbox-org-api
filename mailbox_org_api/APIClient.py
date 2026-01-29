@@ -409,7 +409,8 @@ class APIClient:
             # Checking type of given attribute against types in list of available attributes
             if type(capabilities[attribute]) != domain_capabilities[attribute]:
                 # If type does not match, throw error
-                errormsg = ('Attribute ' + attribute + ' must be of type ' + str(account_set_attributes[attribute]) + '. '
+                errormsg = ('Attribute ' + attribute + ' must be of type ' + str(
+                    account_set_attributes[attribute]) + '. '
                             + str(type(capabilities[attribute])) + ' provided.')
                 raise TypeError(errormsg)
 
