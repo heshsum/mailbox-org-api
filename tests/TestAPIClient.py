@@ -3,6 +3,8 @@ from mailbox_org_api.APIError import APIError
 import unittest
 import os
 import time
+import secrets
+import string
 
 api_test_user = os.environ['API_TEST_USER']
 api_test_pass = os.environ['API_TEST_PASS']
@@ -157,6 +159,19 @@ class TestAPIClient(unittest.TestCase):
         self.assertIn(mail['plan'], ['premium', 'standard', 'light'])
         self.assertIsNotNone(mail['creation_date'])
         api.deauth()
+
+    def test_mail_add(self):
+        api = APIClient.APIClient()
+        api.auth(api_test_user, api_test_pass)
+
+        domain = api.domain_list(api_test_user)[0]['domain']
+        mail_address = test_id + '@' + domain
+
+        alphabet = string.ascii_letters + string.digits
+        password = ''.join(secrets.choice(alphabet) for i in range(42))
+
+        api.mail_add(mail_address, password, 'standard', test_id, test_id)
+        self.assertEqual(api.mail_get(mail_address)['mail'], mail_address)
 
     def test_mail_externaluid(self):
         api = APIClient.APIClient()
