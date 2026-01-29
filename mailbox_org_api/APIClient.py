@@ -179,32 +179,31 @@ class APIClient:
         """
         return self.api_request('hello.innerworld', {})
 
-    def account_add(self, account: str, password: str, plan: str, attributes: dict) -> dict:
+    def account_add(self, account: str, password: str, plan: str, **kwargs) -> dict:
         """
         Function to create a new account
         :param account: the account name to create
         :param password: the password of the account
         :param plan: the plan of the account
-        :param attributes: other the attributes of the account
+        :param kwargs: Optional arguments corresponding to API parameters (e.g., payment_type)
+                                See API documentation for full list.
         :return: the response from the mailbox.org Business API
         """
+
+        # Check for each argument in kwargs if it is a valid function parameter.
+        for arg in kwargs:
+            # Check name of argument
+            if arg not in account_add_attributes:
+                raise ValueError('Parameter', arg, 'not a valid parameter for account_set')
+
+            # Check type for each argument
+            if type(arg) != account_add_attributes[arg]:
+                raise TypeError('Attribute', arg, 'must be of type', str(account_add_attributes[arg]) + '.',
+                                str(type(kwargs[arg])), 'given.')
+
+        # After validation, build parameter list from mail and kwargs
         params = {'account': account, 'password': password, 'plan': plan}
-        for attribute in attributes:
-            if self.debug_output:
-                print('Attribute:', attribute)
-
-            # Checking list of given attributes against list of available araguments
-            if attribute not in account_add_attributes:
-                # If attribute not found, throw error
-                raise ValueError(attribute, 'not found')
-
-            # Check if type of attribute matches the type in the list of allowed attributes
-            if type(attributes[attribute]) != account_add_attributes[attribute]:
-                # If attribute type
-                errormsg = ('Attribute ' + attribute + ' must be of type ' + str(account_add_attributes[attribute]) + '. '
-                            + str(type(attributes[attribute])) + ' provided.')
-                raise TypeError(errormsg)
-            params.update({attribute: attributes[attribute]})
+        params.update({k: v for k, v in kwargs.items() if v is not None})
         return self.api_request('account.add', params)
 
     def account_get(self, account: str) -> dict:
