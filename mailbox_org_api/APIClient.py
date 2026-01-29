@@ -240,7 +240,7 @@ class APIClient:
 
             # Check type for each argument
             if type(arg) != account_set_attributes[arg]:
-                raise TypeError('Attribute', arg, 'must be of type', str(mail_set_attributes[arg]) + '.',
+                raise TypeError('Attribute', arg, 'must be of type', str(account_set_attributes[arg]) + '.',
                                 str(type(kwargs[arg])), 'given.')
 
         # After validation, build parameter list from mail and kwargs
