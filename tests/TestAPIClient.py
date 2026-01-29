@@ -189,6 +189,27 @@ class TestAPIClient(unittest.TestCase):
         self.assertEqual(returned_mail['mail'], mail)
         api.deauth()
 
+    def test_mail_set(self):
+        api = APIClient.APIClient()
+        api.auth(api_test_user, api_test_pass)
+        domain = api.domain_list(api_test_user)[0]['domain']
+        mail = test_id + '@' + domain
+
+        mail_set_tests = {'require_reset_password': True,
+                          'plan': 'premium',
+                          'first_name': test_id, 'last_name': test_id, 'inboxsave': True,
+                          'forwards': [test_id + '_forward@' + domain], 'aliases': [test_id + '_alias@' + domain],
+                          'alternate_mail': test_id + '_alternate@' + domain, 'memo': 'memo_string',
+                          'active': True, 'title': 'Title', 'position': 'Job Position', 'department': 'Department',
+                          'company': 'Company', 'street': 'Street 1', 'postal_code': '12345', 'city': 'City',
+                          'uid_extern': generate_pw(), 'language': 'de_DE'}
+
+        for k, v in mail_set_tests.items():
+            api.mail_set(mail, **{k: v} )
+            self.assertEqual(api.mail_get(mail)[k], v)
+        api.deauth()
+
+
     def test_mail_set_state(self):
         api = APIClient.APIClient()
         api.auth(api_test_user, api_test_pass)
