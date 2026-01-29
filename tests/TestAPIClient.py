@@ -196,13 +196,13 @@ class TestAPIClient(unittest.TestCase):
         mail = test_id + '@' + domain
 
         mail_set_tests = {'same_password_allowed': True, 'require_reset_password': True,
-                          'plan': 'premium', 'additional_mail_quota': '5', 'additional_cloud_quota': 5,
+                          'plan': 'premium', 'additional_mail_quota': '5', 'additional_cloud_quota': '5',
                           'first_name': test_id, 'last_name': test_id, 'inboxsave': True,
                           'forwards': [test_id + '_forward@' + domain], 'aliases': [test_id + '_alias@' + domain],
                           'alternate_mail': test_id + '_alternate@' + domain, 'memo': 'memo_string',
                           'active': True, 'title': 'Title', 'position': 'Job Position', 'department': 'Department',
                           'company': 'Company', 'street': 'Street 1', 'postal_code': '12345', 'city': 'City',
-                          'uid_extern': 'uidextern', 'language': 'de_DE'}
+                          'uid_extern': generate_pw(), 'language': 'de_DE'}
 
         for k, v in mail_set_tests.items():
             self.assertEqual(api.mail_set(mail, **{k: v} ), api.mail_get(mail)[k])
