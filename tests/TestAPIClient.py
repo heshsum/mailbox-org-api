@@ -202,9 +202,14 @@ class TestAPIClient(unittest.TestCase):
                           'department': 'Department', 'company': 'Company', 'street': 'Street 1',
                           'postal_code': '12345', 'city': 'City', 'phone':'+492345678', 'fax':'+492345678',
                           'cell_phone':'+492345678', 'uid_extern': generate_pw(), 'language': 'de_DE'}
+
+        params = {}
+        params.update({k: v for k, v in mail_set_tests.items()})
+        api.mail_set(mail, **params)
+
+        check_mail = api.mail_get(mail)
         for k, v in mail_set_tests.items():
-            api.mail_set(mail, **{k: v} )
-            self.assertEqual(api.mail_get(mail)[k], v)
+            self.assertEqual(check_mail[k], v)
 
         api.deauth()
 
