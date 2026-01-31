@@ -195,20 +195,28 @@ class TestAPIClient(unittest.TestCase):
         domain = api.domain_list(api_test_user)[0]['domain']
         mail = test_id + '@' + domain
 
-        mail_set_tests = {'require_reset_password': True,
-                          'plan': 'premium',
-                          'first_name': test_id, 'last_name': test_id, 'inboxsave': True,
-                          'forwards': [test_id + '_forward@' + domain], 'aliases': [test_id + '_alias@' + domain],
-                          'alternate_mail': test_id + '_alternate@' + domain, 'memo': 'memo_string',
-                          'active': True, 'title': 'Title', 'position': 'Job Position', 'department': 'Department',
-                          'company': 'Company', 'street': 'Street 1', 'postal_code': '12345', 'city': 'City',
-                          'uid_extern': generate_pw(), 'language': 'de_DE'}
+        # Defining parameters and their values to test
+        mail_set_tests = {'require_reset_password': True, 'plan': 'premium', 'first_name': test_id,
+                          'last_name': test_id, 'inboxsave': True, 'forwards': [test_id + '_forward@' + domain],
+                          'aliases': [test_id + '_alias@' + domain], 'alternate_mail': test_id + '_alternate@' + domain,
+                          'memo': 'memo_string', 'active': True, 'title': 'Title', 'position': 'Job Position',
+                          'department': 'Department', 'company': 'Company', 'street': 'Street 1',
+                          'postal_code': '12345', 'city': 'City', 'phone':'+492345678', 'fax':'+492345678',
+                          'cell_phone':'+492345678', 'uid_extern': generate_pw(), 'language': 'de_DE'}
 
+        # Adding parameters to call
+        params = {}
+        params.update({k: v for k, v in mail_set_tests.items()})
+        api.mail_set(mail, **params)
+
+        # Getting mail from API to act as the reference
+        check_mail = api.mail_get(mail)
+
+        # Compare values sent to values received
         for k, v in mail_set_tests.items():
-            api.mail_set(mail, **{k: v} )
-            self.assertEqual(api.mail_get(mail)[k], v)
-        api.deauth()
+            self.assertEqual(check_mail[k], v)
 
+        api.deauth()
 
     def test_mail_set_state(self):
         api = APIClient.APIClient()
