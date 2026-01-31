@@ -133,7 +133,7 @@ class TestAPIClient:
         api = APIClient.APIClient()
         api.auth(api_test_user, api_test_pass)
         domains = api.domain_list(api_test_user)
-        assert 'testbmboapi.internal' == domains[0]['domain']
+        assert domains[0]['domain'] == domain
         assert domains[0]['count_mails'] is not None
         api.deauth()
 
