@@ -259,6 +259,14 @@ class TestAPIClient:
         api.mail_apppassword_add(mail, test_id, True, True)
         assert len(api.mail_apppassword_list(mail)) == len_before + 1
         api.deauth()
+
+    def test_mail_apppassword_list(self):
+        api = APIClient.APIClient()
+        api.auth(api_test_user, api_test_pass)
+        mail = test_id + '@' + domain
+        assert len(api.mail_apppassword_list(mail)) > 0
+        api.deauth()
+
     @pytest.mark.order('last')
     def test_mail_del(self):
         api = APIClient.APIClient()
