@@ -255,6 +255,20 @@ class TestAPIClient:
             assert str(api.mail_get(mail)['plan']).lower() == plan
         api.deauth()
 
+    @pytest.mark.dependency(depends=["test_mail_add"])
+    def test_mail_set_aliases(self):
+        api = APIClient.APIClient()
+        api.auth(api_test_user, api_test_pass)
+        mail = test_id + '@' + domain
+        aliases = []
+        api.mail_set_aliases(mail, [])
+        for i in range(4):
+            address = test_id + '_alias_' + str(i) + '@' + domain
+            aliases.append(address)
+        api.mail_set_aliases(mail, aliases)
+        assert api.mail_get(mail)['aliases'] == aliases
+        api.deauth()
+
     def test_mail_apppassword_add(self):
         api = APIClient.APIClient()
         api.auth(api_test_user, api_test_pass)
