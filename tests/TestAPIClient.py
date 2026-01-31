@@ -140,7 +140,6 @@ class TestAPIClient:
     def test_mail_list(self):
         api = APIClient.APIClient()
         api.auth(api_test_user, api_test_pass)
-        domain = api.domain_list(api_test_user)[0]['domain']
         mails = api.mail_list(domain)
         assert mails is not None
         assert mails[0]['mail'] is not None
@@ -161,7 +160,6 @@ class TestAPIClient:
     def test_mail_get(self):
         api = APIClient.APIClient()
         api.auth(api_test_user, api_test_pass)
-        domain = api.domain_list(api_test_user)[0]['domain']
         mails = api.mail_list(domain)
         mail = mails[0]
         assert '@' in mail['mail'] and domain in mail['mail']
@@ -182,7 +180,6 @@ class TestAPIClient:
         api = APIClient.APIClient()
         api.auth(api_test_user, api_test_pass)
 
-        domain = api.domain_list(api_test_user)[0]['domain']
         mail_address = test_id + '@' + domain
 
         api.mail_add(mail_address, generate_pw(), 'standard', test_id, test_id)
@@ -191,7 +188,6 @@ class TestAPIClient:
     def test_mail_externaluid(self):
         api = APIClient.APIClient()
         api.auth(api_test_user, api_test_pass)
-        domain = api.domain_list(api_test_user)[0]['domain']
         mails = api.mail_list(domain)
         mail = mails[0]['mail']
 
@@ -205,7 +201,6 @@ class TestAPIClient:
     def test_mail_set(self):
         api = APIClient.APIClient()
         api.auth(api_test_user, api_test_pass)
-        domain = api.domain_list(api_test_user)[0]['domain']
         mail = test_id + '@' + domain
 
         # Defining parameters and their values to test
@@ -234,7 +229,6 @@ class TestAPIClient:
     def test_mail_set_state(self):
         api = APIClient.APIClient()
         api.auth(api_test_user, api_test_pass)
-        domain = api.domain_list(api_test_user)[0]['domain']
         mails = api.mail_list(domain)
         mail = mails[0]['mail']
 
@@ -247,7 +241,6 @@ class TestAPIClient:
     def test_mail_set_plan(self):
         api = APIClient.APIClient()
         api.auth(api_test_user, api_test_pass)
-        domain = api.domain_list(api_test_user)[0]['domain']
         mails = api.mail_list(domain)
         mail = mails[0]['mail']
         plans = ['light', 'standard', 'premium']
