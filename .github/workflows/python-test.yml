@@ -24,4 +24,4 @@ jobs:
           API_TEST_USER: ${{ secrets.API_TEST_USER }}
           API_TEST_PASS: ${{ secrets.API_TEST_PASS }}
         run: |
-          python -m unittest discover -s ./tests  -p 'Test*.py'
+          pytest ./tests/*.py
