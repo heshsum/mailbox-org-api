@@ -19,6 +19,7 @@ def generate_pw():
     password = ''.join(secrets.choice(alphabet) for i in range(42))
     return password
 
+domain = 'testbmboapi.internal'
 test_id = generate_id()
 
 class TestAPIClient:
