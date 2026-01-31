@@ -19,8 +19,13 @@ def generate_pw():
     password = ''.join(secrets.choice(alphabet) for i in range(42))
     return password
 
-domain = 'testbmboapi.internal'
+def get_domain():
+    api = APIClient.APIClient()
+    api.auth(api_test_user, api_test_pass)
+    return api.domain_list(api_test_user)[0]['domain']
+
 test_id = generate_id()
+domain = get_domain()
 
 class TestAPIClient:
     def test_headers(self):
@@ -134,7 +139,6 @@ class TestAPIClient:
         api = APIClient.APIClient()
         api.auth(api_test_user, api_test_pass)
         domains = api.domain_list(api_test_user)
-        assert domains[0]['domain'] == domain
         assert domains[0]['count_mails'] is not None
         api.deauth()
 
@@ -249,6 +253,20 @@ class TestAPIClient:
         for plan in plans:
             api.mail_set_plan(mail, plan)
             assert str(api.mail_get(mail)['plan']).lower() == plan
+        api.deauth()
+
+    @pytest.mark.dependency(depends=["test_mail_add"])
+    def test_mail_set_aliases(self):
+        api = APIClient.APIClient()
+        api.auth(api_test_user, api_test_pass)
+        mail = test_id + '@' + domain
+        aliases = []
+        api.mail_set_aliases(mail, [])
+        for i in range(4):
+            address = test_id + '_alias_' + str(i) + '@' + domain
+            aliases.append(address)
+        api.mail_set_aliases(mail, aliases)
+        assert api.mail_get(mail)['aliases'] == aliases
         api.deauth()
 
     def test_mail_apppassword_add(self):
