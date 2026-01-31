@@ -106,6 +106,14 @@ class TestAPIClient(unittest.TestCase):
             self.assertTrue(str.startswith(invoice, 'BMBO-'))
         api.deauth()
 
+    def test_account_invoice_list_open(self):
+        api = APIClient.APIClient()
+        api.auth(api_test_user, api_test_pass)
+        invoices = api.account_invoice_get_list_open(api_test_user)
+        self.assertIsNotNone(invoices)
+        # The test account does not have any open invoices
+        self.assertEqual(0, len(invoices))
+
     def test_domain_list(self):
         api = APIClient.APIClient()
         api.auth(api_test_user, api_test_pass)
