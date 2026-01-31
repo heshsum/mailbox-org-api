@@ -259,13 +259,30 @@ class TestAPIClient:
         api.mail_apppassword_add(mail, test_id, True, True)
         assert len(api.mail_apppassword_list(mail)) == len_before + 1
         api.deauth()
-
+    
     def test_mail_apppassword_list(self):
         api = APIClient.APIClient()
         api.auth(api_test_user, api_test_pass)
         mail = test_id + '@' + domain
         assert len(api.mail_apppassword_list(mail)) > 0
         api.deauth()
+    
+    def test_mail_apppassword_del(self):
+        api = APIClient.APIClient()
+        api.auth(api_test_user, api_test_pass)
+        mail = test_id + '@' + domain
+
+        # In case no app password exists, create a new one
+        api.mail_apppassword_add(mail, test_id, True, True)
+        app_passwords = api.mail_apppassword_list(mail)
+        assert len(app_passwords) > 0
+
+        # Delete all app passwords
+        for i in app_passwords:
+            api.mail_apppassword_del(i['id'])
+
+        # After deleting all app passwords, length should be 0
+        assert len(api.mail_apppassword_list(mail)) == 0
 
     @pytest.mark.order('last')
     def test_mail_del(self):
