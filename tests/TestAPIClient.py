@@ -200,13 +200,13 @@ class TestAPIClient(unittest.TestCase):
                           'aliases': [test_id + '_alias@' + domain], 'alternate_mail': test_id + '_alternate@' + domain,
                           'memo': 'memo_string', 'active': True, 'title': 'Title', 'position': 'Job Position',
                           'department': 'Department', 'company': 'Company', 'street': 'Street 1',
-                          'postal_code': '12345', 'city': 'City', 'uid_extern': generate_pw(), 'language': 'de_DE'}
-
+                          'postal_code': '12345', 'city': 'City', 'phone':'+492345678', 'fax':'+492345678',
+                          'cell_phone':'+492345678', 'uid_extern': generate_pw(), 'language': 'de_DE'}
         for k, v in mail_set_tests.items():
             api.mail_set(mail, **{k: v} )
             self.assertEqual(api.mail_get(mail)[k], v)
-        api.deauth()
 
+        api.deauth()
 
     def test_mail_set_state(self):
         api = APIClient.APIClient()
