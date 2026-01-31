@@ -249,3 +249,25 @@ class TestAPIClient:
             assert str(api.mail_get(mail)['plan']).lower() == plan
         api.deauth()
 
+    @pytest.mark.order('last')
+    def test_mail_del(self):
+        api = APIClient.APIClient()
+        api.auth(api_test_user, api_test_pass)
+        mail = test_id + '@' + domain
+
+        mails = api.mail_list(domain)
+
+        mail_addresses = []
+        for i in mails:
+            mail_addresses.append(i['mail'])
+
+        assert mail in mail_addresses
+
+        api.mail_del(mail)
+
+        mails = api.mail_list(domain)
+        mail_addresses = []
+        for i in mails:
+            mail_addresses.append(i['mail'])
+        assert mail not in mail_addresses
+        api.deauth()
