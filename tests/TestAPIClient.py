@@ -117,6 +117,7 @@ class TestAPIClient:
         assert invoices is not None
         # The test account does not have any open invoices
         assert len(invoices) == 0
+        api.deauth()
 
     def test_domain_list(self):
         api = APIClient.APIClient()
@@ -184,6 +185,7 @@ class TestAPIClient:
 
         api.mail_add(mail_address, generate_pw(), 'standard', test_id, test_id)
         assert api.mail_get(mail_address)['mail'] == mail_address
+        api.deauth()
 
     def test_mail_externaluid(self):
         api = APIClient.APIClient()
@@ -249,3 +251,25 @@ class TestAPIClient:
             assert str(api.mail_get(mail)['plan']).lower() == plan
         api.deauth()
 
+    @pytest.mark.order('last')
+    def test_mail_del(self):
+        api = APIClient.APIClient()
+        api.auth(api_test_user, api_test_pass)
+        mail = test_id + '@' + domain
+
+        mails = api.mail_list(domain)
+
+        mail_addresses = []
+        for i in mails:
+            mail_addresses.append(i['mail'])
+
+        assert mail in mail_addresses
+
+        api.mail_del(mail)
+
+        mails = api.mail_list(domain)
+        mail_addresses = []
+        for i in mails:
+            mail_addresses.append(i['mail'])
+        assert mail not in mail_addresses
+        api.deauth()
