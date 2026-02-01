@@ -238,6 +238,20 @@ class TestAPIClient:
 
         api.deauth()
 
+    @pytest.mark.dependency(depends=['test_mail_add'])
+    def test_mail_capabilities_set(self):
+        capabilities = ['MAIL_SPAMPROTECTION', 'MAIL_BLACKLIST', 'MAIL_BACKUPRECOVER', 'MAIL_PASSWORDRESET_SMS']
+
+        api = APIClient.APIClient(debug_output=True)
+        api.auth(api_test_user, api_test_pass)
+        mail = test_id + '@' + domain
+        for i in capabilities:
+            api.mail_capabilities_set(mail, [i])
+            # The API returns a list of capabilities
+            capabilities = api.mail_get(mail)['capabilities']
+            assert len(capabilities) == 1
+            assert i in capabilities
+
     def test_mail_set_state(self):
         api = APIClient.APIClient()
         api.auth(api_test_user, api_test_pass)
