@@ -212,6 +212,7 @@ class TestAPIClient:
         assert returned_mail['mail'] == mail
         api.deauth()
 
+    @pytest.mark.dependency(depends=['test_mail_add'])
     def test_mail_set(self):
         api = APIClient.APIClient()
         api.auth(api_test_user, api_test_pass)
@@ -291,6 +292,7 @@ class TestAPIClient:
         assert api.mail_get(mail)['aliases'] == aliases
         api.deauth()
 
+    @pytest.mark.dependency(depends=["test_mail_add"])
     def test_mail_apppassword_add(self):
         api = APIClient.APIClient()
         api.auth(api_test_user, api_test_pass)
@@ -299,14 +301,16 @@ class TestAPIClient:
         api.mail_apppassword_add(mail, test_id, True, True)
         assert len(api.mail_apppassword_list(mail)) == len_before + 1
         api.deauth()
-    
+
+    @pytest.mark.dependency(depends=['test_mail_add'])
     def test_mail_apppassword_list(self):
         api = APIClient.APIClient()
         api.auth(api_test_user, api_test_pass)
         mail = test_id + '@' + domain
         assert len(api.mail_apppassword_list(mail)) > 0
         api.deauth()
-    
+
+    @pytest.mark.dependency(depends=['test_mail_add'])
     def test_mail_apppassword_del(self):
         api = APIClient.APIClient()
         api.auth(api_test_user, api_test_pass)
