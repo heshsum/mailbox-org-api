@@ -126,6 +126,14 @@ class TestAPIClient:
         assert len(invoices) == 0
         api.deauth()
 
+    def test_account_invoice_get(self):
+        api = APIClient.APIClient()
+        api.auth(api_test_user, api_test_pass)
+        invoices = api.account_invoice_list(api_test_user)
+        invoice = api.account_invoice_get(api_test_user, invoices[0]['token'])
+        assert invoices[0]['invoice_id'] in str(invoice)
+        api.deauth()
+
     def test_account_invoice_get_file(self):
         api = APIClient.APIClient()
         api.auth(api_test_user, api_test_pass)
