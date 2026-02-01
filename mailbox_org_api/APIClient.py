@@ -25,7 +25,7 @@ mail_capabilities = ['MAIL_SPAMPROTECTION', 'MAIL_BLACKLIST', 'MAIL_BACKUPRECOVE
 mail_list_sort_field = ['mail', 'first_name', 'last_name', 'status', 'domain', 'plan', 'type', 'creation_date']
 
 # Allowed attributes as documented here: https://api.mailbox.org/v1/doc/methods/index.html#mail-set
-mail_set_attributes = {'password': str, 'password_hash': str, 'same_password_allowed': bool,
+mail_set_parameters = {'password': str, 'password_hash': str, 'same_password_allowed': bool,
                       'require_reset_password': bool, 'plan': str, 'additional_mail_quota': str,
                       'additional_cloud_quota': str, 'first_name': str, 'last_name': str, 'inboxsave': bool,
                       'forwards': list, 'aliases': list, 'alternate_mail': str, 'memo': str, 'allow_nets': str,
@@ -402,12 +402,12 @@ class APIClient:
         :return: the API response
         """
         for arg in kwargs:
-            if arg not in mail_set_attributes:
+            if arg not in mail_set_parameters:
                 raise ValueError('Parameter', arg, 'not a valid parameter for domain_capabilities_set')
 
-            if type(kwargs[arg]) != mail_set_attributes[arg]:
+            if type(kwargs[arg]) != mail_set_parameters[arg]:
                 raise TypeError('Parameter', arg, 'must be of type',
-                                str(mail_set_attributes[arg]) + '.', str(type(kwargs[arg])), 'given.')
+                                str(mail_set_parameters[arg]) + '.', str(type(kwargs[arg])), 'given.')
 
         # After validation, build parameter list from domain and kwargs
         params = {'domain': domain}
@@ -546,12 +546,12 @@ class APIClient:
         # Check for each argument in kwargs if it is a valid function parameter.
         # Check key and type of value. Raise errors if a check fails.
         for arg in kwargs:
-          if arg not in mail_set_attributes:
+          if arg not in mail_set_parameters:
             raise ValueError('Parameter', arg, 'not a valid parameter for mail_set')
           
-          if type(kwargs[arg]) != mail_set_attributes[arg]:
+          if type(kwargs[arg]) != mail_set_parameters[arg]:
             raise TypeError('Attribute', arg, 'must be of type',
-              str(mail_set_attributes[arg]) + '.', str(type(kwargs[arg])), 'given.')
+              str(mail_set_parameters[arg]) + '.', str(type(kwargs[arg])), 'given.')
             
         # After validation, build parameter list from mail and kwargs
         params = {'mail':mail}
