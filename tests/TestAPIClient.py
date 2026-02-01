@@ -126,6 +126,17 @@ class TestAPIClient:
         assert len(invoices) == 0
         api.deauth()
 
+    def test_account_invoice_get_file(self):
+        api = APIClient.APIClient()
+        api.auth(api_test_user, api_test_pass)
+        invoice = api.account_invoice_get_list(api_test_user)[0]
+        csv = api.account_invoice_get_file(api_test_user, invoice, 'csv')
+        assert 'date,services,description,quantity,currency,net,vat_percent,total' in str(csv)
+        pdf = api.account_invoice_get_file(api_test_user, invoice, 'pdf')
+        assert 'PDF-1.7' in str(pdf)
+        xml = api.account_invoice_get_file(api_test_user, invoice, 'xml')
+        assert 'xml version="1.0" encoding="UTF-8"' in str(xml)
+
     def test_domain_list(self):
         api = APIClient.APIClient()
         api.auth(api_test_user, api_test_pass)
