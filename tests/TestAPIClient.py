@@ -403,6 +403,16 @@ class TestAPIClient:
         # After deleting all app passwords, length should be 0
         assert len(api.mail_apppassword_list(mail)) == 0
 
+    def test_mail_set_deletion_date(self):
+        api = APIClient.APIClient()
+        api.auth(api_test_user, api_test_pass)
+        mail = test_id + '@' + domain
+        deletion_date = '31.12.2099'
+        assert deletion_date not in api.mail_get(mail)
+        api.mail_set_deletion_date(mail, deletion_date)
+        assert deletion_date in api.mail_get(mail)
+        api.deauth()
+
     @pytest.mark.order('last')
     def test_mail_del(self):
         api = APIClient.APIClient()
