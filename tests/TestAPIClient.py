@@ -142,6 +142,12 @@ class TestAPIClient:
         assert domains[0]['count_mails'] is not None
         api.deauth()
 
+    def test_domain_set(self):
+        api = APIClient.APIClient()
+        api.auth(api_test_user, api_test_pass)
+        api.domain_set(domain, memo=test_id)
+        assert api.domain_get(domain)['memo'] == test_id
+
     def test_mail_list(self):
         api = APIClient.APIClient()
         api.auth(api_test_user, api_test_pass)
