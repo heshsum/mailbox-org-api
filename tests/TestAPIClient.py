@@ -286,7 +286,7 @@ class TestAPIClient:
     def test_mail_capabilities_set(self):
         capabilities = ['MAIL_SPAMPROTECTION', 'MAIL_BLACKLIST', 'MAIL_BACKUPRECOVER', 'MAIL_PASSWORDRESET_SMS']
 
-        api = APIClient.APIClient(debug_output=True)
+        api = APIClient.APIClient()
         api.auth(api_test_user, api_test_pass)
         mail = test_id + '@' + domain
         for i in capabilities:
@@ -362,13 +362,13 @@ class TestAPIClient:
         api.deauth()
 
     @pytest.mark.dependency(depends=['test_mail_add'])
+    @pytest.mark.dependency(depends=['test_mail_apppassword_add'])
+    @pytest.mark.dependency(depends=['test_mail_apppassword_list'])
     def test_mail_apppassword_del(self):
         api = APIClient.APIClient()
         api.auth(api_test_user, api_test_pass)
         mail = test_id + '@' + domain
 
-        # In case no app password exists, create a new one
-        api.mail_apppassword_add(mail, test_id, True, True)
         app_passwords = api.mail_apppassword_list(mail)
         assert len(app_passwords) > 0
 
