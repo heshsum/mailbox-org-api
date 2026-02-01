@@ -334,6 +334,20 @@ class TestAPIClient:
         api.deauth()
 
     @pytest.mark.dependency(depends=["test_mail_add"])
+    def test_mail_set_forwards(self):
+        api = APIClient.APIClient()
+        api.auth(api_test_user, api_test_pass)
+        mail = test_id + '@' + domain
+        forwards = []
+        api.mail_set_forwards(mail, forwards)
+        for i in range(4):
+            address = test_id + '_forward_' + str(i) + '@' + domain
+            forwards.append(address)
+        api.mail_set_forwards(mail, forwards)
+        assert api.mail_get(mail)['forwards'] == forwards
+        api.deauth()
+
+    @pytest.mark.dependency(depends=["test_mail_add"])
     def test_mail_set_password(self):
         api = APIClient.APIClient()
         api.auth(api_test_user, api_test_pass)
