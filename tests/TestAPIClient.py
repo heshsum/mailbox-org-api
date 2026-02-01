@@ -22,7 +22,9 @@ def generate_pw():
 def get_domain():
     api = APIClient.APIClient()
     api.auth(api_test_user, api_test_pass)
-    return api.domain_list(api_test_user)[0]['domain']
+    domain = api.domain_list(api_test_user)[0]['domain']
+    api.deauth()
+    return domain
 
 test_id = generate_id()
 domain = get_domain()
