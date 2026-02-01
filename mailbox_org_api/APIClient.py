@@ -500,7 +500,7 @@ class APIClient:
         """
         Function to add a mail
         :param mail: the mail to add
-        :param password: the password for the mail
+        :param password: the password for the mail. Has to be None if password_hash is used.
         :param plan: the plan of the mail
         :param first_name: the first name of the mail
         :param last_name: the last name of the mail
@@ -510,6 +510,10 @@ class APIClient:
                        See API documentation for full list.
         :return: the response for the request
         """
+        if password and 'password_hash' in kwargs:
+          raise KeyError('''Simultaneous usage of 'password' and 'password_hash' not allowed.
+          Use 'password' = None if password_hash is used.''')
+
         if forwards is None:
             forwards = []
 
