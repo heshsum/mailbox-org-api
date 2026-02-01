@@ -36,11 +36,11 @@ class TestAPIClient:
         assert api.level is None
         assert api.jsonrpc_id is 0
 
-    #def test_hello_world(self):
-    #    api = APIClient.APIClient()
-    #    self.assertEqual(api.jsonrpc_id, 0)
-    #    self.assertEqual(api.hello_world(), 'Hello World!')
-    #    self.assertEqual(api.jsonrpc_id, 1)
+    def test_hello_world(self):
+        api = APIClient.APIClient()
+        assert api.jsonrpc_id == 0
+        assert api.hello_world() == 'Hello World!'
+        assert api.jsonrpc_id == 1
 
     def test_API_error(self):
         api = APIClient.APIClient()
