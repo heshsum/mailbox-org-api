@@ -289,11 +289,11 @@ class APIClient:
         invoice = Invoice(account, invoice_id)
 
         # Retrieve the other data for the invoice from the invoice list
-        for element in invoice_list:
-            if element['invoice_id'] == invoice_id:
-                invoice.date = element['date']
-                invoice.status = element['status']
-                invoice.token = element['token']
+        for i in invoice_list:
+            if i['invoice_id'] == invoice_id:
+                invoice.date = i['date']
+                invoice.status = i['status']
+                invoice.token = i['token']
         return invoice
 
     def account_invoice_get_list(self, account: str) -> list:
