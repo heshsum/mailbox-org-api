@@ -24,16 +24,16 @@ mail_capabilities = ['MAIL_SPAMPROTECTION', 'MAIL_BLACKLIST', 'MAIL_BACKUPRECOVE
 # Allowed sort fields as documented here: https://api.mailbox.org/v1/doc/methods/index.html#mail-list
 mail_list_sort_field = ['mail', 'first_name', 'last_name', 'status', 'domain', 'plan', 'type', 'creation_date']
 
-mail_add_parameters = {'password_hash':str, 'require_reset_password': bool, 'additional_mail_quota':str,
-                       'additional_cloud_quota':str, 'memo':str, 'allow_nets':str, 'catchall':bool,
+mail_add_parameters = {'password_hash':str, 'require_reset_password': bool, 'additional_mail_quota':int,
+                       'additional_cloud_quota':int, 'memo':str, 'allow_nets':str, 'catchall':bool,
                        'create_own_context':bool, 'title':str, 'birthday':str, 'position':str, 'department':str,
                        'company':str, 'street':str, 'postal_code':str, 'city':str, 'phone':str, 'fax':str,
                        'cell_phone':str, 'recover':bool, 'skip_welcome_mail':bool, 'uid_extern':str, 'language':str}
 
 # Allowed attributes as documented here: https://api.mailbox.org/v1/doc/methods/index.html#mail-set
 mail_set_parameters = {'password': str, 'password_hash': str, 'same_password_allowed': bool,
-                      'require_reset_password': bool, 'plan': str, 'additional_mail_quota': str,
-                      'additional_cloud_quota': str, 'first_name': str, 'last_name': str, 'inboxsave': bool,
+                      'require_reset_password': bool, 'plan': str, 'additional_mail_quota': int,
+                      'additional_cloud_quota': int, 'first_name': str, 'last_name': str, 'inboxsave': bool,
                       'forwards': list, 'aliases': list, 'alternate_mail': str, 'memo': str, 'allow_nets': str,
                       'active': bool, 'title': str, 'birthday': str, 'position': str, 'department': str, 'company': str,
                       'street': str, 'postal_code': str, 'city': str, 'phone': str, 'fax': str, 'cell_phone': str,
@@ -60,6 +60,8 @@ account_set_parameters = {'password': str, 'telephone_password':str, 'plan': str
                           'company': str, 'bank_iban': str, 'bank_bic': str, 'bank_account_owner': str,
                           'payment_type':str, 'ustid':str, 'av_contract_accept_name': str, 'max_mailinglist': int,
                           'tarifflimits': list, 'av_contract_professional_secrecy': bool, 'language': str}
+
+keys_to_string = ['additional_cloud_quota', 'additional_mail_quota']
 
 class APIClient:
     """
@@ -510,6 +512,7 @@ class APIClient:
         """
         if forwards is None:
             forwards = []
+
         for arg in kwargs:
             if arg not in mail_add_parameters:
                 raise ValueError('Parameter', arg, 'not a valid parameter for mail_set')
@@ -517,6 +520,10 @@ class APIClient:
             if type(kwargs[arg]) != mail_add_parameters[arg]:
                 raise TypeError('Attribute', arg, 'must be of type',
                                 str(mail_add_parameters[arg]) + '.', str(type(kwargs[arg])), 'given.')
+
+        for k in keys_to_string:
+            if k in kwargs:
+                kwargs[k] = str(kwargs[k])
 
         # After validation, build parameter list from mail and kwargs
         params = {'mail':mail, 'password':password, 'plan':plan, 'first_name':first_name, 'last_name':last_name,
@@ -563,7 +570,11 @@ class APIClient:
           if type(kwargs[arg]) != mail_set_parameters[arg]:
             raise TypeError('Attribute', arg, 'must be of type',
               str(mail_set_parameters[arg]) + '.', str(type(kwargs[arg])), 'given.')
-            
+
+        for k in keys_to_string:
+            if k in kwargs:
+                kwargs[k] = str(kwargs[k])
+
         # After validation, build parameter list from mail and kwargs
         params = {'mail':mail}
         params.update({k: v for k, v in kwargs.items() if v is not None})
