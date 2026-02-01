@@ -24,6 +24,12 @@ mail_capabilities = ['MAIL_SPAMPROTECTION', 'MAIL_BLACKLIST', 'MAIL_BACKUPRECOVE
 # Allowed sort fields as documented here: https://api.mailbox.org/v1/doc/methods/index.html#mail-list
 mail_list_sort_field = ['mail', 'first_name', 'last_name', 'status', 'domain', 'plan', 'type', 'creation_date']
 
+mail_add_parameters = {'password_hash':str, 'require_reset_password': bool, 'additional_mail_quota':str,
+                       'additional_cloud_quota':str, 'memo':str, 'allow_nets':str, 'catchall':bool,
+                       'create_own_context':bool, 'title':str, 'birthday':str, 'position':str, 'department':str,
+                       'company':str, 'street':str, 'postal_code':str, 'city':str, 'phone':str, 'fax':str,
+                       'cell_phone':str, 'recover':bool, 'skip_welcome_mail':bool, 'uid_extern':str, 'language':str}
+
 # Allowed attributes as documented here: https://api.mailbox.org/v1/doc/methods/index.html#mail-set
 mail_set_parameters = {'password': str, 'password_hash': str, 'same_password_allowed': bool,
                       'require_reset_password': bool, 'plan': str, 'additional_mail_quota': str,
@@ -488,8 +494,7 @@ class APIClient:
         return self.api_request('mail.list', params)
 
     def mail_add(self, mail:str, password: str, plan: str, first_name: str, last_name: str, inboxsave: bool = True,
-                 forwards: list = None, memo: str = None, language: str = 'en_US', skip_welcome_mail = False,
-                 uid_extern: str = None) -> dict:
+                 forwards: list = None, **kwargs) -> dict:
         """
         Function to add a mail
         :param mail: the mail to add
@@ -499,21 +504,27 @@ class APIClient:
         :param last_name: the last name of the mail
         :param inboxsave: True if the mail should be saved into the inbox folder (relevant for forwards)
         :param forwards: List of addresses to forwards mails to
-        :param memo: Memo of the mail
-        :param language: the language of the mail in locale format
-        :param skip_welcome_mail: True if the welcome mail should be skipped, False if it should be sent
-        :param uid_extern: the external UID of the mail
+        :param kwargs: Optional arguments corresponding to API parameters (e.g., memo, position, company)
+                       See API documentation for full list.
         :return: the response for the request
         """
         if forwards is None:
             forwards = []
-        if memo is None:
-            memo = ''
-        return self.api_request('mail.add',{'mail':mail, 'password':password, 'plan':plan,
-                                                    'first_name':first_name, 'last_name':last_name,
-                                                    'inboxsave':inboxsave, 'forwards':forwards, 'memo':memo,
-                                                    'language':language, 'skip_welcome_mail':skip_welcome_mail,
-                                                    'uid_extern':uid_extern})
+        for arg in kwargs:
+            if arg not in mail_add_parameters:
+                raise ValueError('Parameter', arg, 'not a valid parameter for mail_set')
+
+            if type(kwargs[arg]) != mail_add_parameters[arg]:
+                raise TypeError('Attribute', arg, 'must be of type',
+                                str(mail_add_parameters[arg]) + '.', str(type(kwargs[arg])), 'given.')
+
+        # After validation, build parameter list from mail and kwargs
+        params = {'mail':mail, 'password':password, 'plan':plan, 'first_name':first_name, 'last_name':last_name,
+                  'inboxsave':inboxsave, 'forwards':forwards}
+        params.update({k: v for k, v in kwargs.items() if v is not None})
+
+        return self.api_request('mail.add', params)
+
 
     def mail_get(self, mail: str, include_quota_usage: bool = False) -> dict:
         """
