@@ -13,6 +13,8 @@ from mailbox_org_api.Invoice import Invoice
 
 headers = {'content-type': 'application/json'}
 
+domain_set_parameters = {'password':str, 'context_id':str, 'create_new_context_id':bool, 'memo':str}
+
 # Domain capabilities as documented here: https://api.mailbox.org/v1/doc/methods/index.html#domain-capabilities-set
 domain_capabilities = ['MAIL_SPAMPROTECTION', 'MAIL_BLACKLIST', 'MAIL_BACKUPRECOVER', 'MAIL_PASSWORDRESET_SMS']
 
@@ -413,16 +415,28 @@ class APIClient:
 
         return self.api_request('domain.capabilities.set', params)
 
-    def domain_set(self, domain: str, attributes: dict) -> dict:
+    def domain_set(self, domain: str, **kwargs) -> dict:
         """
         Function to set a domain
         :param domain: the domain to update
-        :param attributes: the attributes to set
+        :param kwargs: Optional arguments corresponding to API parameters (e.g., password, context_id)
+                       See API documentation for full list.
         :return:
         """
-        params = {'domain':domain }
-        for element in attributes:
-            params.update({element:attributes[element]})
+        # Check for each argument in kwargs if it is a valid function parameter.
+        for arg in kwargs:
+            # Check name of argument
+            if arg not in domain_set_parameters:
+                raise ValueError('Parameter', arg, 'not a valid parameter for domain_set')
+
+            # Check type for each argument
+            if type(kwargs[arg]) != account_set_parameters[arg]:
+                raise TypeError('Parameter', arg, 'must be of type', str(domain_set_parameters[arg]) + '.',
+                                str(type(kwargs[arg])), 'given.')
+
+        # After validation, build parameter list from mail and kwargs
+        params = {'domain': domain}
+        params.update({k: v for k, v in kwargs.items() if v is not None})
 
         return self.api_request('domain.set', params)
 
