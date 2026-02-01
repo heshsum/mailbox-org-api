@@ -358,6 +358,16 @@ class TestAPIClient:
         api.deauth()
 
     @pytest.mark.dependency(depends=["test_mail_add"])
+    def test_mail_set_password_require_reset(self):
+        api = APIClient.APIClient()
+        api.auth(api_test_user, api_test_pass)
+        mail = test_id + '@' + domain
+        # Set a newly generated password
+        # As the response is just the mailbox info, the assertion is a comparison with mail_get
+        assert api.mail_set_password_require_reset(mail, generate_pw()) == api.mail_get(mail)
+        api.deauth()
+
+    @pytest.mark.dependency(depends=["test_mail_add"])
     def test_mail_apppassword_add(self):
         api = APIClient.APIClient()
         api.auth(api_test_user, api_test_pass)
