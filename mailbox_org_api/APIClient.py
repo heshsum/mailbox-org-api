@@ -635,18 +635,20 @@ class APIClient:
         return self.api_request('mail.set', {'mail': mail, 'deletion_date': deletion_date,
                                 'active': False})
 
-    def mail_capabilities_set(self, mail: str, capabilties: dict) -> dict:
+    def mail_capabilities_set(self, mail: str, capabilities: list) -> dict:
         """
         Function to set a domain capabilities
         :param mail: the mail to set the capabilities for
-        :param capabilties: a list of capabilities to set for the domain
+        :param capabilities: a list of capabilities to set for the domain
         :return: the API response
         """
         params = {'mail': mail}
-        for attribute in capabilties:
-            if attribute not in mail_capabilities:
-                raise ValueError(attribute, 'not found')
-            params.update({attribute: capabilties[attribute]})
+        c = []
+        for i in capabilities:
+            if i not in mail_capabilities:
+                raise ValueError(i, 'not found')
+            c.append(i)
+        params.update({'capabilities':c})
         return self.api_request('mail.capabilities.set', params)
 
     def mail_del(self, mail: str) -> dict:
