@@ -136,6 +136,16 @@ class TestAPIClient:
         assert 'PDF-1.7' in str(pdf)
         xml = api.account_invoice_get_file(api_test_user, invoice, 'xml')
         assert 'xml version="1.0" encoding="UTF-8"' in str(xml)
+        api.deauth()
+
+    def test_account_invoice_get_token(self):
+        api = APIClient.APIClient()
+        api.auth(api_test_user, api_test_pass)
+        invoice = api.account_invoice_get_list(api_test_user)[0]
+        token = api.account_invoice_get_token(api_test_user, invoice_id=invoice)
+        assert len(token) >0
+        assert isinstance(token, str)
+        api.deauth()
 
     def test_domain_list(self):
         api = APIClient.APIClient()
