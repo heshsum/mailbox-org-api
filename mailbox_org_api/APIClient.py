@@ -34,7 +34,7 @@ mail_set_parameters = {'password': str, 'password_hash': str, 'same_password_all
                       'uid_extern': str, 'language': str, 'deletion_date': str}
 
 # Allowed attributes as documented here: https://api.mailbox.org/v1/doc/methods/index.html#account-add
-account_add_attributes = {'tarifflimits': dict, 'memo': str, 'contact_mail': str, 'contact_phone': str,
+account_add_parameters = {'tarifflimits': dict, 'memo': str, 'contact_mail': str, 'contact_phone': str,
                          'contact_fax': str, 'contact_mobile': str, 'company': str, 'ustid': str,
                          'address_main_salutation': str, 'address_main_first_name': str, 'address_main_last_name': str,
                          'address_main_street': str, 'address_main_zipcode': str, 'address_main_town': str,
@@ -197,12 +197,12 @@ class APIClient:
         # Check for each argument in kwargs if it is a valid function parameter.
         for arg in kwargs:
             # Check name of argument
-            if arg not in account_add_attributes:
+            if arg not in account_add_parameters:
                 raise ValueError('Parameter', arg, 'not a valid parameter for account_set')
 
             # Check type for each argument
-            if type(kwargs[arg]) != account_add_attributes[arg]:
-                raise TypeError('Attribute', arg, 'must be of type', str(account_add_attributes[arg]) + '.',
+            if type(kwargs[arg]) != account_add_parameters[arg]:
+                raise TypeError('Attribute', arg, 'must be of type', str(account_add_parameters[arg]) + '.',
                                 str(type(kwargs[arg])), 'given.')
 
         # After validation, build parameter list from mail and kwargs
