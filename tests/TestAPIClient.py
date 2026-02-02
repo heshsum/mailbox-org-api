@@ -301,6 +301,9 @@ class TestAPIClient:
             capabilities = api.mail_get(mail)['capabilities']
             assert len(capabilities) == 1
             assert i in capabilities
+        api.mail_capabilities_set(mail, [])
+        assert api.mail_get(mail)['capabilities'] == []
+        api.deauth()
 
     def test_mail_set_state(self):
         api = APIClient.APIClient()
