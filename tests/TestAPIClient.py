@@ -319,10 +319,12 @@ class TestAPIClient:
         api.auth(api_test_user, api_test_pass)
         mails = api.mail_list(domain)
         mail = mails[0]['mail']
-        plans = ['light', 'standard', 'premium']
+        plans = ['standard', 'premium']
         for plan in plans:
             api.mail_set_plan(mail, plan)
             assert str(api.mail_get(mail)['plan']).lower() == plan
+        with pytest.raises(APIError):
+            api.mail_set_plan(mail, 'light')
         api.deauth()
 
     @pytest.mark.dependency(depends=["test_mail_add"])
