@@ -657,13 +657,11 @@ class APIClient:
         :param capabilities: a list of capabilities to set for the domain
         :return: the API response
         """
-        params = {'mail': mail}
-        c = []
-        for i in capabilities:
-            if i not in mail_capabilities:
-                raise ValueError(i, 'not found')
-            c.append(i)
-        params.update({'capabilities':c})
+        # Validate the input - check capabilities against available capabilities
+        invalid = set(capabilities) - set(mail_capabilities)
+        if invalid:
+            raise ValueError(f'Invalid capabilities found: {', '.join(invalid)}')
+        params = {'mail':mail, 'capabilities':list(capabilities)}
         return self.api_request('mail.capabilities.set', params)
 
     def mail_del(self, mail: str) -> dict:
