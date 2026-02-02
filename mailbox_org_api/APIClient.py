@@ -550,7 +550,7 @@ class APIClient:
         result = self.api_request('mail.get', {'mail':mail, 'include_quota_usage':False})
         mail_object = Mail(mail)
         for k, v in result.items():
-            if v:
+            if v is not None:
                 setattr(mail_object, k, v)
         return mail_object
 
