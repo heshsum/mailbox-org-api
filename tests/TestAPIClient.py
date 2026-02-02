@@ -332,11 +332,13 @@ class TestAPIClient:
         mail = test_id + '@' + domain
         aliases = []
         api.mail_set_aliases(mail, aliases)
-        for i in range(4):
+        for i in range(0, 5):
             address = test_id + '_alias_' + str(i) + '@' + domain
             aliases.append(address)
         api.mail_set_aliases(mail, aliases)
         assert api.mail_get(mail)['aliases'] == aliases
+        api.mail_set_aliases(mail, [])
+        assert api.mail_get(mail)['aliases'] == []
         api.deauth()
 
     @pytest.mark.dependency(depends=["test_mail_add"])
