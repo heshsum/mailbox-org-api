@@ -209,6 +209,12 @@ class TestAPIClient:
                 ['MAIL_BLACKLIST', 'MAIL_SPAMPROTECTION', 'MAIL_PASSWORDRESET_SMS', 'MAIL_BACKUPRECOVER'])
         assert mails[0]['plan'] in ['premium', 'standard', 'light']
         assert mails[0]['creation_date'] is not None
+        with pytest.raises(APIError):
+            api.mail_list(domain, page = 2)
+        with pytest.raises(APIError):
+            api.mail_list(domain, page_size=-1)
+        with pytest.raises(ValueError):
+            api.mail_list(domain, sort_order='wröng')
         api.deauth()
 
     def test_mail_get(self):
