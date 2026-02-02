@@ -751,7 +751,6 @@ class APIClient:
         :param route_to: folder to route spam to
         :return: mailbox API response - an array with the spam settings
         """
-
         if killlevel not in ('reject', 'route'):
             raise ValueError('''Invalid value for killlevel. Only 'reject' or 'route' are allowed''')
 
