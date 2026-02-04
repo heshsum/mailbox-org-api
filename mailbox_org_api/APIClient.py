@@ -479,7 +479,6 @@ class APIClient:
         """
         args = {'domain':domain, 'details':details, 'page_size':page_size, 'page':page, 'sort_field':sort_field,
                   'sort_order':sort_order}
-        params = {}
         # Filter None values
         params = {k: v for k, v in args.items() if v is not None}
 
