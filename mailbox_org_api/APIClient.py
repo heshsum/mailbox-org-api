@@ -375,13 +375,17 @@ class APIClient:
         # Take the Base64 encoded data (response['bin']), decode the Base 64, decompress the gz and return the bytes
         return zlib.decompress(base64.b64decode(response['bin']))
 
-    def domain_list(self, account: str) -> dict:
+    def domain_list(self, account: str, filter:str = None) -> dict:
         """
         Function to list all domains
         :param account: the account to list domains for
+        :param filter: String for optional search filter
         :return: the API response
         """
-        return self.api_request('domain.list',{'account':account})
+        params = {'account':account}
+        if filter:
+            params.update({'filter':filter})
+        return self.api_request('domain.list',params)
 
     def domain_add(self, account: str, domain: str, password: str) -> dict:
         """
