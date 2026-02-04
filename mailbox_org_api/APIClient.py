@@ -559,8 +559,8 @@ class APIClient:
         Function to update a mail
         :param mail: the mail to update
         :param kwargs: Optional arguments corresponding to API parameters (e.g., password, plan)
-                       See API documentation for full list.
-        :return:
+                       See API documentation https://api.mailbox.org/v1/doc/methods/index.html#mail-set for full list.
+        :return: The API response for the request
         """
         if 'password' in kwargs and 'password_hash' in kwargs:
           raise KeyError('''Simultaneous usage of 'password' and 'password_hash' not allowed.''')
