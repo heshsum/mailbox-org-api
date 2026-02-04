@@ -387,15 +387,19 @@ class APIClient:
             params.update({'filter':filter})
         return self.api_request('domain.list',params)
 
-    def domain_add(self, account: str, domain: str, password: str) -> dict:
+    def domain_add(self, account: str, domain: str, password: str, **kwargs) -> dict:
         """
         Function to add a domain
         :param account: the account to add a domain for
         :param domain: the domain to add
         :param password: the password of the domain
+        :param kwargs: Optional arguments corresponding to API parameters for domain.add.
+        See documentation here: https://api.mailbox.org/v1/doc/methods/index.html#domain-add
         :return: the API response
         """
-        return self.api_request('domain.add', {'account':account, 'domain':domain, 'password':password})
+        params = {'account':account, 'domain':domain, 'password':password}
+        params.update({k: v for k, v in kwargs.items() if v is not None})
+        return self.api_request('domain.add', params)
 
     def domain_get(self, domain: str) -> dict:
         """
