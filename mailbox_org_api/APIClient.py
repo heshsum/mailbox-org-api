@@ -175,6 +175,7 @@ class APIClient:
         if api_response:
             # The auth header is stripped
             del headers["HPLS-AUTH"]
+            self.auth_id = None
         return api_response
 
     def hello_world(self):
