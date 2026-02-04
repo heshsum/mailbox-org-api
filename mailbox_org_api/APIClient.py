@@ -419,8 +419,7 @@ class APIClient:
         """
         for c in capabilities:
             if c not in domain_capabilities:
-                raise ValueError('Capability', c, 'not a valid parameter for domain_capabilities_set')
-
+                raise ValueError(f'Capability {c} is not a valid parameter for domain_capabilities_set.')
         return self.api_request('domain.capabilities.set', params={'domain': domain,
                                                                    'capabilities': capabilities})
 
@@ -436,12 +435,12 @@ class APIClient:
         for arg in kwargs:
             # Check name of argument
             if arg not in domain_set_parameters:
-                raise ValueError('Parameter', arg, 'not a valid parameter for domain_set')
+                raise ValueError(f'Parameter {arg} is not a valid parameter for domain_set')
 
             # Check type for each argument
-            if type(kwargs[arg]) != account_set_parameters[arg]:
-                raise TypeError('Parameter', arg, 'must be of type', str(domain_set_parameters[arg]) + '.',
-                                str(type(kwargs[arg])), 'given.')
+            if not isinstance(kwargs[arg], account_set_parameters[arg]):
+                raise TypeError(f'Parameter {arg} must be of type {str(domain_set_parameters[arg])}.'
+                                f'{str(type(kwargs[arg]))} given.')
 
         # After validation, build parameter list from mail and kwargs
         params = {'domain': domain}
@@ -487,7 +486,7 @@ class APIClient:
         # Check values (without triggering a KeyError)
         # Logic: If page_size exists and is > 1, ensure page is also > 1
         if params.get('page_size', 0) > 1 >= params.get('page', 0):
-            raise ValueError("If 'page_size' is used, a 'page' value > 1 must be specified.")
+            raise ValueError(f'''If 'page_size' is used, 'page' must be specified''')
 
         # 3. Use walrus operator to assign a value to a variable, but only if it exists
         if (field := params.get('sort_field')) and field not in mail_list_sort_field:
