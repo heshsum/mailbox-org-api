@@ -903,13 +903,16 @@ class APIClient:
         """
         return self.api_request('context.list', {'account':account})
 
-    def search(self, search_string: str) -> dict:
+    def search(self, query: str, get_account_summary: bool = False, get_extended_mail_result: bool = False) -> dict:
         """
         Function to search for accounts, domains and email addresses
-        :param search_string: the query to search by
+        :param query: the query to search by
+        :param get_account_summary: whether to return more information about accounts found
+        :param get_extended_mail_result: whether to return more information about mailboxes found
         :return: the mailbox API response for the request - an array with results for accounts, domains and mailboxes
         """
-        return self.api_request('search', {'search':search_string})
+        return self.api_request('search', {'query':query, 'get_account_summary':get_account_summary,
+                                           'get_extended_mail_result':get_extended_mail_result})
 
     def mailinglist_list(self, account: str) -> dict:
         """
