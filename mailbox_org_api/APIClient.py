@@ -465,7 +465,7 @@ class APIClient:
         """
         return self.api_request('domain.validate.spf', {'domain':domain})
 
-    def mail_list(self, domain, details: bool = False, page_size: int = -1, page: int = -1, sort_field: str = None,
+    def mail_list(self, domain, details: bool = False, page_size: int = None, page: int = None, sort_field: str = None,
                   sort_order: str = None) -> dict:
         """
         Function to list all mailboxes
@@ -477,22 +477,24 @@ class APIClient:
         :param sort_order: the order to sort by. Possible values: 'asc', 'desc'
         :return: the response from the mailbox.org Business API
         """
-        params = {'domain':domain, 'details':details}
-        if page_size > 0:
-            if page < 1:
-                raise ValueError('''If 'page_size' is used, a 'page' value > 1 must be specified.''')
-            else:
-                params.update({'page':page, 'page_size':page_size})
-        if sort_field:
-            if sort_field not in mail_list_sort_field:
-                raise ValueError('Sort field not allowed.')
-            else:
-                params.update({'sort_field':sort_field})
-        if sort_order:
-            if sort_order not in ['asc', 'desc']:
-                raise ValueError('Sort order must be either "asc" or "desc".')
-            else:
-                params.update({'sort_order':sort_order})
+        args = {'domain':domain, 'details':details, 'page_size':page_size, 'page':page, 'sort_field':sort_field,
+                  'sort_order':sort_order}
+        params = {}
+        # Filter None values
+        params = {k: v for k, v in args.items() if v is not None}
+
+        # Check values (without triggering a KeyError)
+        # Logic: If page_size exists and is > 1, ensure page is also > 1
+        if params.get('page_size', 0) > 1 >= params.get('page', 0):
+            raise ValueError("If 'page_size' is used, a 'page' value > 1 must be specified.")
+
+        # 3. Use walrus operator to assign a value to a variable, but only if it exists
+        if (field := params.get('sort_field')) and field not in mail_list_sort_field:
+            raise ValueError('Sort field not allowed.')
+
+        if (order := params.get('sort_order')) and order not in {'asc', 'desc'}:
+            raise ValueError('Sort order must be either "asc" or "desc".')
+
         return self.api_request('mail.list', params)
 
     def mail_add(self, mail:str, password: str, plan: str, first_name: str, last_name: str, inboxsave: bool = True,
@@ -533,9 +535,7 @@ class APIClient:
         params = {'mail':mail, 'password':password, 'plan':plan, 'first_name':first_name, 'last_name':last_name,
                   'inboxsave':inboxsave, 'forwards':forwards}
         params.update({k: v for k, v in kwargs.items() if v is not None})
-
         return self.api_request('mail.add', params)
-
 
     def mail_get(self, mail: str, include_quota_usage: bool = False) -> dict:
         """
@@ -550,7 +550,7 @@ class APIClient:
         result = self.api_request('mail.get', {'mail':mail, 'include_quota_usage':False})
         mail_object = Mail(mail)
         for k, v in result.items():
-            if v:
+            if v is not None:
                 setattr(mail_object, k, v)
         return mail_object
 
@@ -559,8 +559,8 @@ class APIClient:
         Function to update a mail
         :param mail: the mail to update
         :param kwargs: Optional arguments corresponding to API parameters (e.g., password, plan)
-                       See API documentation for full list.
-        :return:
+                       See API documentation https://api.mailbox.org/v1/doc/methods/index.html#mail-set for full list.
+        :return: The API response for the request
         """
         if 'password' in kwargs and 'password_hash' in kwargs:
           raise KeyError('''Simultaneous usage of 'password' and 'password_hash' not allowed.''')
@@ -657,13 +657,11 @@ class APIClient:
         :param capabilities: a list of capabilities to set for the domain
         :return: the API response
         """
-        params = {'mail': mail}
-        c = []
-        for i in capabilities:
-            if i not in mail_capabilities:
-                raise ValueError(i, 'not found')
-            c.append(i)
-        params.update({'capabilities':c})
+        # Validate the input - check capabilities against available capabilities
+        invalid = set(capabilities) - set(mail_capabilities)
+        if invalid:
+            raise ValueError(f'Invalid capabilities found: {', '.join(invalid)}')
+        params = {'mail':mail, 'capabilities':list(capabilities)}
         return self.api_request('mail.capabilities.set', params)
 
     def mail_del(self, mail: str) -> dict:
@@ -753,7 +751,6 @@ class APIClient:
         :param route_to: folder to route spam to
         :return: mailbox API response - an array with the spam settings
         """
-
         if killlevel not in ('reject', 'route'):
             raise ValueError('''Invalid value for killlevel. Only 'reject' or 'route' are allowed''')
 
