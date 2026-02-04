@@ -375,23 +375,31 @@ class APIClient:
         # Take the Base64 encoded data (response['bin']), decode the Base 64, decompress the gz and return the bytes
         return zlib.decompress(base64.b64decode(response['bin']))
 
-    def domain_list(self, account: str) -> dict:
+    def domain_list(self, account: str, filter:str = None) -> dict:
         """
         Function to list all domains
         :param account: the account to list domains for
+        :param filter: String for optional search filter
         :return: the API response
         """
-        return self.api_request('domain.list',{'account':account})
+        params = {'account':account}
+        if filter:
+            params.update({'filter':filter})
+        return self.api_request('domain.list',params)
 
-    def domain_add(self, account: str, domain: str, password: str) -> dict:
+    def domain_add(self, account: str, domain: str, password: str, **kwargs) -> dict:
         """
         Function to add a domain
         :param account: the account to add a domain for
         :param domain: the domain to add
         :param password: the password of the domain
+        :param kwargs: Optional arguments corresponding to API parameters for domain.add.
+        See documentation here: https://api.mailbox.org/v1/doc/methods/index.html#domain-add
         :return: the API response
         """
-        return self.api_request('domain.add', {'account':account, 'domain':domain, 'password':password})
+        params = {'account':account, 'domain':domain, 'password':password}
+        params.update({k: v for k, v in kwargs.items() if v is not None})
+        return self.api_request('domain.add', params)
 
     def domain_get(self, domain: str) -> dict:
         """
@@ -401,27 +409,19 @@ class APIClient:
         """
         return self.api_request('domain.get',{'domain':domain})
 
-    def domain_capabilities_set(self, domain: str, **kwargs) -> dict:
+    def domain_capabilities_set(self, domain: str, capabilities: list) -> dict:
         """
         Function to set a domain capabilities
         :param domain: the domain to set the capabilities for
-        :param kwargs: Optional arguments corresponding to API parameters for capabilities.
-                       See API documentation for full list.
+        :param capabilities: List of capabilities to set.
+        Full list: https://api.mailbox.org/v1/doc/methods/index.html#domain-capabilities-set
         :return: the API response
         """
-        for arg in kwargs:
-            if arg not in mail_set_parameters:
-                raise ValueError('Parameter', arg, 'not a valid parameter for domain_capabilities_set')
-
-            if type(kwargs[arg]) != mail_set_parameters[arg]:
-                raise TypeError('Parameter', arg, 'must be of type',
-                                str(mail_set_parameters[arg]) + '.', str(type(kwargs[arg])), 'given.')
-
-        # After validation, build parameter list from domain and kwargs
-        params = {'domain': domain}
-        params.update({k: v for k, v in kwargs.items() if v is not None})
-
-        return self.api_request('domain.capabilities.set', params)
+        for c in capabilities:
+            if c not in domain_capabilities:
+                raise ValueError(f'Capability {c} is not a valid parameter for domain_capabilities_set.')
+        return self.api_request('domain.capabilities.set', params={'domain': domain,
+                                                                   'capabilities': capabilities})
 
     def domain_set(self, domain: str, **kwargs) -> dict:
         """
@@ -435,12 +435,12 @@ class APIClient:
         for arg in kwargs:
             # Check name of argument
             if arg not in domain_set_parameters:
-                raise ValueError('Parameter', arg, 'not a valid parameter for domain_set')
+                raise ValueError(f'Parameter {arg} is not a valid parameter for domain_set')
 
             # Check type for each argument
-            if type(kwargs[arg]) != account_set_parameters[arg]:
-                raise TypeError('Parameter', arg, 'must be of type', str(domain_set_parameters[arg]) + '.',
-                                str(type(kwargs[arg])), 'given.')
+            if not isinstance(kwargs[arg], account_set_parameters[arg]):
+                raise TypeError(f'Parameter {arg} must be of type {str(domain_set_parameters[arg])}.'
+                                f'{str(type(kwargs[arg]))} given.')
 
         # After validation, build parameter list from mail and kwargs
         params = {'domain': domain}
@@ -486,7 +486,7 @@ class APIClient:
         # Check values (without triggering a KeyError)
         # Logic: If page_size exists and is > 1, ensure page is also > 1
         if params.get('page_size', 0) > 1 >= params.get('page', 0):
-            raise ValueError("If 'page_size' is used, a 'page' value > 1 must be specified.")
+            raise ValueError(f'''If 'page_size' is used, 'page' must be specified''')
 
         # 3. Use walrus operator to assign a value to a variable, but only if it exists
         if (field := params.get('sort_field')) and field not in mail_list_sort_field:
