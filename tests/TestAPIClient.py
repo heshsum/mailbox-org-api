@@ -437,6 +437,15 @@ class TestAPIClient:
         assert deletion_date in api.mail_get(mail)['deletion_date']
         api.deauth()
 
+    @pytest.mark.depends(name=['test_mail_add'])
+    def test_search(self):
+        api = APIClient.APIClient()
+        api.auth(api_test_user, api_test_pass)
+        mail = test_id + '@' + domain
+        assert mail in api.search(mail)['emails']
+        assert domain in api.search(domain)['domains']
+        assert api_test_user in api.search(api_test_user)['accounts']
+
     @pytest.mark.order('last')
     def test_mail_del(self):
         api = APIClient.APIClient()
