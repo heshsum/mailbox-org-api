@@ -409,27 +409,20 @@ class APIClient:
         """
         return self.api_request('domain.get',{'domain':domain})
 
-    def domain_capabilities_set(self, domain: str, **kwargs) -> dict:
+    def domain_capabilities_set(self, domain: str, capabilities: list) -> dict:
         """
         Function to set a domain capabilities
         :param domain: the domain to set the capabilities for
-        :param kwargs: Optional arguments corresponding to API parameters for capabilities.
-                       See API documentation for full list.
+        :param capabilities: List of capabilities to set.
+        Full list: https://api.mailbox.org/v1/doc/methods/index.html#domain-capabilities-set
         :return: the API response
         """
-        for arg in kwargs:
-            if arg not in mail_set_parameters:
-                raise ValueError('Parameter', arg, 'not a valid parameter for domain_capabilities_set')
+        for c in capabilities:
+            if c not in domain_capabilities:
+                raise ValueError('Capability', c, 'not a valid parameter for domain_capabilities_set')
 
-            if type(kwargs[arg]) != mail_set_parameters[arg]:
-                raise TypeError('Parameter', arg, 'must be of type',
-                                str(mail_set_parameters[arg]) + '.', str(type(kwargs[arg])), 'given.')
-
-        # After validation, build parameter list from domain and kwargs
-        params = {'domain': domain}
-        params.update({k: v for k, v in kwargs.items() if v is not None})
-
-        return self.api_request('domain.capabilities.set', params)
+        return self.api_request('domain.capabilities.set', params={'domain': domain,
+                                                                   'capabilities': capabilities})
 
     def domain_set(self, domain: str, **kwargs) -> dict:
         """
