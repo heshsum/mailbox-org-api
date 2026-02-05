@@ -2,8 +2,8 @@
 Module for the mailbox Business API client
 """
 import json
-from warnings import deprecated
 import requests
+import typing_extensions
 from requests import RequestException
 
 from mailbox_org_api.APIError import APIError
@@ -343,7 +343,7 @@ class APIClient:
                 return invoice['token']
         raise ValueError('Invoice not found')
 
-    @deprecated('Use account_invoice_get_file instead')
+    @typing_extensions.deprecated('Use account_invoice_get_file instead')
     def account_invoice_get_pdf(self, account: str, invoice_id: str) -> bytes:
         """
         Function to get a specific invoice as a PDf-file
@@ -660,7 +660,7 @@ class APIClient:
         # Validate the input - check capabilities against available capabilities
         invalid = set(capabilities) - set(mail_capabilities)
         if invalid:
-            raise ValueError(f'Invalid capabilities found: {', '.join(invalid)}')
+            raise ValueError(f'Invalid capabilities found: {", ".join(invalid)}')
         params = {'mail':mail, 'capabilities':list(capabilities)}
         return self.api_request('mail.capabilities.set', params)
 
