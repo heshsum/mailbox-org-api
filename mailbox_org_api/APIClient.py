@@ -660,7 +660,7 @@ class APIClient:
         # Validate the input - check capabilities against available capabilities
         invalid = set(capabilities) - set(mail_capabilities)
         if invalid:
-            raise ValueError(f'Invalid capabilities found: {', '.join(invalid)}')
+            raise ValueError(f'Invalid capabilities found: {", ".join(invalid)}')
         params = {'mail':mail, 'capabilities':list(capabilities)}
         return self.api_request('mail.capabilities.set', params)
 
