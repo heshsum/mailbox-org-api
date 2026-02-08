@@ -18,8 +18,6 @@ headers = {'content-type': 'application/json'}
 # Capabilities as documented here: https://api.mailbox.org/v1/doc/methods/index.html#mail-capabilities-set
 mail_capabilities = ['MAIL_SPAMPROTECTION', 'MAIL_BLACKLIST', 'MAIL_BACKUPRECOVER', 'MAIL_OTP', 'MAIL_PASSWORDRESET_SMS']
 
-# Allowed sort fields as documented here: https://api.mailbox.org/v1/doc/methods/index.html#mail-list
-mail_list_sort_field = ['mail', 'first_name', 'last_name', 'status', 'domain', 'plan', 'type', 'creation_date']
 
 
 
@@ -453,6 +451,10 @@ class APIClient:
         """
         args = {'domain':domain, 'details':details, 'page_size':page_size, 'page':page, 'sort_field':sort_field,
                   'sort_order':sort_order}
+
+        # Allowed sort fields as documented here: https://api.mailbox.org/v1/doc/methods/index.html#mail-list
+        mail_list_sort_field = ['mail', 'first_name', 'last_name', 'status', 'domain', 'plan', 'type', 'creation_date']
+
         # Filter None values
         params = {k: v for k, v in args.items() if v is not None}
 
