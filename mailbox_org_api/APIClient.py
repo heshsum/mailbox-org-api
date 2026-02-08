@@ -26,15 +26,6 @@ mail_list_sort_field = ['mail', 'first_name', 'last_name', 'status', 'domain', '
 
 
 
-# Allowed attributes as documented here: https://api.mailbox.org/v1/doc/methods/index.html#account-add
-account_add_parameters = {'tarifflimits': dict, 'memo': str, 'contact_mail': str, 'contact_phone': str,
-                         'contact_fax': str, 'contact_mobile': str, 'company': str, 'ustid': str,
-                         'address_main_salutation': str, 'address_main_first_name': str, 'address_main_last_name': str,
-                         'address_main_street': str, 'address_main_zipcode': str, 'address_main_town': str,
-                         'address_main_country': str, 'address_payment_same_as_main': bool,
-                         'address_payment_first_name': str, 'address_payment_last_name': str,
-                         'address_payment_street': str, 'address_payment_zipcode': str, 'address_payment_town': str,
-                         'address_payment_country': str, 'max_mailinglist': int, 'language': str}
 
 # Allowed parameters as documented here: https://api.mailbox.org/v1/doc/methods/index.html#account-set
 account_set_parameters = {'password': str, 'telephone_password':str, 'plan': str, 'memo': str, 'contact_mail': str,
@@ -190,16 +181,20 @@ class APIClient:
         :return: the response from the mailbox.org Business API
         """
 
-        # Check for each argument in kwargs if it is a valid function parameter.
-        for arg in kwargs:
-            # Check name of argument
-            if arg not in account_add_parameters:
-                raise ValueError('Parameter', arg, 'not a valid parameter for account_set')
+        # Allowed parameters as documented here: https://api.mailbox.org/v1/doc/methods/index.html#account-add
+        allowed_parameters = {'tarifflimits': dict, 'memo': str, 'contact_mail': str, 'contact_phone': str,
+                                  'contact_fax': str, 'contact_mobile': str, 'company': str, 'ustid': str,
+                                  'address_main_salutation': str, 'address_main_first_name': str,
+                                  'address_main_last_name': str,
+                                  'address_main_street': str, 'address_main_zipcode': str, 'address_main_town': str,
+                                  'address_main_country': str, 'address_payment_same_as_main': bool,
+                                  'address_payment_first_name': str, 'address_payment_last_name': str,
+                                  'address_payment_street': str, 'address_payment_zipcode': str,
+                                  'address_payment_town': str,
+                                  'address_payment_country': str, 'max_mailinglist': int, 'language': str}
 
-            # Check type for each argument
-            if type(kwargs[arg]) != account_add_parameters[arg]:
-                raise TypeError('Attribute', arg, 'must be of type', str(account_add_parameters[arg]) + '.',
-                                str(type(kwargs[arg])), 'given.')
+        # Validate the parameters before building the API request
+        validate_params(allowed_parameters, kwargs)
 
         # After validation, build parameter list from mail and kwargs
         params = {'account': account, 'password': password, 'plan': plan}
