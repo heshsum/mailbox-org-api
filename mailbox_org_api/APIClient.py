@@ -1022,6 +1022,18 @@ class APIClient:
         return self.api_request('additionalmailaccount.delete',
                                 {'parent_mail':parent_mail, 'account_mail':account_mail})
 
+def validate_params(allowed: dict, actual: dict) -> bool | None:
+    for arg in actual:
+        if arg not in allowed:
+            raise ValueError(f'Parameter {arg} not a valid parameter.')
+
+        if not isinstance(actual[arg], allowed[arg]):
+            raise TypeError(f'Attribute {arg} must be of type {str(allowed[arg])}. {str(type(actual[arg]))} given')
+        else:
+            return True
+    return None
+
+
 def bool2str(state: bool) -> str:
     """
     Converts a boolean value to '1' if True, and '0' if False...
