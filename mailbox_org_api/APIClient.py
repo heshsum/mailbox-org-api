@@ -24,11 +24,6 @@ mail_capabilities = ['MAIL_SPAMPROTECTION', 'MAIL_BLACKLIST', 'MAIL_BACKUPRECOVE
 # Allowed sort fields as documented here: https://api.mailbox.org/v1/doc/methods/index.html#mail-list
 mail_list_sort_field = ['mail', 'first_name', 'last_name', 'status', 'domain', 'plan', 'type', 'creation_date']
 
-mail_add_parameters = {'password_hash':str, 'require_reset_password': bool, 'additional_mail_quota':int,
-                       'additional_cloud_quota':int, 'memo':str, 'allow_nets':str, 'catchall':bool,
-                       'create_own_context':bool, 'title':str, 'birthday':str, 'position':str, 'department':str,
-                       'company':str, 'street':str, 'postal_code':str, 'city':str, 'phone':str, 'fax':str,
-                       'cell_phone':str, 'recover':bool, 'skip_welcome_mail':bool, 'uid_extern':str, 'language':str}
 
 
 # Allowed attributes as documented here: https://api.mailbox.org/v1/doc/methods/index.html#account-add
@@ -504,6 +499,14 @@ class APIClient:
                        See API documentation for full list.
         :return: the response for the request
         """
+        allowed_parameters = {'password_hash': str, 'require_reset_password': bool, 'additional_mail_quota': int,
+                               'additional_cloud_quota': int, 'memo': str, 'allow_nets': str, 'catchall': bool,
+                               'create_own_context': bool, 'title': str, 'birthday': str, 'position': str,
+                               'department': str,
+                               'company': str, 'street': str, 'postal_code': str, 'city': str, 'phone': str, 'fax': str,
+                               'cell_phone': str, 'recover': bool, 'skip_welcome_mail': bool, 'uid_extern': str,
+                               'language': str}
+
         if password and 'password_hash' in kwargs:
           raise KeyError('''Simultaneous usage of 'password' and 'password_hash' not allowed.
           Use 'password' = None if password_hash is used.''')
@@ -511,13 +514,7 @@ class APIClient:
         if forwards is None:
             forwards = []
 
-        for arg in kwargs:
-            if arg not in mail_add_parameters:
-                raise ValueError('Parameter', arg, 'not a valid parameter for mail_set')
-
-            if type(kwargs[arg]) != mail_add_parameters[arg]:
-                raise TypeError('Attribute', arg, 'must be of type',
-                                str(mail_add_parameters[arg]) + '.', str(type(kwargs[arg])), 'given.')
+        validate_params(allowed_parameters, kwargs)
 
         for k in keys_to_string:
             if k in kwargs:
