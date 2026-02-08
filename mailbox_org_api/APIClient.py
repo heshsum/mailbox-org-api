@@ -15,8 +15,6 @@ headers = {'content-type': 'application/json'}
 
 
 
-# Capabilities as documented here: https://api.mailbox.org/v1/doc/methods/index.html#mail-capabilities-set
-mail_capabilities = ['MAIL_SPAMPROTECTION', 'MAIL_BLACKLIST', 'MAIL_BACKUPRECOVER', 'MAIL_OTP', 'MAIL_PASSWORDRESET_SMS']
 
 
 
@@ -640,6 +638,10 @@ class APIClient:
         :param capabilities: a list of capabilities to set for the domain
         :return: the API response
         """
+        # Capabilities as documented here: https://api.mailbox.org/v1/doc/methods/index.html#mail-capabilities-set
+        mail_capabilities = ['MAIL_SPAMPROTECTION', 'MAIL_BLACKLIST', 'MAIL_BACKUPRECOVER', 'MAIL_OTP',
+                             'MAIL_PASSWORDRESET_SMS']
+
         # Validate the input - check capabilities against available capabilities
         invalid = set(capabilities) - set(mail_capabilities)
         if invalid:
