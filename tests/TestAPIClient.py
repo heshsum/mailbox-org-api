@@ -30,6 +30,13 @@ test_id = generate_id()
 domain = get_domain()
 
 class TestAPIClient:
+    def test_validate_params(self):
+        allowed = {'string': str}
+        with pytest.raises(ValueError):
+            APIClient.validate_params(allowed, {'integer':123})
+        with pytest.raises(TypeError):
+            APIClient.validate_params(allowed, {'string':123})
+
     def test_headers(self):
         api = APIClient.APIClient()
         assert api.auth_id is None
