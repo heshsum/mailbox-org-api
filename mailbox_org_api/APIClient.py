@@ -15,8 +15,6 @@ headers = {'content-type': 'application/json'}
 
 domain_set_parameters = {'password':str, 'context_id':str, 'create_new_context_id':bool, 'memo':str}
 
-# Domain capabilities as documented here: https://api.mailbox.org/v1/doc/methods/index.html#domain-capabilities-set
-domain_capabilities = ['MAIL_SPAMPROTECTION', 'MAIL_BLACKLIST', 'MAIL_BACKUPRECOVER', 'MAIL_PASSWORDRESET_SMS']
 
 # Capabilities as documented here: https://api.mailbox.org/v1/doc/methods/index.html#mail-capabilities-set
 mail_capabilities = ['MAIL_SPAMPROTECTION', 'MAIL_BLACKLIST', 'MAIL_BACKUPRECOVER', 'MAIL_OTP', 'MAIL_PASSWORDRESET_SMS']
@@ -397,6 +395,10 @@ class APIClient:
         Full list: https://api.mailbox.org/v1/doc/methods/index.html#domain-capabilities-set
         :return: the API response
         """
+        # Domain capabilities as documented here:
+        # https://api.mailbox.org/v1/doc/methods/index.html#domain-capabilities-set
+        domain_capabilities = ['MAIL_SPAMPROTECTION', 'MAIL_BLACKLIST', 'MAIL_BACKUPRECOVER', 'MAIL_PASSWORDRESET_SMS']
+
         for c in capabilities:
             if c not in domain_capabilities:
                 raise ValueError(f'Capability {c} is not a valid parameter for domain_capabilities_set.')
