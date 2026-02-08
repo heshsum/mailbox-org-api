@@ -13,7 +13,6 @@ from mailbox_org_api.Invoice import Invoice
 
 headers = {'content-type': 'application/json'}
 
-domain_set_parameters = {'password':str, 'context_id':str, 'create_new_context_id':bool, 'memo':str}
 
 
 # Capabilities as documented here: https://api.mailbox.org/v1/doc/methods/index.html#mail-capabilities-set
@@ -413,16 +412,9 @@ class APIClient:
                        See API documentation for full list.
         :return:
         """
-        # Check for each argument in kwargs if it is a valid function parameter.
-        for arg in kwargs:
-            # Check name of argument
-            if arg not in domain_set_parameters:
-                raise ValueError(f'Parameter {arg} is not a valid parameter for domain_set')
+        allowed_parameters = {'password': str, 'context_id': str, 'create_new_context_id': bool, 'memo': str}
 
-            # Check type for each argument
-            if not isinstance(kwargs[arg], account_set_parameters[arg]):
-                raise TypeError(f'Parameter {arg} must be of type {str(domain_set_parameters[arg])}.'
-                                f'{str(type(kwargs[arg]))} given.')
+        validate_params(allowed_parameters, kwargs)
 
         # After validation, build parameter list from mail and kwargs
         params = {'domain': domain}
