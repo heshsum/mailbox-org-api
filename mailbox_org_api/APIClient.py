@@ -13,14 +13,6 @@ from mailbox_org_api.Invoice import Invoice
 
 headers = {'content-type': 'application/json'}
 
-
-
-
-
-
-
-
-
 keys_to_string = ['additional_cloud_quota', 'additional_mail_quota']
 
 class APIClient:
@@ -1017,7 +1009,6 @@ def validate_params(allowed: dict, actual: dict) -> bool | None:
         else:
             return True
     return None
-
 
 def bool2str(state: bool) -> str:
     """
