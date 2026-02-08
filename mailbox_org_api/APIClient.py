@@ -754,14 +754,14 @@ class APIClient:
         """
         return self.api_request('mail.blacklist.add', {'mail':mail, 'add_address':add_address})
 
-    def mail_blacklist_delete(self, mail: str, delete_address: str) -> dict:
+    def mail_blacklist_del(self, mail: str, delete_address: str) -> dict:
         """
         Function to delete a mail from a blacklist
         :param mail: the mail of the owner of the blacklist
         :param delete_address: the address to delete from the blacklist
         :return: mailbox API response - an array with the complete blacklist of the mail
         """
-        return self.api_request('mail.blacklist.remove', {'mail':mail, 'delete_address':delete_address})
+        return self.api_request('mail.blacklist.del', {'mail':mail, 'delete_address':delete_address})
 
     def mail_vacation_get(self, mail: str) -> dict:
         """
