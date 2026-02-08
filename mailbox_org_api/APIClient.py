@@ -13,54 +13,6 @@ from mailbox_org_api.Invoice import Invoice
 
 headers = {'content-type': 'application/json'}
 
-domain_set_parameters = {'password':str, 'context_id':str, 'create_new_context_id':bool, 'memo':str}
-
-# Domain capabilities as documented here: https://api.mailbox.org/v1/doc/methods/index.html#domain-capabilities-set
-domain_capabilities = ['MAIL_SPAMPROTECTION', 'MAIL_BLACKLIST', 'MAIL_BACKUPRECOVER', 'MAIL_PASSWORDRESET_SMS']
-
-# Capabilities as documented here: https://api.mailbox.org/v1/doc/methods/index.html#mail-capabilities-set
-mail_capabilities = ['MAIL_SPAMPROTECTION', 'MAIL_BLACKLIST', 'MAIL_BACKUPRECOVER', 'MAIL_OTP', 'MAIL_PASSWORDRESET_SMS']
-
-# Allowed sort fields as documented here: https://api.mailbox.org/v1/doc/methods/index.html#mail-list
-mail_list_sort_field = ['mail', 'first_name', 'last_name', 'status', 'domain', 'plan', 'type', 'creation_date']
-
-mail_add_parameters = {'password_hash':str, 'require_reset_password': bool, 'additional_mail_quota':int,
-                       'additional_cloud_quota':int, 'memo':str, 'allow_nets':str, 'catchall':bool,
-                       'create_own_context':bool, 'title':str, 'birthday':str, 'position':str, 'department':str,
-                       'company':str, 'street':str, 'postal_code':str, 'city':str, 'phone':str, 'fax':str,
-                       'cell_phone':str, 'recover':bool, 'skip_welcome_mail':bool, 'uid_extern':str, 'language':str}
-
-# Allowed attributes as documented here: https://api.mailbox.org/v1/doc/methods/index.html#mail-set
-mail_set_parameters = {'password': str, 'password_hash': str, 'same_password_allowed': bool,
-                      'require_reset_password': bool, 'plan': str, 'additional_mail_quota': int,
-                      'additional_cloud_quota': int, 'first_name': str, 'last_name': str, 'inboxsave': bool,
-                      'forwards': list, 'aliases': list, 'alternate_mail': str, 'memo': str, 'allow_nets': str,
-                      'active': bool, 'title': str, 'birthday': str, 'position': str, 'department': str, 'company': str,
-                      'street': str, 'postal_code': str, 'city': str, 'phone': str, 'fax': str, 'cell_phone': str,
-                      'uid_extern': str, 'language': str, 'deletion_date': str}
-
-# Allowed attributes as documented here: https://api.mailbox.org/v1/doc/methods/index.html#account-add
-account_add_parameters = {'tarifflimits': dict, 'memo': str, 'contact_mail': str, 'contact_phone': str,
-                         'contact_fax': str, 'contact_mobile': str, 'company': str, 'ustid': str,
-                         'address_main_salutation': str, 'address_main_first_name': str, 'address_main_last_name': str,
-                         'address_main_street': str, 'address_main_zipcode': str, 'address_main_town': str,
-                         'address_main_country': str, 'address_payment_same_as_main': bool,
-                         'address_payment_first_name': str, 'address_payment_last_name': str,
-                         'address_payment_street': str, 'address_payment_zipcode': str, 'address_payment_town': str,
-                         'address_payment_country': str, 'max_mailinglist': int, 'language': str}
-
-# Allowed parameters as documented here: https://api.mailbox.org/v1/doc/methods/index.html#account-set
-account_set_parameters = {'password': str, 'telephone_password':str, 'plan': str, 'memo': str, 'contact_mail': str,
-                          'contact_mail_payment': str, 'contact_phone': str, 'contact_fax': str, 'contact_mobile': str,
-                          'address_main_first_name': str, 'address_main_last_name':str, 'address_main_street': str,
-                          'address_main_zipcode': str, 'address_main_town': str, 'address_main_country': str,
-                          'address_payment_same_as_main': bool, 'address_payment_first_name': str,
-                          'address_payment_last_name': str, 'address_payment_company':str,
-                          'address_payment_street': str, 'address_payment_zipcode': str, 'address_payment_town': str,
-                          'company': str, 'bank_iban': str, 'bank_bic': str, 'bank_account_owner': str,
-                          'payment_type':str, 'ustid':str, 'av_contract_accept_name': str, 'max_mailinglist': int,
-                          'tarifflimits': list, 'av_contract_professional_secrecy': bool, 'language': str}
-
 keys_to_string = ['additional_cloud_quota', 'additional_mail_quota']
 
 class APIClient:
@@ -203,16 +155,20 @@ class APIClient:
         :return: the response from the mailbox.org Business API
         """
 
-        # Check for each argument in kwargs if it is a valid function parameter.
-        for arg in kwargs:
-            # Check name of argument
-            if arg not in account_add_parameters:
-                raise ValueError('Parameter', arg, 'not a valid parameter for account_set')
+        # Allowed parameters as documented here: https://api.mailbox.org/v1/doc/methods/index.html#account-add
+        allowed_parameters = {'tarifflimits': dict, 'memo': str, 'contact_mail': str, 'contact_phone': str,
+                                  'contact_fax': str, 'contact_mobile': str, 'company': str, 'ustid': str,
+                                  'address_main_salutation': str, 'address_main_first_name': str,
+                                  'address_main_last_name': str,
+                                  'address_main_street': str, 'address_main_zipcode': str, 'address_main_town': str,
+                                  'address_main_country': str, 'address_payment_same_as_main': bool,
+                                  'address_payment_first_name': str, 'address_payment_last_name': str,
+                                  'address_payment_street': str, 'address_payment_zipcode': str,
+                                  'address_payment_town': str,
+                                  'address_payment_country': str, 'max_mailinglist': int, 'language': str}
 
-            # Check type for each argument
-            if type(kwargs[arg]) != account_add_parameters[arg]:
-                raise TypeError('Attribute', arg, 'must be of type', str(account_add_parameters[arg]) + '.',
-                                str(type(kwargs[arg])), 'given.')
+        # Validate the parameters before building the API request
+        validate_params(allowed_parameters, kwargs)
 
         # After validation, build parameter list from mail and kwargs
         params = {'account': account, 'password': password, 'plan': plan}
@@ -244,16 +200,24 @@ class APIClient:
         :return: the response from the mailbox.org Business API
         """
 
-        # Check for each argument in kwargs if it is a valid function parameter.
-        for arg in kwargs:
-            # Check name of argument
-            if arg not in account_set_parameters:
-                raise ValueError('Parameter', arg, 'not a valid parameter for account_set')
+        # Allowed parameters as documented here: https://api.mailbox.org/v1/doc/methods/index.html#account-set
+        allowed_parameters = {'password': str, 'telephone_password': str, 'plan': str, 'memo': str,
+                                  'contact_mail': str,
+                                  'contact_mail_payment': str, 'contact_phone': str, 'contact_fax': str,
+                                  'contact_mobile': str,
+                                  'address_main_first_name': str, 'address_main_last_name': str,
+                                  'address_main_street': str,
+                                  'address_main_zipcode': str, 'address_main_town': str, 'address_main_country': str,
+                                  'address_payment_same_as_main': bool, 'address_payment_first_name': str,
+                                  'address_payment_last_name': str, 'address_payment_company': str,
+                                  'address_payment_street': str, 'address_payment_zipcode': str,
+                                  'address_payment_town': str,
+                                  'company': str, 'bank_iban': str, 'bank_bic': str, 'bank_account_owner': str,
+                                  'payment_type': str, 'ustid': str, 'av_contract_accept_name': str,
+                                  'max_mailinglist': int,
+                                  'tarifflimits': list, 'av_contract_professional_secrecy': bool, 'language': str}
 
-            # Check type for each argument
-            if type(kwargs[arg]) != account_set_parameters[arg]:
-                raise TypeError('Attribute', arg, 'must be of type', str(account_set_parameters[arg]) + '.',
-                                str(type(kwargs[arg])), 'given.')
+        validate_params(allowed_parameters, kwargs)
 
         # After validation, build parameter list from mail and kwargs
         params = {'account': account}
@@ -418,6 +382,10 @@ class APIClient:
         Full list: https://api.mailbox.org/v1/doc/methods/index.html#domain-capabilities-set
         :return: the API response
         """
+        # Domain capabilities as documented here:
+        # https://api.mailbox.org/v1/doc/methods/index.html#domain-capabilities-set
+        domain_capabilities = ['MAIL_SPAMPROTECTION', 'MAIL_BLACKLIST', 'MAIL_BACKUPRECOVER', 'MAIL_PASSWORDRESET_SMS']
+
         for c in capabilities:
             if c not in domain_capabilities:
                 raise ValueError(f'Capability {c} is not a valid parameter for domain_capabilities_set.')
@@ -432,16 +400,9 @@ class APIClient:
                        See API documentation for full list.
         :return:
         """
-        # Check for each argument in kwargs if it is a valid function parameter.
-        for arg in kwargs:
-            # Check name of argument
-            if arg not in domain_set_parameters:
-                raise ValueError(f'Parameter {arg} is not a valid parameter for domain_set')
+        allowed_parameters = {'password': str, 'context_id': str, 'create_new_context_id': bool, 'memo': str}
 
-            # Check type for each argument
-            if not isinstance(kwargs[arg], account_set_parameters[arg]):
-                raise TypeError(f'Parameter {arg} must be of type {str(domain_set_parameters[arg])}.'
-                                f'{str(type(kwargs[arg]))} given.')
+        validate_params(allowed_parameters, kwargs)
 
         # After validation, build parameter list from mail and kwargs
         params = {'domain': domain}
@@ -480,6 +441,10 @@ class APIClient:
         """
         args = {'domain':domain, 'details':details, 'page_size':page_size, 'page':page, 'sort_field':sort_field,
                   'sort_order':sort_order}
+
+        # Allowed sort fields as documented here: https://api.mailbox.org/v1/doc/methods/index.html#mail-list
+        mail_list_sort_field = ['mail', 'first_name', 'last_name', 'status', 'domain', 'plan', 'type', 'creation_date']
+
         # Filter None values
         params = {k: v for k, v in args.items() if v is not None}
 
@@ -512,6 +477,14 @@ class APIClient:
                        See API documentation for full list.
         :return: the response for the request
         """
+        allowed_parameters = {'password_hash': str, 'require_reset_password': bool, 'additional_mail_quota': int,
+                               'additional_cloud_quota': int, 'memo': str, 'allow_nets': str, 'catchall': bool,
+                               'create_own_context': bool, 'title': str, 'birthday': str, 'position': str,
+                               'department': str,
+                               'company': str, 'street': str, 'postal_code': str, 'city': str, 'phone': str, 'fax': str,
+                               'cell_phone': str, 'recover': bool, 'skip_welcome_mail': bool, 'uid_extern': str,
+                               'language': str}
+
         if password and 'password_hash' in kwargs:
           raise KeyError('''Simultaneous usage of 'password' and 'password_hash' not allowed.
           Use 'password' = None if password_hash is used.''')
@@ -519,13 +492,7 @@ class APIClient:
         if forwards is None:
             forwards = []
 
-        for arg in kwargs:
-            if arg not in mail_add_parameters:
-                raise ValueError('Parameter', arg, 'not a valid parameter for mail_set')
-
-            if type(kwargs[arg]) != mail_add_parameters[arg]:
-                raise TypeError('Attribute', arg, 'must be of type',
-                                str(mail_add_parameters[arg]) + '.', str(type(kwargs[arg])), 'given.')
+        validate_params(allowed_parameters, kwargs)
 
         for k in keys_to_string:
             if k in kwargs:
@@ -562,18 +529,24 @@ class APIClient:
                        See API documentation https://api.mailbox.org/v1/doc/methods/index.html#mail-set for full list.
         :return: The API response for the request
         """
+        # Allowed attributes as documented here: https://api.mailbox.org/v1/doc/methods/index.html#mail-set
+        allowed_parameters = {'password': str, 'password_hash': str, 'same_password_allowed': bool,
+                               'require_reset_password': bool, 'plan': str, 'additional_mail_quota': int,
+                               'additional_cloud_quota': int, 'first_name': str, 'last_name': str, 'inboxsave': bool,
+                               'forwards': list, 'aliases': list, 'alternate_mail': str, 'memo': str, 'allow_nets': str,
+                               'active': bool, 'title': str, 'birthday': str, 'position': str, 'department': str,
+                               'company': str,
+                               'street': str, 'postal_code': str, 'city': str, 'phone': str, 'fax': str,
+                               'cell_phone': str,
+                               'uid_extern': str, 'language': str, 'deletion_date': str}
+
         if 'password' in kwargs and 'password_hash' in kwargs:
           raise KeyError('''Simultaneous usage of 'password' and 'password_hash' not allowed.''')
         
         # Check for each argument in kwargs if it is a valid function parameter.
         # Check key and type of value. Raise errors if a check fails.
-        for arg in kwargs:
-          if arg not in mail_set_parameters:
-            raise ValueError('Parameter', arg, 'not a valid parameter for mail_set')
-          
-          if type(kwargs[arg]) != mail_set_parameters[arg]:
-            raise TypeError('Attribute', arg, 'must be of type',
-              str(mail_set_parameters[arg]) + '.', str(type(kwargs[arg])), 'given.')
+
+        validate_params(allowed_parameters, kwargs)
 
         for k in keys_to_string:
             if k in kwargs:
@@ -657,6 +630,10 @@ class APIClient:
         :param capabilities: a list of capabilities to set for the domain
         :return: the API response
         """
+        # Capabilities as documented here: https://api.mailbox.org/v1/doc/methods/index.html#mail-capabilities-set
+        mail_capabilities = ['MAIL_SPAMPROTECTION', 'MAIL_BLACKLIST', 'MAIL_BACKUPRECOVER', 'MAIL_OTP',
+                             'MAIL_PASSWORDRESET_SMS']
+
         # Validate the input - check capabilities against available capabilities
         invalid = set(capabilities) - set(mail_capabilities)
         if invalid:
@@ -1021,6 +998,17 @@ class APIClient:
         """
         return self.api_request('additionalmailaccount.delete',
                                 {'parent_mail':parent_mail, 'account_mail':account_mail})
+
+def validate_params(allowed: dict, actual: dict) -> bool | None:
+    for arg in actual:
+        if arg not in allowed:
+            raise ValueError(f'Parameter {arg} not a valid parameter.')
+
+        if not isinstance(actual[arg], allowed[arg]):
+            raise TypeError(f'Attribute {arg} must be of type {str(allowed[arg])}. {str(type(actual[arg]))} given')
+        else:
+            return True
+    return None
 
 def bool2str(state: bool) -> str:
     """
