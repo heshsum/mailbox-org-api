@@ -30,14 +30,6 @@ mail_add_parameters = {'password_hash':str, 'require_reset_password': bool, 'add
                        'company':str, 'street':str, 'postal_code':str, 'city':str, 'phone':str, 'fax':str,
                        'cell_phone':str, 'recover':bool, 'skip_welcome_mail':bool, 'uid_extern':str, 'language':str}
 
-# Allowed attributes as documented here: https://api.mailbox.org/v1/doc/methods/index.html#mail-set
-mail_set_parameters = {'password': str, 'password_hash': str, 'same_password_allowed': bool,
-                      'require_reset_password': bool, 'plan': str, 'additional_mail_quota': int,
-                      'additional_cloud_quota': int, 'first_name': str, 'last_name': str, 'inboxsave': bool,
-                      'forwards': list, 'aliases': list, 'alternate_mail': str, 'memo': str, 'allow_nets': str,
-                      'active': bool, 'title': str, 'birthday': str, 'position': str, 'department': str, 'company': str,
-                      'street': str, 'postal_code': str, 'city': str, 'phone': str, 'fax': str, 'cell_phone': str,
-                      'uid_extern': str, 'language': str, 'deletion_date': str}
 
 # Allowed attributes as documented here: https://api.mailbox.org/v1/doc/methods/index.html#account-add
 account_add_parameters = {'tarifflimits': dict, 'memo': str, 'contact_mail': str, 'contact_phone': str,
@@ -562,18 +554,24 @@ class APIClient:
                        See API documentation https://api.mailbox.org/v1/doc/methods/index.html#mail-set for full list.
         :return: The API response for the request
         """
+        # Allowed attributes as documented here: https://api.mailbox.org/v1/doc/methods/index.html#mail-set
+        allowed_parameters = {'password': str, 'password_hash': str, 'same_password_allowed': bool,
+                               'require_reset_password': bool, 'plan': str, 'additional_mail_quota': int,
+                               'additional_cloud_quota': int, 'first_name': str, 'last_name': str, 'inboxsave': bool,
+                               'forwards': list, 'aliases': list, 'alternate_mail': str, 'memo': str, 'allow_nets': str,
+                               'active': bool, 'title': str, 'birthday': str, 'position': str, 'department': str,
+                               'company': str,
+                               'street': str, 'postal_code': str, 'city': str, 'phone': str, 'fax': str,
+                               'cell_phone': str,
+                               'uid_extern': str, 'language': str, 'deletion_date': str}
+
         if 'password' in kwargs and 'password_hash' in kwargs:
           raise KeyError('''Simultaneous usage of 'password' and 'password_hash' not allowed.''')
         
         # Check for each argument in kwargs if it is a valid function parameter.
         # Check key and type of value. Raise errors if a check fails.
-        for arg in kwargs:
-          if arg not in mail_set_parameters:
-            raise ValueError('Parameter', arg, 'not a valid parameter for mail_set')
-          
-          if type(kwargs[arg]) != mail_set_parameters[arg]:
-            raise TypeError('Attribute', arg, 'must be of type',
-              str(mail_set_parameters[arg]) + '.', str(type(kwargs[arg])), 'given.')
+
+        validate_params(allowed_parameters, kwargs)
 
         for k in keys_to_string:
             if k in kwargs:
