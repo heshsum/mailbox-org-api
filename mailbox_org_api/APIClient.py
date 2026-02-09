@@ -144,6 +144,15 @@ class APIClient:
         """
         return self.api_request('hello.innerworld', {})
 
+    def account_list(self, query: str, extended_results: bool = False) -> dict:
+        """
+        Function to get a list of accounts
+        :param query: the query to search for
+        :param extended_results: if True, return extended information for accounts found
+        :return: the response from the mailbox.org Business API
+        """
+        return self.api_request('account.list', {'query': query, 'extended_results': extended_results})
+
     def account_add(self, account: str, password: str, plan: str, **kwargs) -> dict:
         """
         Function to create a new account
