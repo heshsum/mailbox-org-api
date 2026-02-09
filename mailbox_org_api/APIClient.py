@@ -1006,7 +1006,7 @@ class APIClient:
         This will activate all mailboxes for the authenticated account.
         :return: True if emergency state was activated, False otherwise
         """
-        return self.api_request('evac_activate')
+        return self.api_request('evac_activate', {})
 
     def evac_resetaccount(self, delete_mail_accounts_and_domains:bool = False) -> dict:
         """
