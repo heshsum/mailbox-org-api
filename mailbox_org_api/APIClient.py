@@ -1002,6 +1002,24 @@ class APIClient:
         return self.api_request('additionalmailaccount.delete',
                                 {'parent_mail':parent_mail, 'account_mail':account_mail})
 
+    def evac_activate(self):
+        """
+        Function to activate the emergency state for a mailbox EVAC account.
+        This will activate all mailboxes for the authenticated account.
+        :return: True if emergency state was activated, False otherwise
+        """
+        return self.api_request('evac_activate')
+
+    def evac_resetaccount(self, delete_mail_accounts_and_domains:bool = False) -> dict:
+        """
+        Function to reset a mailbox EVAC account.
+        Note: this needs a special permission from mailbox.
+        :param delete_mail_accounts_and_domains: True if all mailboxes and domains should be deleted
+        instead of resetting them. Default is False.
+        """
+        return self.api_request('evac_resetaccount',
+                                {'delete_mail_accounts_and_domains': delete_mail_accounts_and_domains})
+
 def validate_params(allowed: dict, actual: dict) -> bool | None:
     for arg in actual:
         if arg not in allowed:
