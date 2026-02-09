@@ -157,15 +157,14 @@ class APIClient:
 
         # Allowed parameters as documented here: https://api.mailbox.org/v1/doc/methods/index.html#account-add
         allowed_parameters = {'tarifflimits': dict, 'memo': str, 'contact_mail': str, 'contact_phone': str,
-                                  'contact_fax': str, 'contact_mobile': str, 'company': str, 'ustid': str,
-                                  'address_main_salutation': str, 'address_main_first_name': str,
-                                  'address_main_last_name': str,
-                                  'address_main_street': str, 'address_main_zipcode': str, 'address_main_town': str,
-                                  'address_main_country': str, 'address_payment_same_as_main': bool,
-                                  'address_payment_first_name': str, 'address_payment_last_name': str,
-                                  'address_payment_street': str, 'address_payment_zipcode': str,
-                                  'address_payment_town': str,
-                                  'address_payment_country': str, 'max_mailinglist': int, 'language': str}
+                              'contact_fax': str, 'contact_mobile': str, 'company': str, 'ustid': str,
+                              'address_main_salutation': str, 'address_main_first_name': str,
+                              'address_main_last_name': str, 'address_main_street': str, 'address_main_zipcode': str,
+                              'address_main_town': str, 'address_main_country': str,
+                              'address_payment_same_as_main': bool, 'address_payment_first_name': str,
+                              'address_payment_last_name': str, 'address_payment_street': str,
+                              'address_payment_zipcode': str, 'address_payment_town': str,
+                              'address_payment_country': str, 'max_mailinglist': int, 'language': str}
 
         # Validate the parameters before building the API request
         validate_params(allowed_parameters, kwargs)
