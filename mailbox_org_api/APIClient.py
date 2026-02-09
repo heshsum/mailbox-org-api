@@ -482,12 +482,11 @@ class APIClient:
         :return: the response for the request
         """
         allowed_parameters = {'password_hash': str, 'require_reset_password': bool, 'additional_mail_quota': int,
-                               'additional_cloud_quota': int, 'memo': str, 'allow_nets': str, 'catchall': bool,
-                               'create_own_context': bool, 'title': str, 'birthday': str, 'position': str,
-                               'department': str,
-                               'company': str, 'street': str, 'postal_code': str, 'city': str, 'phone': str, 'fax': str,
-                               'cell_phone': str, 'recover': bool, 'skip_welcome_mail': bool, 'uid_extern': str,
-                               'language': str}
+                              'additional_cloud_quota': int, 'memo': str, 'allow_nets': str, 'catchall': bool,
+                              'create_own_context': bool, 'title': str, 'birthday': str, 'position': str,
+                              'department': str, 'company': str, 'street': str, 'postal_code': str, 'city': str,
+                              'phone': str, 'fax': str, 'cell_phone': str, 'recover': bool, 'skip_welcome_mail': bool,
+                              'uid_extern': str, 'language': str, 'evac_force_activation':bool}
 
         if password and 'password_hash' in kwargs:
           raise KeyError('''Simultaneous usage of 'password' and 'password_hash' not allowed.
