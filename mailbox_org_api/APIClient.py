@@ -538,10 +538,8 @@ class APIClient:
                                'additional_cloud_quota': int, 'first_name': str, 'last_name': str, 'inboxsave': bool,
                                'forwards': list, 'aliases': list, 'alternate_mail': str, 'memo': str, 'allow_nets': str,
                                'active': bool, 'title': str, 'birthday': str, 'position': str, 'department': str,
-                               'company': str,
-                               'street': str, 'postal_code': str, 'city': str, 'phone': str, 'fax': str,
-                               'cell_phone': str,
-                               'uid_extern': str, 'language': str, 'deletion_date': str}
+                               'company': str, 'street': str, 'postal_code': str, 'city': str, 'phone': str, 'fax': str,
+                               'cell_phone': str, 'uid_extern': str, 'language': str, 'deletion_date': str}
 
         if 'password' in kwargs and 'password_hash' in kwargs:
           raise KeyError('''Simultaneous usage of 'password' and 'password_hash' not allowed.''')
