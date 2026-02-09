@@ -144,6 +144,15 @@ class APIClient:
         """
         return self.api_request('hello.innerworld', {})
 
+    def account_list(self, query: str, extended_results: bool = False) -> dict:
+        """
+        Function to get a list of accounts
+        :param query: the query to search for
+        :param extended_results: if True, return extended information for accounts found
+        :return: the response from the mailbox.org Business API
+        """
+        return self.api_request('account.list', {'query': query, 'extended_results': extended_results})
+
     def account_add(self, account: str, password: str, plan: str, **kwargs) -> dict:
         """
         Function to create a new account
@@ -157,15 +166,14 @@ class APIClient:
 
         # Allowed parameters as documented here: https://api.mailbox.org/v1/doc/methods/index.html#account-add
         allowed_parameters = {'tarifflimits': dict, 'memo': str, 'contact_mail': str, 'contact_phone': str,
-                                  'contact_fax': str, 'contact_mobile': str, 'company': str, 'ustid': str,
-                                  'address_main_salutation': str, 'address_main_first_name': str,
-                                  'address_main_last_name': str,
-                                  'address_main_street': str, 'address_main_zipcode': str, 'address_main_town': str,
-                                  'address_main_country': str, 'address_payment_same_as_main': bool,
-                                  'address_payment_first_name': str, 'address_payment_last_name': str,
-                                  'address_payment_street': str, 'address_payment_zipcode': str,
-                                  'address_payment_town': str,
-                                  'address_payment_country': str, 'max_mailinglist': int, 'language': str}
+                              'contact_fax': str, 'contact_mobile': str, 'company': str, 'ustid': str,
+                              'address_main_salutation': str, 'address_main_first_name': str,
+                              'address_main_last_name': str, 'address_main_street': str, 'address_main_zipcode': str,
+                              'address_main_town': str, 'address_main_country': str,
+                              'address_payment_same_as_main': bool, 'address_payment_first_name': str,
+                              'address_payment_last_name': str, 'address_payment_street': str,
+                              'address_payment_zipcode': str, 'address_payment_town': str,
+                              'address_payment_country': str, 'max_mailinglist': int, 'language': str}
 
         # Validate the parameters before building the API request
         validate_params(allowed_parameters, kwargs)
@@ -201,21 +209,17 @@ class APIClient:
         """
 
         # Allowed parameters as documented here: https://api.mailbox.org/v1/doc/methods/index.html#account-set
-        allowed_parameters = {'password': str, 'telephone_password': str, 'plan': str, 'memo': str,
-                                  'contact_mail': str,
-                                  'contact_mail_payment': str, 'contact_phone': str, 'contact_fax': str,
-                                  'contact_mobile': str,
-                                  'address_main_first_name': str, 'address_main_last_name': str,
-                                  'address_main_street': str,
-                                  'address_main_zipcode': str, 'address_main_town': str, 'address_main_country': str,
-                                  'address_payment_same_as_main': bool, 'address_payment_first_name': str,
-                                  'address_payment_last_name': str, 'address_payment_company': str,
-                                  'address_payment_street': str, 'address_payment_zipcode': str,
-                                  'address_payment_town': str,
-                                  'company': str, 'bank_iban': str, 'bank_bic': str, 'bank_account_owner': str,
-                                  'payment_type': str, 'ustid': str, 'av_contract_accept_name': str,
-                                  'max_mailinglist': int,
-                                  'tarifflimits': list, 'av_contract_professional_secrecy': bool, 'language': str}
+        allowed_parameters = {'password': str, 'telephone_password': str, 'plan': str, 'memo': str, 'contact_mail': str,
+                              'contact_mail_payment': str, 'contact_phone': str, 'contact_fax': str,
+                              'contact_mobile': str, 'address_main_first_name': str, 'address_main_last_name': str,
+                              'address_main_street': str, 'address_main_zipcode': str, 'address_main_town': str,
+                              'address_main_country': str, 'address_payment_same_as_main': bool,
+                              'address_payment_first_name': str, 'address_payment_last_name': str,
+                              'address_payment_company': str, 'address_payment_street': str,
+                              'address_payment_zipcode': str, 'address_payment_town': str, 'company': str,
+                              'bank_iban': str, 'bank_bic': str, 'bank_account_owner': str, 'payment_type': dict,
+                              'ustid': str, 'av_contract_accept_name': str, 'max_mailinglist': int,
+                              'tarifflimits': dict, 'av_contract_professional_secrecy': bool, 'language': str}
 
         validate_params(allowed_parameters, kwargs)
 
