@@ -4,3 +4,4 @@ pytest-dependency>=0.6.0
 setuptools>=70.0.0
 requests>=2.32.3
 typing-extensions>=4.15.0
+urllib3
