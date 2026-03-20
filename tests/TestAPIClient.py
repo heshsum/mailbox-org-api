@@ -226,6 +226,11 @@ class TestAPIClient:
                 ['MAIL_BLACKLIST', 'MAIL_SPAMPROTECTION', 'MAIL_PASSWORDRESET_SMS', 'MAIL_BACKUPRECOVER'])
         assert mails[0]['plan'] in ['premium', 'standard', 'light']
         assert mails[0]['creation_date'] is not None
+        paginated_mails = api.mail_list(domain, page_size=50, page=1)
+        assert paginated_mails is not None
+        assert paginated_mails['totalHits'] is not None
+        assert paginated_mails['totalPages'] is not None
+        assert paginated_mails['results'] is not None
         with pytest.raises(APIError):
             api.mail_list(domain, page = 2)
         with pytest.raises(APIError):
