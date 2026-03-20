@@ -454,7 +454,7 @@ class APIClient:
 
         # Check values (without triggering a KeyError)
         # Logic: If page_size exists and is > 1, ensure page is also > 1
-        if params.get('page_size', 0) > 1 >= params.get('page', 0):
+        if params.get('page_size', 0) >= 1 > params.get('page', 0):
             raise ValueError(f'''If 'page_size' is used, 'page' must be specified''')
 
         # 3. Use walrus operator to assign a value to a variable, but only if it exists
