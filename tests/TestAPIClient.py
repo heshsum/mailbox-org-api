@@ -63,6 +63,14 @@ class TestAPIClient:
         assert api.jsonrpc_id == 1
         api.deauth()
 
+    def test_deauth(self):
+        api = APIClient.APIClient()
+        assert api.session.headers.get('HPLS-AUTH') is None
+        api.auth(api_test_user, api_test_pass)
+        assert api.session.headers.get('HPLS-AUTH') is not None
+        api.deauth()
+        assert api.session.headers.get('HPLS-AUTH') is None
+
     def test_account_get(self):
         api = APIClient.APIClient()
         api.auth(api_test_user, api_test_pass)

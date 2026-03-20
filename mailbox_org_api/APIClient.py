@@ -3,9 +3,10 @@ Module for the mailbox Business API client
 """
 import json
 import requests
+from requests.adapters import HTTPAdapter
+from urllib3.util.retry import Retry
+from requests.exceptions import RequestException
 import typing_extensions
-from requests import RequestException
-
 from mailbox_org_api.APIError import APIError
 from mailbox_org_api.Account import Account
 from mailbox_org_api.Mail import Mail
@@ -19,8 +20,7 @@ class APIClient:
     """
     Object for API Client
     """
-
-    def __init__(self, debug_output=False):
+    def __init__(self, debug_output=False, max_retries=5):
         # URL of the API
         self.url = "https://api.mailbox.org/v1/"
 
@@ -34,6 +34,27 @@ class APIClient:
         self.auth_id = None
 
         self.debug_output = debug_output
+
+        # Initialize the session
+        self.session = requests.Session()
+
+        # Set default headers for the session
+        self.session.headers.update({
+            'Content-Type': 'application/json',
+        })
+
+        # Retry strategy
+        retry_strategy = Retry(
+            total=max_retries,
+            backoff_factor=0.5,
+            # Retry on these specific HTTP status codes
+            status_forcelist=[429, 500, 502, 503, 504],
+            # Allow retries for POST requests
+            allowed_methods=["HEAD", "GET", "OPTIONS", "POST"]
+        )
+
+        adapter = HTTPAdapter(max_retries=retry_strategy)
+        self.session.mount('https://', adapter)
 
     # Increment the request ID
     def get_jsonrpc_id(self):
@@ -73,8 +94,7 @@ class APIClient:
             # Print the clean version of the request
             print('API full request:\t', print_request)
 
-        api_response = requests.post(
-            self.url, data=json.dumps(request), headers=headers)
+        api_response = self.session.post(self.url, data=json.dumps(request))
         try:
             api_response = api_response.json()
         except RequestException as error:
@@ -115,7 +135,7 @@ class APIClient:
             self.auth_id = str(api_response["session"])
             print('Auth ID:', self.auth_id)
             # The auth-header is added to the list of headers, as it has to be provided with each call
-            headers.update({"HPLS-AUTH": self.auth_id})
+            self.session.headers.update({"HPLS-AUTH": self.auth_id})
         return api_response
 
     def deauth(self) -> dict:
@@ -126,8 +146,9 @@ class APIClient:
         api_response = self.api_request('deauth',{})
         if api_response:
             # The auth header is stripped
-            del headers["HPLS-AUTH"]
+            self.session.headers.pop("HPLS-AUTH")
             self.auth_id = None
+            self.session.close()
         return api_response
 
     def hello_world(self):
