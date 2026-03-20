@@ -6,7 +6,7 @@ authors = [
 ]
 description = "A library to access the mailbox.org Business API."
 readme = "README.md"
-requires-python = ">=3.8"
+requires-python = ">=3.11"
 classifiers = [
     "Programming Language :: Python :: 3",
     "License :: OSI Approved :: MIT License",
@@ -18,7 +18,7 @@ Homepage = "https://github.com/heshsum/mailbox-org-api"
 Issues = "https://github.com/heshsum/mailbox-org-api/issues"
 
 [build-system]
-requires = ["setuptools>=61.0"]
+requires = ["setuptools>=70.0"]
 build-backend = "setuptools.build_meta"
 
 [tool.pytest.ini_options]
