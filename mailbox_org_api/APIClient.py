@@ -962,6 +962,13 @@ class APIClient:
         :return: the mailbox API response for the request - True if the mailing list was deleted, error code otherwise
         """
         return self.api_request('mailinglist.delete', {'mailinglist':mailinglist, 'account':account})
+    def additionalmailaccount_list(self, parent_mail: str) -> dict:
+        """
+        Function to list all additional mail accounts for a given parent mail
+        :param parent_mail: the parent mail to list additional mail accounts for
+        :return: a dict containing the parent mail account and a list of additional mail accounts
+        """
+        return self.api_request('additionalmailaccount.list', {'parent_mail':parent_mail})
 
     def additionalmailaccount_add(self, parent_mail: str, new_account_mail: str, new_account_password: str,
                                   primary_address: str = None, mail_server: str = 'imap.mailbox.org',
