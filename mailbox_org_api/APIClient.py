@@ -954,14 +954,15 @@ class APIClient:
         return self.api_request('mailinglist.set', {'mailinglist':mailinglist, 'account':account,
                                                 'password':password, 'adminmail':adminmail})
 
-    def mailinglist_delete(self, mailinglist: str, account: str) -> dict:
+    def mailinglist_del(self, mailinglist: str, account: str) -> dict:
         """
         Function to delete a mailing list
         :param mailinglist: the mailing list to delete
         :param account: the account of the mailing list
         :return: the mailbox API response for the request - True if the mailing list was deleted, error code otherwise
         """
-        return self.api_request('mailinglist.delete', {'mailinglist':mailinglist, 'account':account})
+        return self.api_request('mailinglist.del', {'mailinglist':mailinglist, 'account':account})
+
     def additionalmailaccount_list(self, parent_mail: str) -> dict:
         """
         Function to list all additional mail accounts for a given parent mail
