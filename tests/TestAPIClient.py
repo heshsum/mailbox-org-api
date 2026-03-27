@@ -445,6 +445,7 @@ class TestAPIClient:
 
         # After deleting all app passwords, length should be 0
         assert len(api.mail_apppassword_list(mail)) == 0
+        api.deauth()
 
     @pytest.mark.depends(name=['test_mail_add'])
     def test_mail_set_deletion_date(self):
@@ -457,6 +458,43 @@ class TestAPIClient:
         assert deletion_date in api.mail_get(mail)['deletion_date']
         api.deauth()
 
+    def test_additionalmailaccount_list(self):
+        api = APIClient.APIClient()
+        api.auth(api_test_user, api_test_pass)
+        parent = 'parent@testbmboapi.internal'
+        sub = 'sub_mail@testbmboapi.internal'
+        assert sub in api.additionalmailaccount_list(parent)['additional_accounts']
+        api.deauth()
+
+    def test_additionalmailaccount_add(self):
+        api = APIClient.APIClient()
+        api.auth(api_test_user, api_test_pass)
+        parent = 'parent@testbmboapi.internal'
+        sub = test_id + '@' + domain
+        pw = generate_pw()
+        # Ensuring that the password is correct and the account is active
+        api.mail_set_state(sub, True)
+        api.mail_set_password(sub, pw)
+
+        # Ensuring that the sub account is not already in the list of additional accounts
+        assert sub not in api.additionalmailaccount_list(parent)['additional_accounts']
+
+        # Adding the sub account…
+        assert api.additionalmailaccount_add(parent, sub, pw) == True
+
+        # Checking that the sub account is listed as an additional account
+        assert sub in api.additionalmailaccount_list(parent)['additional_accounts']
+        api.deauth()
+
+    def test_additionalmailaccount_delete(self):
+        api = APIClient.APIClient()
+        api.auth(api_test_user, api_test_pass)
+        parent = 'parent@testbmboapi.internal'
+        sub = test_id + '@' + domain
+        assert api.additionalmailaccount_delete(parent, sub) == True
+        assert sub not in api.additionalmailaccount_list(parent)
+        api.deauth()
+
     @pytest.mark.depends(name=['test_mail_add'])
     def test_search(self):
         api = APIClient.APIClient()
@@ -465,6 +503,7 @@ class TestAPIClient:
         assert mail in api.search(mail)['emails']
         assert domain in api.search(domain)['domains']
         assert api_test_user in api.search(api_test_user)['accounts']
+        api.deauth()
 
     @pytest.mark.order('last')
     def test_mail_del(self):
