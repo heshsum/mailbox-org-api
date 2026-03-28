@@ -15,9 +15,26 @@ def generate_id():
     return str(int(time.time()))
 
 def generate_pw():
-    alphabet = string.ascii_letters + string.digits
-    password = ''.join(secrets.choice(alphabet) for i in range(42))
-    return password
+    # Length of password
+    length = 42
+    # Required character sets
+    upper = string.ascii_uppercase
+    lower = string.ascii_lowercase
+    digits = string.digits
+    special = '!$"%%&/()'
+
+    # Combine all allowed characters
+    all_chars = upper + lower + digits + special
+    while True:
+        # Generate a random string of the specified length
+        pw = ''.join(secrets.choice(all_chars) for _ in range(length))
+
+        # Ensure the password meets all criteria
+        if (any(c in upper for c in pw) and
+                any(c in lower for c in pw) and
+                any(c in digits for c in pw) and
+                any(c in special for c in pw)):
+            return pw
 
 def get_domain():
     api = APIClient.APIClient()
