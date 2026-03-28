@@ -492,6 +492,9 @@ class TestAPIClient:
         api.mail_add(sub_mail, pw, 'light', 'test sub', 'test_sub' )
         # Adding it to the mail account
         assert api.additionalmailaccount_add(parent_mail, sub_mail, pw) == True
+        # Before checking the result, wait for a bit
+        # The mailbox API is sometimes slower than the test, resulting in failed tests
+        time.sleep(5)
         # Checking that the sub account is listed as an additional account
         assert sub_mail in api.additionalmailaccount_list(parent_mail)['additional_accounts']
         api.deauth()
