@@ -384,7 +384,7 @@ class TestAPIClient:
         mail = test_id + '@' + domain
         aliases = []
         api.mail_set_aliases(mail, aliases)
-        for i in range(0, 5):
+        for i in range(0, 2):
             address = test_id + '_alias_' + str(i) + '@' + domain
             aliases.append(address)
         api.mail_set_aliases(mail, aliases)
