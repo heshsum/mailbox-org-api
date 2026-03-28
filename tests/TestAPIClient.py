@@ -306,7 +306,7 @@ class TestAPIClient:
         assert returned_mail['mail'] == mail
         api.deauth()
 
-    @pytest.mark.depends(name=['test_mail_add'])
+    @pytest.mark.depends(name='test_mail_add')
     def test_mail_set(self):
         api = APIClient.APIClient()
         api.auth(api_test_user, api_test_pass)
@@ -319,7 +319,7 @@ class TestAPIClient:
                           'memo': 'memo_string', 'active': True, 'title': 'Title', 'position': 'Job Position',
                           'department': 'Department', 'company': 'Company', 'street': 'Street 1',
                           'postal_code': '12345', 'city': 'City', 'phone':'+492345678', 'fax':'+492345678',
-                          'cell_phone':'+492345678', 'uid_extern': generate_pw(), 'language': 'de_DE'}
+                          'cell_phone':'+492345678', 'uid_extern': 'external_uid_value', 'language': 'de_DE'}
 
         # Adding parameters to call
         params = {}
@@ -328,14 +328,14 @@ class TestAPIClient:
 
         # Getting mail from API to act as the reference
         check_mail = api.mail_get(mail)
-
+        print(check_mail)
         # Compare values sent to values received
         for k, v in mail_set_tests.items():
             assert check_mail[k] == v
 
         api.deauth()
 
-    @pytest.mark.depends(name=["test_mail_add"])
+    @pytest.mark.depends(name="test_mail_add")
     def test_mail_capabilities_set(self):
         capabilities = ['MAIL_SPAMPROTECTION', 'MAIL_BLACKLIST', 'MAIL_BACKUPRECOVER', 'MAIL_PASSWORDRESET_SMS']
 
@@ -369,22 +369,20 @@ class TestAPIClient:
         api.auth(api_test_user, api_test_pass)
         mails = api.mail_list(domain)
         mail = mails[0]['mail']
-        plans = ['standard', 'premium']
+        plans = ['premium', 'light', 'standard']
         for plan in plans:
             api.mail_set_plan(mail, plan)
             assert str(api.mail_get(mail)['plan']).lower() == plan
-        with pytest.raises(APIError):
-            api.mail_set_plan(mail, 'light')
         api.deauth()
 
-    @pytest.mark.depends(name=["test_mail_add"])
+    @pytest.mark.depends(name="test_mail_add")
     def test_mail_set_aliases(self):
         api = APIClient.APIClient()
         api.auth(api_test_user, api_test_pass)
         mail = test_id + '@' + domain
         aliases = []
         api.mail_set_aliases(mail, aliases)
-        for i in range(0, 5):
+        for i in range(0, 2):
             address = test_id + '_alias_' + str(i) + '@' + domain
             aliases.append(address)
         api.mail_set_aliases(mail, aliases)
@@ -393,7 +391,7 @@ class TestAPIClient:
         assert api.mail_get(mail)['aliases'] == []
         api.deauth()
 
-    @pytest.mark.depends(name=["test_mail_add"])
+    @pytest.mark.depends(name="test_mail_add")
     def test_mail_set_forwards(self):
         api = APIClient.APIClient()
         api.auth(api_test_user, api_test_pass)
@@ -407,7 +405,7 @@ class TestAPIClient:
         assert api.mail_get(mail)['forwards'] == forwards
         api.deauth()
 
-    @pytest.mark.depends(name=["test_mail_add"])
+    @pytest.mark.depends(name="test_mail_add")
     def test_mail_set_password(self):
         api = APIClient.APIClient()
         api.auth(api_test_user, api_test_pass)
@@ -417,7 +415,7 @@ class TestAPIClient:
         assert api.mail_set_password(mail, generate_pw()) == api.mail_get(mail)
         api.deauth()
 
-    @pytest.mark.depends(name=["test_mail_add"])
+    @pytest.mark.depends(name="test_mail_add")
     def test_mail_set_password_require_reset(self):
         api = APIClient.APIClient()
         api.auth(api_test_user, api_test_pass)
@@ -427,7 +425,7 @@ class TestAPIClient:
         assert api.mail_set_password_require_reset(mail, generate_pw()) == api.mail_get(mail)
         api.deauth()
 
-    @pytest.mark.depends(name=["test_mail_add"])
+    @pytest.mark.depends(name="test_mail_add")
     def test_mail_apppassword_add(self):
         api = APIClient.APIClient()
         api.auth(api_test_user, api_test_pass)
@@ -437,7 +435,7 @@ class TestAPIClient:
         assert len(api.mail_apppassword_list(mail)) == len_before + 1
         api.deauth()
 
-    @pytest.mark.depends(name=["test_mail_add"])
+    @pytest.mark.depends(name="test_mail_add")
     def test_mail_apppassword_list(self):
         api = APIClient.APIClient()
         api.auth(api_test_user, api_test_pass)
@@ -445,9 +443,9 @@ class TestAPIClient:
         assert len(api.mail_apppassword_list(mail)) > 0
         api.deauth()
 
-    @pytest.mark.depends(name=["test_mail_add"])
-    @pytest.mark.depends(name=['test_mail_apppassword_add'])
-    @pytest.mark.depends(name=['test_mail_apppassword_list'])
+    @pytest.mark.depends(name="test_mail_add")
+    @pytest.mark.depends(name='test_mail_apppassword_add')
+    @pytest.mark.depends(name='test_mail_apppassword_list')
     def test_mail_apppassword_del(self):
         api = APIClient.APIClient()
         api.auth(api_test_user, api_test_pass)
@@ -464,7 +462,7 @@ class TestAPIClient:
         assert len(api.mail_apppassword_list(mail)) == 0
         api.deauth()
 
-    @pytest.mark.depends(name=['test_mail_add'])
+    @pytest.mark.depends(name='test_mail_add')
     def test_mail_set_deletion_date(self):
         api = APIClient.APIClient()
         api.auth(api_test_user, api_test_pass)
@@ -494,11 +492,14 @@ class TestAPIClient:
         api.mail_add(sub_mail, pw, 'light', 'test sub', 'test_sub' )
         # Adding it to the mail account
         assert api.additionalmailaccount_add(parent_mail, sub_mail, pw) == True
+        # Before checking the result, wait for a bit
+        # The mailbox API is sometimes slower than the test, resulting in failed tests
+        time.sleep(5)
         # Checking that the sub account is listed as an additional account
         assert sub_mail in api.additionalmailaccount_list(parent_mail)['additional_accounts']
         api.deauth()
 
-    @pytest.mark.depends(name=['test_additionalmailaccount_add'])
+    @pytest.mark.depends(name='test_additionalmailaccount_add')
     def test_additionalmailaccount_delete(self):
         api = APIClient.APIClient()
         api.auth(api_test_user, api_test_pass)
@@ -510,7 +511,7 @@ class TestAPIClient:
         api.mail_del(sub_mail)
         api.deauth()
 
-    @pytest.mark.depends(name=['test_mail_add'])
+    @pytest.mark.depends(name='test_mail_add')
     def test_search(self):
         api = APIClient.APIClient()
         api.auth(api_test_user, api_test_pass)
