@@ -319,7 +319,7 @@ class TestAPIClient:
                           'memo': 'memo_string', 'active': True, 'title': 'Title', 'position': 'Job Position',
                           'department': 'Department', 'company': 'Company', 'street': 'Street 1',
                           'postal_code': '12345', 'city': 'City', 'phone':'+492345678', 'fax':'+492345678',
-                          'cell_phone':'+492345678', 'uid_extern': generate_pw(), 'language': 'de_DE'}
+                          'cell_phone':'+492345678', 'uid_extern': 'external_uid_value', 'language': 'de_DE'}
 
         # Adding parameters to call
         params = {}
@@ -328,7 +328,7 @@ class TestAPIClient:
 
         # Getting mail from API to act as the reference
         check_mail = api.mail_get(mail)
-
+        print(check_mail)
         # Compare values sent to values received
         for k, v in mail_set_tests.items():
             assert check_mail[k] == v
