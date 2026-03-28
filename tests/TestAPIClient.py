@@ -469,30 +469,28 @@ class TestAPIClient:
     def test_additionalmailaccount_add(self):
         api = APIClient.APIClient()
         api.auth(api_test_user, api_test_pass)
-        parent = 'parent@testbmboapi.internal'
-        sub = test_id + '@' + domain
+        parent_mail = test_id + '_parent@' + domain
+        sub_mail = test_id + '_sub@' + domain
         pw = generate_pw()
-        # Ensuring that the password is correct and the account is active
-        api.mail_set_state(sub, True)
-        api.mail_set_password(sub, pw)
-
-        # Ensuring that the sub account is not already in the list of additional accounts
-        assert sub not in api.additionalmailaccount_list(parent)['additional_accounts']
-
-        # Adding the sub account…
-        assert api.additionalmailaccount_add(parent, sub, pw) == True
-
+        # Creating the accounts
+        api.mail_add(parent_mail, pw, 'light', 'test parent', 'test_parent')
+        api.mail_add(sub_mail, pw, 'light', 'test sub', 'test_sub' )
+        # Adding it to the mail account
+        assert api.additionalmailaccount_add(parent_mail, sub_mail, pw) == True
         # Checking that the sub account is listed as an additional account
-        assert sub in api.additionalmailaccount_list(parent)['additional_accounts']
+        assert sub_mail in api.additionalmailaccount_list(parent_mail)['additional_accounts']
         api.deauth()
 
+    @pytest.mark.depends(name=['test_additionalmailaccount_add'])
     def test_additionalmailaccount_delete(self):
         api = APIClient.APIClient()
         api.auth(api_test_user, api_test_pass)
-        parent = 'parent@testbmboapi.internal'
-        sub = test_id + '@' + domain
-        assert api.additionalmailaccount_delete(parent, sub) == True
-        assert sub not in api.additionalmailaccount_list(parent)
+        parent_mail = test_id + '_parent@' + domain
+        sub_mail = test_id + '_sub@' + domain
+        assert api.additionalmailaccount_delete(parent_mail, sub_mail) == True
+        assert sub_mail not in api.additionalmailaccount_list(parent_mail)
+        api.mail_del(parent_mail)
+        api.mail_del(sub_mail)
         api.deauth()
 
     @pytest.mark.depends(name=['test_mail_add'])
