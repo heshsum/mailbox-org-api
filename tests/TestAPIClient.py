@@ -333,6 +333,15 @@ class TestAPIClient:
         for k, v in mail_set_tests.items():
             assert check_mail[k] == v
 
+        with pytest.raises(KeyError):
+            api.mail_set(mail, additional_mail_quota=5)
+
+        with pytest.raises(KeyError):
+            api.mail_set(mail, additional_cloud_quota=5)
+
+        with pytest.raises(KeyError):
+            api.mail_set(mail, additional_mail_quota = 5, additional_cloud_quota=5)
+
         api.deauth()
 
     @pytest.mark.depends(name="test_mail_add")
