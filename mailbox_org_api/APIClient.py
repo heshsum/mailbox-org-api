@@ -637,6 +637,27 @@ class APIClient:
         """
         return self.api_request('mail.set', {'mail':mail, 'active':active})
 
+    def mail_set_additional_mail_quota(self, mail: str, quota: int) -> dict:
+        """
+        Function to set additional mail quota for a given mail
+        :param mail: the mail to set the quota for
+        :param quota: the quota to set
+        :return: the response for the request
+        """
+        plan = self.mail_get(mail)['plan']
+        return self.api_request('mail.set', {'mail': mail, 'plan':plan, 'additional_mail_quota':quota})
+
+    def mail_set_additional_cloud_quota(self, mail: str, quota: int) -> dict:
+        """
+        Function to set additional cloud quota for a given mail
+        :param mail: the mail to set the quota for
+        :param quota: the quota to set
+        :return: the response for the request
+        """
+        plan = self.mail_get(mail)['plan']
+        return self.api_request('mail.set', {'mail': mail, 'plan': plan,
+                                             'additional_cloud_quota': quota})
+
     def mail_set_deletion_date(self, mail: str, deletion_date: str) -> dict:
         """
         Function to delete an inbox at a given date.
