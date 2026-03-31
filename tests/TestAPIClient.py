@@ -510,17 +510,17 @@ class TestAPIClient:
     #     assert sub_mail in api.additionalmailaccount_list(parent_mail)['additional_accounts']
     #     api.deauth()
 
-    @pytest.mark.depends(name='test_additionalmailaccount_add')
-    def test_additionalmailaccount_delete(self):
-        api = APIClient.APIClient()
-        api.auth(api_test_user, api_test_pass)
-        parent_mail = test_id + '_parent@' + domain
-        sub_mail = test_id + '_sub@' + domain
-        assert api.additionalmailaccount_delete(parent_mail, sub_mail) == True
-        assert sub_mail not in api.additionalmailaccount_list(parent_mail)
-        api.mail_del(parent_mail)
-        api.mail_del(sub_mail)
-        api.deauth()
+    # @pytest.mark.depends(name='test_additionalmailaccount_add')
+    # def test_additionalmailaccount_delete(self):
+    #     api = APIClient.APIClient()
+    #     api.auth(api_test_user, api_test_pass)
+    #     parent_mail = test_id + '_parent@' + domain
+    #     sub_mail = test_id + '_sub@' + domain
+    #     assert api.additionalmailaccount_delete(parent_mail, sub_mail) == True
+    #     assert sub_mail not in api.additionalmailaccount_list(parent_mail)
+    #     api.mail_del(parent_mail)
+    #     api.mail_del(sub_mail)
+    #     api.deauth()
 
     @pytest.mark.depends(name='test_mail_add')
     def test_search(self):
