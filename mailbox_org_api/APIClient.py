@@ -984,7 +984,8 @@ class APIClient:
         """
         return self.api_request('mailinglist.get', {'mailinglist':mailinglist, 'account':account})
 
-    def mailinglist_set(self, mailinglist: str, account: str, password: str = None, adminmail: str = None) -> dict:
+    def mailinglist_set(self, mailinglist: str, account: str, password: str | None = None,
+                        adminmail: str | None = None) -> dict:
         """
         Function to change a mailing list
         :param mailinglist: the mailing list to change
