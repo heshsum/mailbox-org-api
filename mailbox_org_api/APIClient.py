@@ -838,7 +838,7 @@ class APIClient:
 
         return self.api_request('mail.vacation.set', params)
 
-    def group_list(self, account:str = None) -> dict:
+    def group_list(self, account:str | None = None) -> dict:
         """
         Function to list all groups for an account
         :param account: optional parameter for the account to list the groups for
