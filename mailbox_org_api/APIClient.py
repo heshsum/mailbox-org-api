@@ -963,7 +963,7 @@ class APIClient:
         """
         return self.api_request('mailinglist.list', {'account':account})
 
-    def mailinglist_add(self, mailinglist: str, password: str, account: str, adminmail: str = None) -> dict:
+    def mailinglist_add(self, mailinglist: str, password: str, account: str, adminmail: str | None = None) -> dict:
         """
         Function to add a mailing list
         :param mailinglist: the mailing list to add
