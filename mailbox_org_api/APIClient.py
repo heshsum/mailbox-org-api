@@ -818,7 +818,7 @@ class APIClient:
         return self.api_request('mail.vacation.get', {'mail':mail})
 
     def mail_vacation_set(self, mail: str, subject: str, body: str, start_date: str, end_date: str,
-                          additional_mail_addresses: list = None) -> dict:
+                          additional_mail_addresses: list | None = None) -> dict:
         """
         Function to set the vacation notice for a given mail
         :param mail: the mail to get the vacation notice for
