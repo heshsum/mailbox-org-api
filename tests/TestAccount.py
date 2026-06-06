@@ -80,8 +80,8 @@ class TestAccount:
     def test_account_contact(self):
         account = Account.Account(account_name)
         assert account.contact == {}
-        contact = {'mail':'contact@tests.internal', 'first_name': 'Test', 'last_name': 'Contact', 'birthday': '',
-                   'street':'Teststr. 1', 'zipcode':'12345', 'town':'Testtown', 'country':'DE'}
+        contact = {'mail': 'contact@tests.internal', 'first_name': 'Test', 'last_name': 'Contact', 'birthday': '',
+                   'street': 'Teststr. 1', 'zipcode': '12345', 'town': 'Testtown', 'country': 'DE'}
         account.contact = contact
         assert account.contact == contact
 
