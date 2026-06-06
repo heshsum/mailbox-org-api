@@ -373,7 +373,7 @@ class APIClient:
         :return: the API response
         """
         params = {'account':account}
-        if filter:
+        if isinstance(search_filter, str):
             params.update({'filter':str(search_filter)})
         return self.api_request('domain.list',params)
 
