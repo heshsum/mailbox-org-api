@@ -390,7 +390,6 @@ class APIClient:
         :return: a list of domain names
         """
         result = self.domain_list(account, search_filter)
-
         domains = []
         for i in result:
             domains.append(i['domain'])
