@@ -390,7 +390,6 @@ class APIClient:
         :return: a list of domain names
         """
         result = self.domain_list(account, search_filter)
-
         domains = []
         for i in result:
             domains.append(i['domain'])
@@ -505,6 +504,18 @@ class APIClient:
             raise ValueError('Sort order must be either "asc" or "desc".')
 
         return self.api_request('mail.list', params)
+
+    def mail_list_addresses(self, domain: str) -> list:
+        """
+        Function to list all addresses of a domain.
+        :param domain: the domain to list all mailboxes for.
+        :return: a list of all mail addresses for the domain.
+        """
+        result = self.mail_list(domain)
+        mails = []
+        for i in result:
+            mails.append(i['mail'])
+        return mails
 
     def mail_add(self, mail: str, password: str, plan: str, first_name: str, last_name: str, inboxsave: bool = True,
                  forwards: list | None = None, **kwargs) -> dict:

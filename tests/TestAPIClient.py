@@ -222,6 +222,7 @@ class TestAPIClient:
         api.auth(api_test_user, api_test_pass)
         domain_names = api.domain_list_names(api_test_user)
         domains = api.domain_list(api_test_user)
+        assert len(domain_names) == len(domains)
         for d in domains:
             assert d['domain'] in domain_names
         api.deauth()
@@ -278,6 +279,17 @@ class TestAPIClient:
             api.mail_list(domain, page_size=-1)
         with pytest.raises(ValueError):
             api.mail_list(domain, sort_order='wröng')
+        api.deauth()
+
+    def test_mail_list_addresses(self):
+        api = APIClient.APIClient()
+        api.auth(api_test_user, api_test_pass)
+        mails = api.mail_list(domain)
+        mail_addresses = api.mail_list_addresses(domain)
+        assert len(mail_addresses) == len(mails)
+        for i in mails:
+            assert i['mail'] is not None
+            assert i['mail'] in mail_addresses
         api.deauth()
 
     def test_mail_get(self):
