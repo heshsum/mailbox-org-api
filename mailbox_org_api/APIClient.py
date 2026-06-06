@@ -838,57 +838,75 @@ class APIClient:
 
         return self.api_request('mail.vacation.set', params)
 
-    def group_list(self) -> dict:
+    def group_list(self, account:str = None) -> dict:
         """
         Function to list all groups for an account
+        :param account: optional parameter for the account to list the groups for
         :return: mailbox API response - the list of groups
         """
-        return self.api_request('group.list', {})
+        params = {}
+        if account:
+            params['account'] = account
+        return self.api_request('group.list', params)
 
-    def group_get(self, group_id: int) -> dict:
+    def group_get(self, group_id: int, account: str = None) -> dict:
         """
         Function to get a group from the account by the group id
         :param group_id: the id of the group to get
+        :param account: optional parameter for the account to get the group for
         :return: mailbox API response - the list of groups of the account
         """
-        return self.api_request('group.get', {'group_id':group_id})
+        params = {'group_id': group_id}
+        if account:
+            params['account'] = account
+        return self.api_request('group.get', params)
 
-    def group_del(self, group_id: int) -> dict:
+    def group_del(self, group_id: int, account: str = None) -> dict:
         """
         Function to delete a group
         :param group_id: the group's id of the group to delete
+        :param account: optional parameter for the account to delete the group for
         :return: mailbox API response - True if the group was deleted, False otherwise
         """
-        return self.api_request('group.del', {'group_id':group_id})
+        params = {'group_id': group_id}
+        if account:
+            params['account'] = account
+        return self.api_request('group.del', params)
 
-    def group_add(self, name: str, display_name: str, mail_addresses_to_add: list) -> dict:
+    def group_add(self, name: str, display_name: str, mail_addresses_to_add: list, account: str = None) -> dict:
         """
         Function to add a group
         :param name: the group name
         :param display_name: the group's display name
         :param mail_addresses_to_add: a list of mail addresses to add
+        :param account: optional parameter for the account to add the group for
         :return: mailbox API response - True if the group was added, False otherwise
         """
-        return self.api_request('group.add', {'name':name, 'display_name':display_name,
-                                              'mail_addresses_to_add':mail_addresses_to_add})
+        params = {'name':name, 'display_name':display_name, 'mail_addresses_to_add':mail_addresses_to_add}
+        if account:
+            params['account'] = account
+        return self.api_request('group.add', params)
 
     def group_set(self, group_id: int, display_name: str, mail_addresses_to_add: list = None,
-                  mail_addresses_to_remove: list = None) -> dict:
+                  mail_addresses_to_remove: list = None, account: str = None) -> dict:
         """
         Function to modify a group. Either mail_addresses_to_add or mail_addresses_to_remove have to be specified.
         :param group_id: the group's id of the group to modify
         :param display_name: the group's display name
         :param mail_addresses_to_add: a list of mail addresses to add. Defaults to None
         :param mail_addresses_to_remove: a list of mail addresses to remove. Defaults to None
+        :param account: optional parameter for the account to set the group for
         :return: mailbox API response - True if the group was edited, False otherwise
         """
         # If mail_addresses_to_add and mail_addresses_to_remove are both empty, raise error
         if mail_addresses_to_add is None and mail_addresses_to_remove is None:
             raise ValueError('mail_addresses_to_add or mail_addresses_to_remove are required')
 
-        return self.api_request('group.set', {'group_id':group_id, 'display_name':display_name,
-                                              'mail_addresses_to_add':mail_addresses_to_add,
-                                              'mail_addresses_to_remove':mail_addresses_to_remove})
+        params = {'group_id':group_id, 'display_name':display_name, 'mail_addresses_to_add':mail_addresses_to_add,
+                  'mail_addresses_to_remove':mail_addresses_to_remove}
+        if account:
+            params['account'] = account
+        return self.api_request('group.set', params)
 
     def mail_passwordreset_listmethods(self, mail: str) -> dict:
         """
