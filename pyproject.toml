@@ -1,10 +1,10 @@
 [project]
 name = "mailbox-org-api"
-version = "2.2"
+version = "2.3"
 authors = [
   { name="Hendrik Schlange", email="mail@heshsum.de" },
 ]
-description = "A library to access the mailbox.org Business API."
+description = "A library to access the mailbox Business API."
 readme = "README.md"
 requires-python = ">=3.11"
 classifiers = [
