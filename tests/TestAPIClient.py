@@ -217,6 +217,15 @@ class TestAPIClient:
             assert isinstance(d['count_mails'], int)
         api.deauth()
 
+    def test_domain_list_names(self):
+        api = APIClient.APIClient()
+        api.auth(api_test_user, api_test_pass)
+        domain_names = api.domain_list_names(api_test_user)
+        domains = api.domain_list(api_test_user)
+        for d in domains:
+            assert d['domain'] in domain_names
+        api.deauth()
+
     def test_domain_get(self):
         api = APIClient.APIClient()
         api.auth(api_test_user, api_test_pass)
