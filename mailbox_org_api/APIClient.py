@@ -791,18 +791,18 @@ class APIClient:
 
     def mail_blacklist_list(self, mail: str) -> dict:
         """
-        Function to list the mail blacklist for a given mail address
-        :param mail: the mail to list the blacklist for
-        :return: mailbox API response - an array with the complete blacklist of the mail
+        Function to list the mail blacklist for a given mail address.
+        :param mail: the mail to list the blacklist for.
+        :return: mailbox API response - an array with the complete blacklist of the mail.
         """
         return self.api_request('mail.blacklist.list', {'mail': mail})
 
     def mail_blacklist_add(self, mail: str, add_address: str) -> dict:
         """
-        Function to add a mail to a blacklist of a mail address
-        :param mail: the mail of the owner of the blacklist
-        :param add_address: the address to add to the blacklist
-        :return: mailbox API response - an array with the complete blacklist of the mail
+        Function to add a mail to a blacklist of a mail address.
+        :param mail: the mail of the owner of the blacklist.
+        :param add_address: the address to add to the blacklist.
+        :return: mailbox API response - an array with the complete blacklist of the mail.
         """
         return self.api_request('mail.blacklist.add', {'mail': mail, 'add_address': add_address})
 
@@ -993,12 +993,12 @@ class APIClient:
     def mailinglist_set(self, mailinglist: str, account: str, password: str | None = None,
                         adminmail: str | None = None) -> dict:
         """
-        Function to change a mailing list
-        :param mailinglist: the mailing list to change
-        :param password: the password of the mailing list
-        :param account: the account of the mailing list (optional)
-        :param adminmail: admin email address of the mailing list (optional)
-        :return: the mailbox API response for the request - True if the mailing list was changed, error code otherwise
+        Function to change a mailing list.
+        :param mailinglist: the mailing list to change.
+        :param password: the password of the mailing list.
+        :param account: the account of the mailing list (optional).
+        :param adminmail: admin email address of the mailing list (optional).
+        :return: the mailbox API response for the request - True if the mailing list was changed, error code otherwise.
         """
         return self.api_request('mailinglist.set', {'mailinglist': mailinglist, 'account': account,
                                                     'password': password, 'adminmail': adminmail})
@@ -1034,23 +1034,23 @@ class APIClient:
         2. mail server settings are grouped
         3. transport server settings are grouped
         4. Ports are integers
-        :param new_account_mail: the additional mail address to add
-        :param new_account_password: the password of the additional mail address
-        :param parent_mail: the mail address to add the additional mail account to
-        :param primary_address: the primary 'address from' for the additional mail address
-        :param mail_server: the IMAP server to use
-        :param mail_port: the port of the IMAP server
-        :param transport_server: the SMTP server to use
-        :param transport_port: the port of the SMTP server
-        :param mail_secure: whether to use SSL for IMAP
-        :param mail_starttls: whether to use STARTTLS for IMAP
-        :param transport_secure: whether to use SSL for SMTP
-        :param transport_starttls: whether to use STARTTLS for SMTP
-        :param trash_folder: name of the trash folder
-        :param sent_folder: name of the sent folder
-        :param drafts_folder: name of the drafts folder
-        :param spam_folder: name of the spam folder
-        :return: the response for the request - True if adding was successful, error code otherwise
+        :param new_account_mail: the additional mail address to add.
+        :param new_account_password: the password of the additional mail address.
+        :param parent_mail: the mail address to add the additional mail account to.
+        :param primary_address: the primary 'address from' for the additional mail address.
+        :param mail_server: the IMAP server to use.
+        :param mail_port: the port of the IMAP server.
+        :param transport_server: the SMTP server to use.
+        :param transport_port: the port of the SMTP server.
+        :param mail_secure: whether to use SSL for IMAP.
+        :param mail_starttls: whether to use STARTTLS for IMAP.
+        :param transport_secure: whether to use SSL for SMTP.
+        :param transport_starttls: whether to use STARTTLS for SMTP.
+        :param trash_folder: name of the trash folder.
+        :param sent_folder: name of the sent folder.
+        :param drafts_folder: name of the drafts folder.
+        :param spam_folder: name of the spam folder.
+        :return: the response for the request - True if adding was successful, error code otherwise.
         """
         return self.api_request('additionalmailaccount.add', {'new_account_mail': new_account_mail,
                                                               'new_account_password': new_account_password,
