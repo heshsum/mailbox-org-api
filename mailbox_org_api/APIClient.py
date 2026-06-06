@@ -2,6 +2,7 @@
 Module for the mailbox Business API client
 """
 import json
+from typing import Any
 
 import requests
 import typing_extensions
