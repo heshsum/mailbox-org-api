@@ -2,15 +2,18 @@
 Module for the mailbox Business API client
 """
 import json
+from typing import Any
+
 import requests
-from requests.adapters import HTTPAdapter
-from urllib3.util.retry import Retry
-from requests.exceptions import RequestException
 import typing_extensions
+from requests.adapters import HTTPAdapter
+from requests.exceptions import RequestException
+from urllib3.util.retry import Retry
+
 from mailbox_org_api.APIError import APIError
 from mailbox_org_api.Account import Account
-from mailbox_org_api.Mail import Mail
 from mailbox_org_api.Invoice import Invoice
+from mailbox_org_api.Mail import Mail
 
 headers = {'content-type': 'application/json'}
 
@@ -62,7 +65,7 @@ class APIClient:
         self.jsonrpc_id += 1
         return str(self.jsonrpc_id)
 
-    def api_request(self, method: str, params: dict) -> dict:
+    def api_request(self, method: str, params: dict) -> dict | Any:
         """
         Function to send API calls
         :param method: the method to call
