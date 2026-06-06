@@ -873,7 +873,7 @@ class APIClient:
             params['account'] = account
         return self.api_request('group.del', params)
 
-    def group_add(self, name: str, display_name: str, mail_addresses_to_add: list, account: str = None) -> dict:
+    def group_add(self, name: str, display_name: str, mail_addresses_to_add: list, account: str | None = None) -> dict:
         """
         Function to add a group
         :param name: the group name
