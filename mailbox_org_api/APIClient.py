@@ -127,7 +127,7 @@ class APIClient:
         :param password: the password
         :return: the API response for the request
         """
-        api_response = self.api_request('auth', {'user':username, 'pass':password})
+        api_response = self.api_request('auth', {'user': username, 'pass': password})
         if api_response['session']:
             # Level gives information about the calls available
             self.level = api_response["level"]
@@ -145,7 +145,7 @@ class APIClient:
         Function to close the current API session
         :return: True if the API session is closed, False otherwise
         """
-        api_response = self.api_request('deauth',{})
+        api_response = self.api_request('deauth', {})
         if api_response:
             # The auth header is stripped
             self.session.headers.pop("HPLS-AUTH")
@@ -158,7 +158,7 @@ class APIClient:
         Function for hello world, just to test the connection
         :return: The response from the mailbox.org Business API
         """
-        return self.api_request('hello.world',{})
+        return self.api_request('hello.world', {})
 
     def hello_innerworld(self):
         """
@@ -212,9 +212,9 @@ class APIClient:
         :param account: the account name to get
         :return: the response from the mailbox.org Business API
         """
-        return self.api_request('account.get', {'account':account})
+        return self.api_request('account.get', {'account': account})
 
-    def account_get_object(self, account:str) -> Account:
+    def account_get_object(self, account: str) -> Account:
         result = self.api_request('account.get', {'account': account})
         account_object = Account(account)
         for k, v in result.items():
@@ -258,7 +258,7 @@ class APIClient:
         :param account: the account name to delete
         :return: the response from the mailbox.org Business API
         """
-        return self.api_request('account.del', {'account':account})
+        return self.api_request('account.del', {'account': account})
 
     def account_invoice_list(self, account: str) -> dict:
         """
@@ -266,7 +266,7 @@ class APIClient:
         :param account: the account name to list
         :return: the response from the mailbox.org Business API
         """
-        return self.api_request('account.invoice.list', {'account':account})
+        return self.api_request('account.invoice.list', {'account': account})
 
     def account_invoice_get(self, account: str, token: str) -> dict:
         """
@@ -275,7 +275,7 @@ class APIClient:
         :param token: the token for the invoice
         :return: the response from the mailbox.org Business API - the invoice as a Base64 encoded gzipped string
         """
-        return self.api_request('account.invoice.get', {'account':account, 'token':token})
+        return self.api_request('account.invoice.get', {'account': account, 'token': token})
 
     def account_invoice_get_object(self, account: str, invoice_id: str) -> Invoice:
         """
@@ -302,7 +302,7 @@ class APIClient:
         """
         Function to get a list of all invoice ids for a specific account
         """
-        response = self.api_request('account.invoice.list', {'account':account})
+        response = self.api_request('account.invoice.list', {'account': account})
         invoices = []
 
         for invoice in response:
@@ -367,17 +367,17 @@ class APIClient:
         # Take the Base64 encoded data (response['bin']), decode the Base 64, decompress the gz and return the bytes
         return zlib.decompress(base64.b64decode(response['bin']))
 
-    def domain_list(self, account:str, search_filter:str | None = None) -> dict:
+    def domain_list(self, account: str, search_filter: str | None = None) -> dict:
         """
         Function to list all domains
         :param account: the account to list domains for
         :param search_filter: String for optional search filter
         :return: the API response
         """
-        params = {'account':account}
+        params = {'account': account}
         if isinstance(search_filter, str):
-            params.update({'filter':str(search_filter)})
-        return self.api_request('domain.list',params)
+            params.update({'filter': str(search_filter)})
+        return self.api_request('domain.list', params)
 
     def domain_add(self, account: str, domain: str, password: str, **kwargs) -> dict:
         """
@@ -389,7 +389,7 @@ class APIClient:
         See documentation here: https://api.mailbox.org/v1/doc/methods/index.html#domain-add
         :return: the API response
         """
-        params = {'account':account, 'domain':domain, 'password':password}
+        params = {'account': account, 'domain': domain, 'password': password}
         params.update({k: v for k, v in kwargs.items() if v is not None})
         return self.api_request('domain.add', params)
 
@@ -399,7 +399,7 @@ class APIClient:
         :param domain: the domain to get
         :return: the API response
         """
-        return self.api_request('domain.get',{'domain':domain})
+        return self.api_request('domain.get', {'domain': domain})
 
     def domain_capabilities_set(self, domain: str, capabilities: list) -> dict:
         """
@@ -444,7 +444,7 @@ class APIClient:
         :param domain: the domain to delete
         :return: the API response
         """
-        return self.api_request('domain.del', {'account':account, 'domain':domain})
+        return self.api_request('domain.del', {'account': account, 'domain': domain})
 
     def domain_validate_spf(self, domain: str) -> dict:
         """
@@ -452,9 +452,9 @@ class APIClient:
         :param domain: the domain to validate
         :return: the API response - information about the SPF config
         """
-        return self.api_request('domain.validate.spf', {'domain':domain})
+        return self.api_request('domain.validate.spf', {'domain': domain})
 
-    def mail_list(self, domain: str, details: bool = False, page_size: int  | None= None, page: int | None = None,
+    def mail_list(self, domain: str, details: bool = False, page_size: int | None = None, page: int | None = None,
                   sort_field: str | None = None, sort_order: str | None = None) -> dict:
         """
         Function to list all mailboxes
@@ -466,8 +466,8 @@ class APIClient:
         :param sort_order: the order to sort by. Possible values: 'asc', 'desc'
         :return: the response from the mailbox.org Business API
         """
-        args = {'domain':domain, 'details':details, 'page_size':page_size, 'page':page, 'sort_field':sort_field,
-                  'sort_order':sort_order}
+        args = {'domain': domain, 'details': details, 'page_size': page_size, 'page': page, 'sort_field': sort_field,
+                'sort_order': sort_order}
 
         # Allowed sort fields as documented here: https://api.mailbox.org/v1/doc/methods/index.html#mail-list
         mail_list_sort_field = ['mail', 'first_name', 'last_name', 'status', 'domain', 'plan', 'type', 'creation_date']
@@ -489,8 +489,8 @@ class APIClient:
 
         return self.api_request('mail.list', params)
 
-    def mail_add(self, mail:str, password: str, plan: str, first_name: str, last_name: str, inboxsave: bool = True,
-                 forwards: list | None= None, **kwargs) -> dict:
+    def mail_add(self, mail: str, password: str, plan: str, first_name: str, last_name: str, inboxsave: bool = True,
+                 forwards: list | None = None, **kwargs) -> dict:
         """
         Function to add a mail
         :param mail: the mail to add
@@ -509,10 +509,10 @@ class APIClient:
                               'create_own_context': bool, 'title': str, 'birthday': str, 'position': str,
                               'department': str, 'company': str, 'street': str, 'postal_code': str, 'city': str,
                               'phone': str, 'fax': str, 'cell_phone': str, 'recover': bool, 'skip_welcome_mail': bool,
-                              'uid_extern': str, 'language': str, 'evac_force_activation':bool}
+                              'uid_extern': str, 'language': str, 'evac_force_activation': bool}
 
         if password and 'password_hash' in kwargs:
-          raise KeyError('''Simultaneous usage of 'password' and 'password_hash' not allowed.
+            raise KeyError('''Simultaneous usage of 'password' and 'password_hash' not allowed.
           Use 'password' = None if password_hash is used.''')
 
         if forwards is None:
@@ -525,8 +525,8 @@ class APIClient:
                 kwargs[k] = str(kwargs[k])
 
         # After validation, build parameter list from mail and kwargs
-        params = {'mail':mail, 'password':password, 'plan':plan, 'first_name':first_name, 'last_name':last_name,
-                  'inboxsave':inboxsave, 'forwards':forwards}
+        params = {'mail': mail, 'password': password, 'plan': plan, 'first_name': first_name, 'last_name': last_name,
+                  'inboxsave': inboxsave, 'forwards': forwards}
         params.update({k: v for k, v in kwargs.items() if v is not None})
         return self.api_request('mail.add', params)
 
@@ -537,10 +537,10 @@ class APIClient:
         :param include_quota_usage: True if the quota usage should be included in the request
         :return the response for the request
         """
-        return self.api_request('mail.get', {'mail':mail, 'include_quota_usage':include_quota_usage})
+        return self.api_request('mail.get', {'mail': mail, 'include_quota_usage': include_quota_usage})
 
-    def mail_get_object(self, mail:str) -> Mail:
-        result = self.api_request('mail.get', {'mail':mail, 'include_quota_usage':False})
+    def mail_get_object(self, mail: str) -> Mail:
+        result = self.api_request('mail.get', {'mail': mail, 'include_quota_usage': False})
         mail_object = Mail(mail)
         for k, v in result.items():
             if v is not None:
@@ -557,15 +557,15 @@ class APIClient:
         """
         # Allowed attributes as documented here: https://api.mailbox.org/v1/doc/methods/index.html#mail-set
         allowed_parameters = {'password': str, 'password_hash': str, 'same_password_allowed': bool,
-                               'require_reset_password': bool, 'plan': str, 'additional_mail_quota': int,
-                               'additional_cloud_quota': int, 'first_name': str, 'last_name': str, 'inboxsave': bool,
-                               'forwards': list, 'aliases': list, 'alternate_mail': str, 'memo': str, 'allow_nets': str,
-                               'active': bool, 'title': str, 'birthday': str, 'position': str, 'department': str,
-                               'company': str, 'street': str, 'postal_code': str, 'city': str, 'phone': str, 'fax': str,
-                               'cell_phone': str, 'uid_extern': str, 'language': str, 'deletion_date': str}
+                              'require_reset_password': bool, 'plan': str, 'additional_mail_quota': int,
+                              'additional_cloud_quota': int, 'first_name': str, 'last_name': str, 'inboxsave': bool,
+                              'forwards': list, 'aliases': list, 'alternate_mail': str, 'memo': str, 'allow_nets': str,
+                              'active': bool, 'title': str, 'birthday': str, 'position': str, 'department': str,
+                              'company': str, 'street': str, 'postal_code': str, 'city': str, 'phone': str, 'fax': str,
+                              'cell_phone': str, 'uid_extern': str, 'language': str, 'deletion_date': str}
 
         if 'password' in kwargs and 'password_hash' in kwargs:
-          raise KeyError('''Simultaneous usage of 'password' and 'password_hash' not allowed.''')
+            raise KeyError('''Simultaneous usage of 'password' and 'password_hash' not allowed.''')
 
         if 'additional_mail_quota' in kwargs or 'additional_cloud_quota' in kwargs and 'plan' not in kwargs:
             raise KeyError('''If setting additional quota, 'plan' must be given.''')
@@ -580,9 +580,9 @@ class APIClient:
                 kwargs[k] = str(kwargs[k])
 
         # After validation, build parameter list from mail and kwargs
-        params = {'mail':mail}
+        params = {'mail': mail}
         params.update({k: v for k, v in kwargs.items() if v is not None})
-        
+
         return self.api_request('mail.set', params)
 
     def mail_set_password(self, mail: str, password: str) -> dict:
@@ -592,7 +592,7 @@ class APIClient:
         :param password: the password to set
         :return: the response for the request
         """
-        return self.api_request('mail.set', {'mail':mail, 'password':password})
+        return self.api_request('mail.set', {'mail': mail, 'password': password})
 
     def mail_set_password_require_reset(self, mail: str, password: str) -> dict:
         """
@@ -610,7 +610,7 @@ class APIClient:
         :param plan: the plan to set
         :return: the response for the request
         """
-        return self.api_request('mail.set', {'mail':mail, 'plan':plan})
+        return self.api_request('mail.set', {'mail': mail, 'plan': plan})
 
     def mail_set_forwards(self, mail: str, forwards: list) -> dict:
         """
@@ -619,7 +619,7 @@ class APIClient:
         :param forwards: a list of addresses to forwards mails to
         :return: the response for the request
         """
-        return self.api_request('mail.set', {'mail':mail, 'forwards':forwards})
+        return self.api_request('mail.set', {'mail': mail, 'forwards': forwards})
 
     def mail_set_aliases(self, mail: str, aliases: list) -> dict:
         """
@@ -628,7 +628,7 @@ class APIClient:
         :param aliases: a list of aliases to set
         :return: the response for the request
         """
-        return self.api_request('mail.set', {'mail':mail, 'aliases':aliases})
+        return self.api_request('mail.set', {'mail': mail, 'aliases': aliases})
 
     def mail_set_state(self, mail: str, active: bool) -> dict:
         """
@@ -637,7 +637,7 @@ class APIClient:
         :param active: True if the mail should be active, False if it shall be deactivated
         :return: the response for the request
         """
-        return self.api_request('mail.set', {'mail':mail, 'active':active})
+        return self.api_request('mail.set', {'mail': mail, 'active': active})
 
     def mail_set_additional_mail_quota(self, mail: str, quota: int) -> dict:
         """
@@ -647,7 +647,7 @@ class APIClient:
         :return: the response for the request
         """
         plan = self.mail_get(mail)['plan']
-        return self.api_request('mail.set', {'mail': mail, 'plan':plan, 'additional_mail_quota':quota})
+        return self.api_request('mail.set', {'mail': mail, 'plan': plan, 'additional_mail_quota': quota})
 
     def mail_set_additional_cloud_quota(self, mail: str, quota: int) -> dict:
         """
@@ -686,7 +686,7 @@ class APIClient:
         invalid = set(capabilities) - set(mail_capabilities)
         if invalid:
             raise ValueError(f'Invalid capabilities found: {", ".join(invalid)}')
-        params = {'mail':mail, 'capabilities':list(capabilities)}
+        params = {'mail': mail, 'capabilities': list(capabilities)}
         return self.api_request('mail.capabilities.set', params)
 
     def mail_del(self, mail: str) -> dict:
@@ -695,17 +695,17 @@ class APIClient:
         :param mail: the mail to delete
         :return: the response for the request
         """
-        return self.api_request('mail.del', {'mail':mail})
+        return self.api_request('mail.del', {'mail': mail})
 
-    def mail_apppassword_list(self, mail:str) -> dict:
+    def mail_apppassword_list(self, mail: str) -> dict:
         """
         Function to list all app passwords of a given mail
         :param mail: the mail to list app passwords for
         :return: the response for the request
         """
-        return self.api_request('mail.apppassword.list', {'mail':mail})
+        return self.api_request('mail.apppassword.list', {'mail': mail})
 
-    def mail_apppassword_add(self, mail:str, memo:str, imap_allowed:bool = True, smtp_allowed:bool = True) -> dict:
+    def mail_apppassword_add(self, mail: str, memo: str, imap_allowed: bool = True, smtp_allowed: bool = True) -> dict:
         """
         Function to generate a new mail app password for a mail
         :param mail: the mail to generate a new mail app password
@@ -714,8 +714,8 @@ class APIClient:
         :param smtp_allowed: True if the app password should be allowed to use an SMTP server. Default: True
         :return: the response for the request
         """
-        return self.api_request('mail.apppassword.add', {'mail':mail, 'memo':memo,
-                                                         'imap_allowed':imap_allowed, 'smtp_allowed':smtp_allowed})
+        return self.api_request('mail.apppassword.add', {'mail': mail, 'memo': memo,
+                                                         'imap_allowed': imap_allowed, 'smtp_allowed': smtp_allowed})
 
     def mail_apppassword_del(self, apppassword_id: int) -> dict:
         """
@@ -723,7 +723,7 @@ class APIClient:
         :param apppassword_id: the id of the mail app password
         :return: the response for the request
         """
-        return self.api_request('mail.apppassword.del', {'id':apppassword_id})
+        return self.api_request('mail.apppassword.del', {'id': apppassword_id})
 
     def mail_externaluid(self, account: str, uid_extern: str) -> dict:
         """
@@ -732,7 +732,7 @@ class APIClient:
         :param uid_extern: the external UID to get a mail for
         :return: mailbox API response - an array with the mail details
         """
-        return self.api_request('mail.externaluid', {'account':account, 'uid_extern':uid_extern})
+        return self.api_request('mail.externaluid', {'account': account, 'uid_extern': uid_extern})
 
     def mail_backup_list(self, mail: str) -> dict:
         """
@@ -740,7 +740,7 @@ class APIClient:
         :param mail: the mail to list backups for
         :return: mailbox API response - an array with the backup numbers and dates
         """
-        return self.api_request('mail.backup.list', {'mail':mail})
+        return self.api_request('mail.backup.list', {'mail': mail})
 
     def mail_backup_import(self, mail: str, backup_id: str, time: str, backup_filter: str) -> dict:
         """
@@ -752,7 +752,7 @@ class APIClient:
         :return: mailbox API response - an array with the backup numbers and dates
         """
         return self.api_request('mail.backup.import',
-                                {'mail':mail, 'id':backup_id, 'time':time, 'filter':backup_filter})
+                                {'mail': mail, 'id': backup_id, 'time': time, 'filter': backup_filter})
 
     def mail_spamprotect_get(self, mail: str) -> dict:
         """
@@ -760,7 +760,7 @@ class APIClient:
         :param mail: the mail to get the spam settings for
         :return: mailbox API response - an array with the spam settings
         """
-        return self.api_request('mail.spamprotect.get', {'mail':mail})
+        return self.api_request('mail.spamprotect.get', {'mail': mail})
 
     def mail_spamprotect_set(self, mail: str, greylist: bool, smtp_plausibility: bool, rbl: bool,
                              bypass_banned_checks: bool, tag2level: float, killlevel: str, route_to: str) -> dict:
@@ -780,10 +780,11 @@ class APIClient:
             raise ValueError('''Invalid value for killlevel. Only 'reject' or 'route' are allowed''')
 
         return self.api_request('mail.spamprotect.set',
-                                {'mail':mail, 'greylist': bool2str(greylist),
-                                 'smtp_plausibility':bool2str(smtp_plausibility), 'rbl':bool2str(rbl),
-                                 'bypass_banned_checks':bool2str(bypass_banned_checks), 'tag2level':round(tag2level, 1),
-                                 'killevel':killlevel, 'route_to':route_to})
+                                {'mail': mail, 'greylist': bool2str(greylist),
+                                 'smtp_plausibility': bool2str(smtp_plausibility), 'rbl': bool2str(rbl),
+                                 'bypass_banned_checks': bool2str(bypass_banned_checks),
+                                 'tag2level': round(tag2level, 1),
+                                 'killevel': killlevel, 'route_to': route_to})
 
     def mail_blacklist_list(self, mail: str) -> dict:
         """
@@ -791,7 +792,7 @@ class APIClient:
         :param mail: the mail to list the blacklist for
         :return: mailbox API response - an array with the complete blacklist of the mail
         """
-        return self.api_request('mail.blacklist.list', {'mail':mail})
+        return self.api_request('mail.blacklist.list', {'mail': mail})
 
     def mail_blacklist_add(self, mail: str, add_address: str) -> dict:
         """
@@ -800,7 +801,7 @@ class APIClient:
         :param add_address: the address to add to the blacklist
         :return: mailbox API response - an array with the complete blacklist of the mail
         """
-        return self.api_request('mail.blacklist.add', {'mail':mail, 'add_address':add_address})
+        return self.api_request('mail.blacklist.add', {'mail': mail, 'add_address': add_address})
 
     def mail_blacklist_del(self, mail: str, delete_address: str) -> dict:
         """
@@ -809,7 +810,7 @@ class APIClient:
         :param delete_address: the address to delete from the blacklist
         :return: mailbox API response - an array with the complete blacklist of the mail
         """
-        return self.api_request('mail.blacklist.del', {'mail':mail, 'delete_address':delete_address})
+        return self.api_request('mail.blacklist.del', {'mail': mail, 'delete_address': delete_address})
 
     def mail_vacation_get(self, mail: str) -> dict:
         """
@@ -817,7 +818,7 @@ class APIClient:
         :param mail: the mail to get the vacation notice for
         :return: mailbox API response - the vacation notice of the mail
         """
-        return self.api_request('mail.vacation.get', {'mail':mail})
+        return self.api_request('mail.vacation.get', {'mail': mail})
 
     def mail_vacation_set(self, mail: str, subject: str, body: str, start_date: str, end_date: str,
                           additional_mail_addresses: list | None = None) -> dict:
@@ -831,8 +832,8 @@ class APIClient:
         :param additional_mail_addresses: list of addresses to add to the vacation notice (optional)
         :return: mailbox API response - array with result 'true' of the request, code and message in case of an error
         """
-        params = {'mail':mail, 'subject':subject, 'body':body,'start_date':start_date, 'end_date':end_date,
-                  'additional_mail_addresses':additional_mail_addresses}
+        params = {'mail': mail, 'subject': subject, 'body': body, 'start_date': start_date, 'end_date': end_date,
+                  'additional_mail_addresses': additional_mail_addresses}
 
         # If no additional_mail_addresses are given, remove the parameter from the request
         if not additional_mail_addresses:
@@ -840,7 +841,7 @@ class APIClient:
 
         return self.api_request('mail.vacation.set', params)
 
-    def group_list(self, account:str | None = None) -> dict:
+    def group_list(self, account: str | None = None) -> dict:
         """
         Function to list all groups for an account
         :param account: optional parameter for the account to list the groups for
@@ -884,13 +885,13 @@ class APIClient:
         :param account: optional parameter for the account to add the group for
         :return: mailbox API response - True if the group was added, False otherwise
         """
-        params = {'name':name, 'display_name':display_name, 'mail_addresses_to_add':mail_addresses_to_add}
+        params = {'name': name, 'display_name': display_name, 'mail_addresses_to_add': mail_addresses_to_add}
         if account:
             params['account'] = account
         return self.api_request('group.add', params)
 
     def group_set(self, group_id: int, display_name: str, mail_addresses_to_add: list | None = None,
-                  mail_addresses_to_remove: list | None = None, account: str | None= None) -> dict:
+                  mail_addresses_to_remove: list | None = None, account: str | None = None) -> dict:
         """
         Function to modify a group. Either mail_addresses_to_add or mail_addresses_to_remove have to be specified.
         :param group_id: the group's id of the group to modify
@@ -904,8 +905,8 @@ class APIClient:
         if mail_addresses_to_add is None and mail_addresses_to_remove is None:
             raise ValueError('mail_addresses_to_add or mail_addresses_to_remove are required')
 
-        params = {'group_id':group_id, 'display_name':display_name, 'mail_addresses_to_add':mail_addresses_to_add,
-                  'mail_addresses_to_remove':mail_addresses_to_remove}
+        params = {'group_id': group_id, 'display_name': display_name, 'mail_addresses_to_add': mail_addresses_to_add,
+                  'mail_addresses_to_remove': mail_addresses_to_remove}
         if account:
             params['account'] = account
         return self.api_request('group.set', params)
@@ -916,7 +917,7 @@ class APIClient:
         :param mail: the mail to query
         :return: mailbox API response - a list of available password reset methods
         """
-        return self.api_request('mail.passwordreset.listmethods', {'mail':mail})
+        return self.api_request('mail.passwordreset.listmethods', {'mail': mail})
 
     def mail_passwordreset_sendsms(self, mail: str, cell_phone: str) -> dict:
         """
@@ -925,7 +926,7 @@ class APIClient:
         :param cell_phone: the cell phone number of the mailbox
         :return: mailbox API response - True if the SMS was sent, False otherwise
         """
-        return self.api_request('mail.passwordreset.sendsms',{'mail':mail, 'cell_phone':cell_phone})
+        return self.api_request('mail.passwordreset.sendsms', {'mail': mail, 'cell_phone': cell_phone})
 
     def mail_passwordreset_setpassword(self, mail: str, token: str, password: str) -> dict:
         """
@@ -936,7 +937,7 @@ class APIClient:
         :return: mailbox API response - True if the password was set, False otherwise
         """
         return self.api_request('mail.passwordreset.setpassword',
-                                {'mail':mail, 'token':token, 'password':password})
+                                {'mail': mail, 'token': token, 'password': password})
 
     def context_list(self, account: str) -> dict:
         """
@@ -944,7 +945,7 @@ class APIClient:
         :param account: the account to list all contexts for
         :return: mailbox API response - an array with key 'context id' and value 'associated domains'
         """
-        return self.api_request('context.list', {'account':account})
+        return self.api_request('context.list', {'account': account})
 
     def search(self, query: str, get_account_summary: bool = False, get_extended_mail_result: bool = False) -> dict:
         """
@@ -954,8 +955,8 @@ class APIClient:
         :param get_extended_mail_result: whether to return more information about mailboxes found
         :return: the mailbox API response for the request - an array with results for accounts, domains and mailboxes
         """
-        return self.api_request('search', {'query':query, 'get_account_summary':get_account_summary,
-                                           'get_extended_mail_result':get_extended_mail_result})
+        return self.api_request('search', {'query': query, 'get_account_summary': get_account_summary,
+                                           'get_extended_mail_result': get_extended_mail_result})
 
     def mailinglist_list(self, account: str) -> dict:
         """
@@ -963,7 +964,7 @@ class APIClient:
         :param account: the account to list all mailing lists for
         :return: a dict containing the list of mailing lists
         """
-        return self.api_request('mailinglist.list', {'account':account})
+        return self.api_request('mailinglist.list', {'account': account})
 
     def mailinglist_add(self, mailinglist: str, password: str, account: str, adminmail: str | None = None) -> dict:
         """
@@ -974,8 +975,8 @@ class APIClient:
         :param adminmail: admin email address of the mailing list (optional)
         :return: True if the mailing list was added, error code otherwise
         """
-        return self.api_request('mailinglist.add', {'mailinglist':mailinglist, 'password':password,
-                                                'account':account, 'adminmail':adminmail})
+        return self.api_request('mailinglist.add', {'mailinglist': mailinglist, 'password': password,
+                                                    'account': account, 'adminmail': adminmail})
 
     def mailinglist_get(self, mailinglist: str, account: str) -> dict:
         """
@@ -984,7 +985,7 @@ class APIClient:
         :param account: the account of the mailing list
         :return: the mailbox API response for the request - a dict of the mailing list
         """
-        return self.api_request('mailinglist.get', {'mailinglist':mailinglist, 'account':account})
+        return self.api_request('mailinglist.get', {'mailinglist': mailinglist, 'account': account})
 
     def mailinglist_set(self, mailinglist: str, account: str, password: str | None = None,
                         adminmail: str | None = None) -> dict:
@@ -996,8 +997,8 @@ class APIClient:
         :param adminmail: admin email address of the mailing list (optional)
         :return: the mailbox API response for the request - True if the mailing list was changed, error code otherwise
         """
-        return self.api_request('mailinglist.set', {'mailinglist':mailinglist, 'account':account,
-                                                'password':password, 'adminmail':adminmail})
+        return self.api_request('mailinglist.set', {'mailinglist': mailinglist, 'account': account,
+                                                    'password': password, 'adminmail': adminmail})
 
     def mailinglist_del(self, mailinglist: str, account: str) -> dict:
         """
@@ -1006,7 +1007,7 @@ class APIClient:
         :param account: the account of the mailing list
         :return: the mailbox API response for the request - True if the mailing list was deleted, error code otherwise
         """
-        return self.api_request('mailinglist.del', {'mailinglist':mailinglist, 'account':account})
+        return self.api_request('mailinglist.del', {'mailinglist': mailinglist, 'account': account})
 
     def additionalmailaccount_list(self, parent_mail: str) -> dict:
         """
@@ -1014,7 +1015,7 @@ class APIClient:
         :param parent_mail: the parent mail to list additional mail accounts for
         :return: a dict containing the parent mail account and a list of additional mail accounts
         """
-        return self.api_request('additionalmailaccount.list', {'parent_mail':parent_mail})
+        return self.api_request('additionalmailaccount.list', {'parent_mail': parent_mail})
 
     def additionalmailaccount_add(self, parent_mail: str, new_account_mail: str, new_account_password: str,
                                   primary_address: str | None = None, mail_server: str = 'imap.mailbox.org',
@@ -1072,7 +1073,7 @@ class APIClient:
         :return: True if the account was deleted, error code otherwise
         """
         return self.api_request('additionalmailaccount.delete',
-                                {'parent_mail':parent_mail, 'account_mail':account_mail})
+                                {'parent_mail': parent_mail, 'account_mail': account_mail})
 
     def evac_activate(self):
         """
@@ -1082,7 +1083,7 @@ class APIClient:
         """
         return self.api_request('evac_activate', {})
 
-    def evac_resetaccount(self, delete_mail_accounts_and_domains:bool = False) -> dict:
+    def evac_resetaccount(self, delete_mail_accounts_and_domains: bool = False) -> dict:
         """
         Function to reset a mailbox EVAC account.
         Note: this needs a special permission from mailbox.
