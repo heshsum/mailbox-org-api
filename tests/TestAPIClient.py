@@ -222,6 +222,7 @@ class TestAPIClient:
         api.auth(api_test_user, api_test_pass)
         domain_names = api.domain_list_names(api_test_user)
         domains = api.domain_list(api_test_user)
+        assert len(domain_names) == len(domains)
         for d in domains:
             assert d['domain'] in domain_names
         api.deauth()
