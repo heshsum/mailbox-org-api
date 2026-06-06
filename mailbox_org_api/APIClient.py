@@ -671,7 +671,7 @@ class APIClient:
         :return: the response for the request
         """
         return self.api_request('mail.set', {'mail': mail, 'deletion_date': deletion_date,
-                                'active': False})
+                                             'active': False})
 
     def mail_capabilities_set(self, mail: str, capabilities: list) -> dict:
         """
