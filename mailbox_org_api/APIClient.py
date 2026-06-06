@@ -352,7 +352,7 @@ class APIClient:
         Function to get a specific invoice as a PDf-file
         :param account: the account name
         :param invoice_id: the invoice ID
-        :param file_type: The file type to return. Valid: csv, pdf and xml
+        :param file_type: The file type to return. Valid: CSV, PDF and XML
         :return: the file as bytes
         """
         if file_type not in ('csv', 'pdf', 'xml'):
@@ -927,7 +927,7 @@ class APIClient:
         Function to send a password reset for a mail via SMS
         :param mail: the mail to send the SMS for
         :param cell_phone: the cell phone number of the mailbox
-        :return: mailbox API response - True if the SMS was sent, False otherwise
+        :return: API response from mailbox - True if the SMS was sent, False otherwise
         """
         return self.api_request('mail.passwordreset.sendsms', {'mail': mail, 'cell_phone': cell_phone})
 
