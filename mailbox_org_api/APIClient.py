@@ -5,7 +5,6 @@ import json
 from typing import Any
 
 import requests
-import typing_extensions
 from requests.adapters import HTTPAdapter
 from requests.exceptions import RequestException
 from urllib3.util.retry import Retry
