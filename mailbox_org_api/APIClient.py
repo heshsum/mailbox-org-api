@@ -337,16 +337,6 @@ class APIClient:
                 return invoice['token']
         raise ValueError('Invoice not found')
 
-    @typing_extensions.deprecated('Use account_invoice_get_file instead')
-    def account_invoice_get_pdf(self, account: str, invoice_id: str) -> bytes:
-        """
-        Function to get a specific invoice as a PDf-file
-        :param account: the account name
-        :param invoice_id: the invoice ID
-        :return: the PDF as bytes
-        """
-        return self.account_invoice_get_file(account, invoice_id, 'pdf')
-
     def account_invoice_get_file(self, account: str, invoice_id: str, file_type: str) -> bytes:
         """
         Function to get a specific invoice as a PDf-file
