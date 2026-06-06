@@ -873,16 +873,19 @@ class APIClient:
             params['account'] = account
         return self.api_request('group.del', params)
 
-    def group_add(self, name: str, display_name: str, mail_addresses_to_add: list) -> dict:
+    def group_add(self, name: str, display_name: str, mail_addresses_to_add: list, account: str = None) -> dict:
         """
         Function to add a group
         :param name: the group name
         :param display_name: the group's display name
         :param mail_addresses_to_add: a list of mail addresses to add
+        :param account: optional parameter for the account to add the group for
         :return: mailbox API response - True if the group was added, False otherwise
         """
-        return self.api_request('group.add', {'name':name, 'display_name':display_name,
-                                              'mail_addresses_to_add':mail_addresses_to_add})
+        params = {'name':name, 'display_name':display_name, 'mail_addresses_to_add':mail_addresses_to_add}
+        if account:
+            params['account'] = account
+        return self.api_request('group.add', params)
 
     def group_set(self, group_id: int, display_name: str, mail_addresses_to_add: list = None,
                   mail_addresses_to_remove: list = None) -> dict:
