@@ -2,15 +2,17 @@
 Module for the mailbox Business API client
 """
 import json
+
 import requests
-from requests.adapters import HTTPAdapter
-from urllib3.util.retry import Retry
-from requests.exceptions import RequestException
 import typing_extensions
+from requests.adapters import HTTPAdapter
+from requests.exceptions import RequestException
+from urllib3.util.retry import Retry
+
 from mailbox_org_api.APIError import APIError
 from mailbox_org_api.Account import Account
-from mailbox_org_api.Mail import Mail
 from mailbox_org_api.Invoice import Invoice
+from mailbox_org_api.Mail import Mail
 
 headers = {'content-type': 'application/json'}
 
