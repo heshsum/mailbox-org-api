@@ -887,8 +887,8 @@ class APIClient:
             params['account'] = account
         return self.api_request('group.add', params)
 
-    def group_set(self, group_id: int, display_name: str, mail_addresses_to_add: list = None,
-                  mail_addresses_to_remove: list = None, account: str = None) -> dict:
+    def group_set(self, group_id: int, display_name: str, mail_addresses_to_add: list | None = None,
+                  mail_addresses_to_remove: list | None = None, account: str | None= None) -> dict:
         """
         Function to modify a group. Either mail_addresses_to_add or mail_addresses_to_remove have to be specified.
         :param group_id: the group's id of the group to modify
