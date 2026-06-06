@@ -52,9 +52,9 @@ class TestAPIClient:
     def test_validate_params(self):
         allowed = {'string': str}
         with pytest.raises(ValueError):
-            APIClient.validate_params(allowed, {'integer':123})
+            APIClient.validate_params(allowed, {'integer': 123})
         with pytest.raises(TypeError):
-            APIClient.validate_params(allowed, {'string':123})
+            APIClient.validate_params(allowed, {'string': 123})
 
     def test_headers(self):
         api = APIClient.APIClient()
@@ -197,7 +197,7 @@ class TestAPIClient:
         api.auth(api_test_user, api_test_pass)
         invoice = api.account_invoice_get_list(api_test_user)[0]
         token = api.account_invoice_get_token(api_test_user, invoice_id=invoice)
-        assert len(token) >0
+        assert len(token) > 0
         assert isinstance(token, str)
         api.deauth()
 
@@ -259,7 +259,7 @@ class TestAPIClient:
         assert paginated_mails['totalPages'] is not None
         assert paginated_mails['results'] is not None
         with pytest.raises(APIError):
-            api.mail_list(domain, page = 2)
+            api.mail_list(domain, page=2)
         with pytest.raises(APIError):
             api.mail_list(domain, page_size=-1)
         with pytest.raises(ValueError):
@@ -320,8 +320,8 @@ class TestAPIClient:
                           'aliases': [test_id + '_alias@' + domain], 'alternate_mail': test_id + '_alternate@' + domain,
                           'memo': 'memo_string', 'active': True, 'title': 'Title', 'position': 'Job Position',
                           'department': 'Department', 'company': 'Company', 'street': 'Street 1',
-                          'postal_code': '12345', 'city': 'City', 'phone':'+492345678', 'fax':'+492345678',
-                          'cell_phone':'+492345678', 'uid_extern': 'external_uid_value', 'language': 'de_DE'}
+                          'postal_code': '12345', 'city': 'City', 'phone': '+492345678', 'fax': '+492345678',
+                          'cell_phone': '+492345678', 'uid_extern': 'external_uid_value', 'language': 'de_DE'}
 
         # Adding parameters to call
         params = {}
@@ -342,7 +342,7 @@ class TestAPIClient:
             api.mail_set(mail, additional_cloud_quota=5)
 
         with pytest.raises(KeyError):
-            api.mail_set(mail, additional_mail_quota = 5, additional_cloud_quota=5)
+            api.mail_set(mail, additional_mail_quota=5, additional_cloud_quota=5)
 
         api.deauth()
 
