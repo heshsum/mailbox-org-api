@@ -849,13 +849,17 @@ class APIClient:
             params['account'] = account
         return self.api_request('group.list', params)
 
-    def group_get(self, group_id: int) -> dict:
+    def group_get(self, group_id: int, account: str = None) -> dict:
         """
         Function to get a group from the account by the group id
         :param group_id: the id of the group to get
+        :param account: optional parameter for the account to get the group for
         :return: mailbox API response - the list of groups of the account
         """
-        return self.api_request('group.get', {'group_id':group_id})
+        params = {'group_id': group_id}
+        if account:
+            params['account'] = account
+        return self.api_request('group.get', params)
 
     def group_del(self, group_id: int) -> dict:
         """
