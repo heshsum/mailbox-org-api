@@ -2,6 +2,7 @@ from mailbox_org_api import Account
 
 account_name = 'heiner.hansen'
 
+
 class TestAccount:
     def test_account(self):
         account = Account.Account(account_name)
