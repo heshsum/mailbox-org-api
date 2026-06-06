@@ -11,10 +11,12 @@ from mailbox_org_api.APIError import APIError
 api_test_user = os.environ['API_TEST_USER']
 api_test_pass = os.environ['API_TEST_PASS']
 
+
 # Create a unique ID String by using the Unix time,
 # converted to int (to get rid of the decimal) and then to String
 def generate_id():
     return str(int(time.time()))
+
 
 def generate_pw():
     # Length of password
@@ -38,6 +40,7 @@ def generate_pw():
                 any(c in special for c in pw)):
             return pw
 
+
 def get_domain():
     api = APIClient.APIClient()
     api.auth(api_test_user, api_test_pass)
@@ -45,8 +48,10 @@ def get_domain():
     api.deauth()
     return domain
 
+
 test_id = generate_id()
 domain = get_domain()
+
 
 class TestAPIClient:
     def test_validate_params(self):
