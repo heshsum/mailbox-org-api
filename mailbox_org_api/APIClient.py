@@ -18,10 +18,12 @@ headers = {'content-type': 'application/json'}
 
 keys_to_string = ['additional_cloud_quota', 'additional_mail_quota']
 
+
 class APIClient:
     """
     Object for API Client
     """
+
     def __init__(self, debug_output=False, max_retries=5):
         # URL of the API
         self.url = "https://api.mailbox.org/v1/"
@@ -315,7 +317,7 @@ class APIClient:
         """
         invoices = self.account_invoice_list(account)
         open_invoices = []
-        
+
         for i in invoices:
             if i['status'] == 'open':
                 open_invoices.append(i)
@@ -1093,6 +1095,7 @@ class APIClient:
         return self.api_request('evac_resetaccount',
                                 {'delete_mail_accounts_and_domains': delete_mail_accounts_and_domains})
 
+
 def validate_params(allowed: dict, actual: dict) -> bool | None:
     for arg in actual:
         if arg not in allowed:
@@ -1103,6 +1106,7 @@ def validate_params(allowed: dict, actual: dict) -> bool | None:
         else:
             return True
     return None
+
 
 def bool2str(state: bool) -> str:
     """
