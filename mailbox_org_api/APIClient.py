@@ -861,7 +861,7 @@ class APIClient:
             params['account'] = account
         return self.api_request('group.get', params)
 
-    def group_del(self, group_id: int, account: str = None) -> dict:
+    def group_del(self, group_id: int, account: str | None = None) -> dict:
         """
         Function to delete a group
         :param group_id: the group's id of the group to delete
