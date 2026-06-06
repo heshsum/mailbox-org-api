@@ -849,7 +849,7 @@ class APIClient:
             params['account'] = account
         return self.api_request('group.list', params)
 
-    def group_get(self, group_id: int, account: str = None) -> dict:
+    def group_get(self, group_id: int, account: str | None = None) -> dict:
         """
         Function to get a group from the account by the group id
         :param group_id: the id of the group to get
