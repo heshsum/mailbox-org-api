@@ -1,10 +1,12 @@
-from mailbox_org_api import APIClient
-from mailbox_org_api.APIError import APIError
-import pytest
 import os
-import time
 import secrets
 import string
+import time
+
+import pytest
+
+from mailbox_org_api import APIClient
+from mailbox_org_api.APIError import APIError
 
 api_test_user = os.environ['API_TEST_USER']
 api_test_pass = os.environ['API_TEST_PASS']
