@@ -365,7 +365,7 @@ class APIClient:
         # Take the Base64 encoded data (response['bin']), decode the Base 64, decompress the gz and return the bytes
         return zlib.decompress(base64.b64decode(response['bin']))
 
-    def domain_list(self, account: str, search_filter:str = None) -> dict:
+    def domain_list(self, account:str, search_filter:str | None = None) -> dict:
         """
         Function to list all domains
         :param account: the account to list domains for
@@ -373,8 +373,8 @@ class APIClient:
         :return: the API response
         """
         params = {'account':account}
-        if filter:
-            params.update({'filter':search_filter})
+        if isinstance(search_filter, str):
+            params.update({'filter':str(search_filter)})
         return self.api_request('domain.list',params)
 
     def domain_add(self, account: str, domain: str, password: str, **kwargs) -> dict:
@@ -452,8 +452,8 @@ class APIClient:
         """
         return self.api_request('domain.validate.spf', {'domain':domain})
 
-    def mail_list(self, domain: str, details: bool = False, page_size: int = None, page: int = None, sort_field: str = None,
-                  sort_order: str = None) -> dict:
+    def mail_list(self, domain: str, details: bool = False, page_size: int  | None= None, page: int | None = None,
+                  sort_field: str | None = None, sort_order: str | None = None) -> dict:
         """
         Function to list all mailboxes
         :param domain: the domain to list
@@ -488,7 +488,7 @@ class APIClient:
         return self.api_request('mail.list', params)
 
     def mail_add(self, mail:str, password: str, plan: str, first_name: str, last_name: str, inboxsave: bool = True,
-                 forwards: list = None, **kwargs) -> dict:
+                 forwards: list | None= None, **kwargs) -> dict:
         """
         Function to add a mail
         :param mail: the mail to add
@@ -818,7 +818,7 @@ class APIClient:
         return self.api_request('mail.vacation.get', {'mail':mail})
 
     def mail_vacation_set(self, mail: str, subject: str, body: str, start_date: str, end_date: str,
-                          additional_mail_addresses: list = None) -> dict:
+                          additional_mail_addresses: list | None = None) -> dict:
         """
         Function to set the vacation notice for a given mail
         :param mail: the mail to get the vacation notice for
@@ -838,7 +838,7 @@ class APIClient:
 
         return self.api_request('mail.vacation.set', params)
 
-    def group_list(self, account:str = None) -> dict:
+    def group_list(self, account:str | None = None) -> dict:
         """
         Function to list all groups for an account
         :param account: optional parameter for the account to list the groups for
@@ -849,7 +849,7 @@ class APIClient:
             params['account'] = account
         return self.api_request('group.list', params)
 
-    def group_get(self, group_id: int, account: str = None) -> dict:
+    def group_get(self, group_id: int, account: str | None = None) -> dict:
         """
         Function to get a group from the account by the group id
         :param group_id: the id of the group to get
@@ -861,7 +861,7 @@ class APIClient:
             params['account'] = account
         return self.api_request('group.get', params)
 
-    def group_del(self, group_id: int, account: str = None) -> dict:
+    def group_del(self, group_id: int, account: str | None = None) -> dict:
         """
         Function to delete a group
         :param group_id: the group's id of the group to delete
@@ -873,7 +873,7 @@ class APIClient:
             params['account'] = account
         return self.api_request('group.del', params)
 
-    def group_add(self, name: str, display_name: str, mail_addresses_to_add: list, account: str = None) -> dict:
+    def group_add(self, name: str, display_name: str, mail_addresses_to_add: list, account: str | None = None) -> dict:
         """
         Function to add a group
         :param name: the group name
@@ -887,8 +887,8 @@ class APIClient:
             params['account'] = account
         return self.api_request('group.add', params)
 
-    def group_set(self, group_id: int, display_name: str, mail_addresses_to_add: list = None,
-                  mail_addresses_to_remove: list = None, account: str = None) -> dict:
+    def group_set(self, group_id: int, display_name: str, mail_addresses_to_add: list | None = None,
+                  mail_addresses_to_remove: list | None = None, account: str | None= None) -> dict:
         """
         Function to modify a group. Either mail_addresses_to_add or mail_addresses_to_remove have to be specified.
         :param group_id: the group's id of the group to modify
@@ -963,7 +963,7 @@ class APIClient:
         """
         return self.api_request('mailinglist.list', {'account':account})
 
-    def mailinglist_add(self, mailinglist: str, password: str, account: str, adminmail: str = None) -> dict:
+    def mailinglist_add(self, mailinglist: str, password: str, account: str, adminmail: str | None = None) -> dict:
         """
         Function to add a mailing list
         :param mailinglist: the mailing list to add
@@ -984,7 +984,8 @@ class APIClient:
         """
         return self.api_request('mailinglist.get', {'mailinglist':mailinglist, 'account':account})
 
-    def mailinglist_set(self, mailinglist: str, account: str, password: str = None, adminmail: str = None) -> dict:
+    def mailinglist_set(self, mailinglist: str, account: str, password: str | None = None,
+                        adminmail: str | None = None) -> dict:
         """
         Function to change a mailing list
         :param mailinglist: the mailing list to change
@@ -1014,7 +1015,7 @@ class APIClient:
         return self.api_request('additionalmailaccount.list', {'parent_mail':parent_mail})
 
     def additionalmailaccount_add(self, parent_mail: str, new_account_mail: str, new_account_password: str,
-                                  primary_address: str = None, mail_server: str = 'imap.mailbox.org',
+                                  primary_address: str | None = None, mail_server: str = 'imap.mailbox.org',
                                   mail_port: int = 993, mail_secure: bool = True, mail_starttls: bool = False,
                                   transport_server: str = 'smtp.mailbox.org', transport_port: int = 465,
                                   transport_secure: bool = True, transport_starttls: bool = False,
