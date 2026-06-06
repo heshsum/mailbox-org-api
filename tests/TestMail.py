@@ -4,6 +4,7 @@ from mailbox_org_api import Mail
 
 mail_address = 'tests@tests.tests'
 
+
 class TestMail(unittest.TestCase):
 
     def test_init(self):
