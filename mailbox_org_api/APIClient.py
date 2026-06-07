@@ -371,12 +371,12 @@ class APIClient:
             params.update({'filter': str(search_filter)})
         return self.api_request('domain.list', params)
 
-    def domain_list_names(self, account: str, search_filter: str | None = None) -> list:
+    def domain_get_list(self, account: str, search_filter: str | None = None) -> list:
         """
-        Function to retrieve a list of domain names for a given account
+        Function to get a List object with domain names for a given account
         :param account: the account to list domains for
         :param search_filter: String for optional search filter
-        :return: a list of domain names
+        :return: a List object containing the domain names
         """
         result = self.domain_list(account, search_filter)
         domains = []
