@@ -3,7 +3,7 @@ from setuptools import find_packages, setup
 setup(
     name='mailbox_org_api',
     packages=find_packages(),
-    version='2.3',
+    version='2.4',
     description='A library to access the mailbox Business API',
     author='Hendrik Schlange',
     install_requires=['requests'],
