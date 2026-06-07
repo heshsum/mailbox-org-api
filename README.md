@@ -19,11 +19,15 @@ pip install mailbox-org-api
 pip install git+https://github.com/heshsum/mailbox-org-api
 ```
 
-## Usage
+## Usage and documentation
 Basic usage is fairly straightforward. The naming scheme of the functions is similar to the naming at mailbox.org,
-but instead of points, it uses underscores (e.g. instead of `mail.add` it's `mail_add`).  
+but instead of points, it uses underscores (e.g. instead of `mail.add` it's `mail_add`).
+
+Therefore, the functions mirror the functions as provided and documented at mailbox: 
+[api.mailbox.org](https://api.mailbox.org)
+
 Additionally, some helper functions for common or more complicated tasks are included to make life a bit easier, 
-e.g. for changing plans, password and to retrieve invoices.  
+e.g. for changing plans, password and to retrieving invoices.
 
 ```python
 from mailbox_org_api import APIClient
@@ -69,6 +73,8 @@ api.mail_set_forwards('foo@bar.com', ['forward1@bar.com', 'forward2@bar.com'])
 # Closing the session
 api.deauth()
 ```
+
+More information can be found in the [Wiki](https://github.com/heshsum/mailbox-org-api/wiki)
 
 ## Common tasks
 mailbox_org_api includes a number of helper functions to make common tasks simpler. These include:
@@ -146,21 +152,21 @@ Usage:
 api.account_invoice_get_token('BMBO-1234-24')
 ```
 
-### account_invoice_get_pdf
+### account_invoice_get_file
 Invoices are provided as Based64 encoded gz Strings. This function
 1. takes the invoice ID
 2. retrieves the token for the invoice
 3. gets the binary data
 4. decodes the Base64
 5. decompresses it
-6. returns the bytes of the actual PDF
+6. returns the bytes of the actual invoice file
 
 Usage
 ```python
 invoice_id = 'BMBO-1234-24'
-account_name = 'some_user'
+account_name = 'foo'
 with open(invoice_id + '.pdf', 'w') as file:
-    file.write(api.account_invoice_get_pdf(account_name, invoice_id))
+    file.write(api.account_invoice_get_file(account_name, invoice_id, 'PDF'))
 ```
 
 ## Here be dragons
