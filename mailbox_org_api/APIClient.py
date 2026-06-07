@@ -494,11 +494,11 @@ class APIClient:
 
         return self.api_request('mail.list', params)
 
-    def mail_list_addresses(self, domain: str) -> list:
+    def mail_get_list(self, domain: str) -> list:
         """
-        Function to list all addresses of a domain.
+        Function to get a list of all mailboxes of a domain as a List object.
         :param domain: the domain to list all mailboxes for.
-        :return: a list of all mail addresses for the domain.
+        :return: a List object containing all mail addresses of the given domain.
         """
         result = self.mail_list(domain)
         mails = []
