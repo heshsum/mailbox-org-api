@@ -217,10 +217,10 @@ class TestAPIClient:
             assert isinstance(d['count_mails'], int)
         api.deauth()
 
-    def test_domain_list_names(self):
+    def test_domain_get_list(self):
         api = APIClient.APIClient()
         api.auth(api_test_user, api_test_pass)
-        domain_names = api.domain_list_names(api_test_user)
+        domain_names = api.domain_get_list(api_test_user)
         domains = api.domain_list(api_test_user)
         assert len(domain_names) == len(domains)
         for d in domains:
@@ -281,11 +281,11 @@ class TestAPIClient:
             api.mail_list(domain, sort_order='wröng')
         api.deauth()
 
-    def test_mail_list_addresses(self):
+    def test_mail_get_list(self):
         api = APIClient.APIClient()
         api.auth(api_test_user, api_test_pass)
         mails = api.mail_list(domain)
-        mail_addresses = api.mail_list_addresses(domain)
+        mail_addresses = api.mail_get_list(domain)
         assert len(mail_addresses) == len(mails)
         for i in mails:
             assert i['mail'] is not None
