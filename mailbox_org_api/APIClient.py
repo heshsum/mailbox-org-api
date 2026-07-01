@@ -584,7 +584,7 @@ class APIClient:
         if 'password' in kwargs and 'password_hash' in kwargs:
             raise KeyError('''Simultaneous usage of 'password' and 'password_hash' not allowed.''')
 
-        if 'additional_mail_quota' in kwargs or 'additional_cloud_quota' in kwargs and 'plan' not in kwargs:
+        if ('additional_mail_quota' in kwargs or 'additional_cloud_quota' in kwargs) and 'plan' not in kwargs:
             raise KeyError('''If setting additional quota, 'plan' must be given.''')
 
         # Check for each argument in kwargs if it is a valid function parameter.
