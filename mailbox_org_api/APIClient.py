@@ -92,9 +92,10 @@ class APIClient:
             # Check if any parameter is 'password' or 'pass'.
             # Check explicit for these strings as not to interfere with possible other
             # parameters containing a substring.
+            sensitive_keys = ['password', 'pass', 'password_hash', 'new_account_password', 'token',
+                              'HPLS-AUTH', 'auth_id', 'telephone_password']
             for param in print_request['params']:
-                if param == 'password' or param == 'pass':
-                    # If True, replace the logged value with 'xxx'
+                if param in sensitive_keys:
                     print_request['params'][param] = 'xxx'
 
             # Print the clean version of the request
