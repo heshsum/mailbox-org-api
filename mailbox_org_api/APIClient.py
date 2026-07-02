@@ -1111,16 +1111,13 @@ class APIClient:
                                 {'delete_mail_accounts_and_domains': delete_mail_accounts_and_domains})
 
 
-def validate_params(allowed: dict, actual: dict) -> bool | None:
+def validate_params(allowed: dict, actual: dict) -> bool:
     for arg in actual:
         if arg not in allowed:
             raise ValueError(f'Parameter {arg} not a valid parameter.')
-
         if not isinstance(actual[arg], allowed[arg]):
             raise TypeError(f'Attribute {arg} must be of type {str(allowed[arg])}. {str(type(actual[arg]))} given')
-        else:
-            return True
-    return None
+    return True
 
 
 def bool2str(state: bool) -> str:
