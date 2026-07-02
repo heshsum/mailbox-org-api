@@ -3,7 +3,8 @@ name: Python Tests
 on:
   pull_request:
   push:
-    branches: [main]
+    branches:
+      - main
     paths:
       - "**/*.py"
       - "pyproject.toml"
@@ -20,13 +21,15 @@ jobs:
     timeout-minutes: 15
     strategy:
       fail-fast: true
+      matrix:
+        python-version: ["3.11"]
 
     steps:
       - uses: actions/checkout@v6
 
       - uses: actions/setup-python@v6
         with:
-          python-version: "3.11"
+          python-version: ${{ matrix.python-version }}
           cache: pip
           cache-dependency-path: |
             pyproject.toml
