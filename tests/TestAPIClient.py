@@ -379,6 +379,9 @@ class TestAPIClient:
         api = APIClient.APIClient()
         api.auth(api_test_user, api_test_pass)
         mail = test_id + '@' + domain
+
+        # Ensure that the plan supports capabilities
+        api.mail_set_plan(mail, 'standard')
         for i in capabilities:
             api.mail_capabilities_set(mail, [i])
             # The API returns a list of capabilities
@@ -468,16 +471,17 @@ class TestAPIClient:
         mail = test_id + '@' + domain
         additional_mail_quota = 23
         api.mail_set_additional_mail_quota(mail, additional_mail_quota)
-        assert additional_mail_quota == api.mail_get(mail)['additional_mail_quota']
+        assert int(api.mail_get(mail)['additional_mail_quota']) == additional_mail_quota
         api.deauth()
 
+    @pytest.mark.depends(name="test_mail_add")
     def test_mail_set_additional_cloud_quota(self):
         api = APIClient.APIClient()
         api.auth(api_test_user, api_test_pass)
         mail = test_id + '@' + domain
         additional_cloud_quota = 42
         api.mail_set_additional_cloud_quota(mail, additional_cloud_quota)
-        assert additional_cloud_quota == api.mail_get(mail)['additional_cloud_quota']
+        assert int(api.mail_get(mail)['additional_cloud_quota']) == additional_cloud_quota
         api.deauth()
 
     @pytest.mark.depends(name="test_mail_add")
