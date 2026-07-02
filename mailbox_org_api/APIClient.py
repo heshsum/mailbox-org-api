@@ -109,8 +109,8 @@ class APIClient:
         try:
             api_response = response.json()
         except (ValueError, requests.exceptions.JSONDecodeError) as error:
+            print(f'API Full response: {response.content}')
             raise APIError(message="Non-JSON response received from API", code=-32700) from error
-            print(f'Full response content: {response.content}')
         if self.debug_output:
             print('API full response:\t', api_response)
 
