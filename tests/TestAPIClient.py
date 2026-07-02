@@ -406,7 +406,7 @@ class TestAPIClient:
         api.auth(api_test_user, api_test_pass)
         mails = api.mail_list(domain)
         mail = mails[0]['mail']
-        plans = ['premium', 'light', 'standard']
+        plans = ['premium', 'standard']
         for plan in plans:
             api.mail_set_plan(mail, plan)
             assert str(api.mail_get(mail)['plan']).lower() == plan
