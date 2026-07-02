@@ -2,11 +2,6 @@ name: Python Tests
 
 on:
   pull_request:
-    paths:
-      - "**/*.py"
-      - "pyproject.toml"
-      - "requirements*.txt"
-      - ".github/workflows/python-test.yml"
   push:
     branches: [main]
     paths:
@@ -31,7 +26,7 @@ jobs:
 
       - uses: actions/setup-python@v6
         with:
-          python-version: '3.11'
+          python-version: "3.11"
           cache: pip
           cache-dependency-path: |
             pyproject.toml
@@ -41,6 +36,7 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements.txt
+
       - name: Run tests
         env:
           API_TEST_USER: ${{ secrets.API_TEST_USER }}
