@@ -101,7 +101,7 @@ class APIClient:
         api_response = self.session.post(self.url, data=json.dumps(request))
         try:
             api_response = api_response.json()
-        except RequestException as error:
+        except (ValueError, requests.exceptions.JSONDecodeError) as error:
             print('Non-JSON response received.\nFull response:\t', api_response,
                   '\nError:', {error})
         if self.debug_output:
