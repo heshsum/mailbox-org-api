@@ -24,7 +24,7 @@ class APIClient:
     Object for API Client
     """
 
-    def __init__(self, debug_output=False, max_retries=5):
+    def __init__(self, debug_output=False, max_retries=5, request_timeout: int = 30):
         # URL of the API
         self.url = "https://api.mailbox.org/v1/"
 
@@ -59,6 +59,8 @@ class APIClient:
 
         adapter = HTTPAdapter(max_retries=retry_strategy)
         self.session.mount('https://', adapter)
+
+        self.request_timeout = request_timeout
 
     # Increment the request ID
     def get_jsonrpc_id(self):
@@ -98,12 +100,17 @@ class APIClient:
             # Print the clean version of the request
             print('API full request:\t', print_request)
 
-        api_response = self.session.post(self.url, data=json.dumps(request))
         try:
-            api_response = api_response.json()
+            response = self.session.post(self.url, json=request, timeout=self.request_timeout)
+            response.raise_for_status()
+        except RequestException as error:
+            raise APIError(message=f"HTTP request failed: {error}", code=-32000) from error
+
+        try:
+            api_response = response.json()
         except (ValueError, requests.exceptions.JSONDecodeError) as error:
-            print('Non-JSON response received.\nFull response:\t', api_response,
-                  '\nError:', {error})
+            raise APIError(message="Non-JSON response received from API", code=-32700) from error
+            print(f'Full response content: {response.content}')
         if self.debug_output:
             print('API full response:\t', api_response)
 
