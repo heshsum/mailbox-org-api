@@ -630,7 +630,8 @@ class APIClient:
         :param password: the password to set
         :return: the response for the request
         """
-        return self.api_request('mail.set', {'mail': mail, 'password': password, 'require_reset': True})
+        return self.api_request('mail.set', {'mail': mail, 'password': password,
+                                             'require_reset_password': True})
 
     def mail_set_plan(self, mail: str, plan: str) -> dict:
         """
