@@ -297,16 +297,19 @@ class APIClient:
         # Get all invoices for the account
         invoice_list = self.account_invoice_list(account)
 
-        # Initialize the Invoice object
-        invoice = Invoice(account, invoice_id)
-
-        # Retrieve the other data for the invoice from the invoice list
-        for i in invoice_list:
-            if i['invoice_id'] == invoice_id:
-                invoice.date = i['date']
-                invoice.status = i['status']
-                invoice.token = i['token']
-        return invoice
+        # Iterate over all invoices and create an object if the ID matches
+        for invoice in invoice_list:
+            if invoice['invoice_id'] == invoice_id:
+                # Initialize the Invoice object
+                invoice = Invoice(account, invoice_id)
+                # Retrieve the other data for the invoice from the invoice list
+                for i in invoice_list:
+                    if i['invoice_id'] == invoice_id:
+                        invoice.date = i['date']
+                        invoice.status = i['status']
+                        invoice.token = i['token']
+                return invoice
+        raise ValueError('Invoice not found')
 
     def account_invoice_get_list(self, account: str) -> list:
         """
