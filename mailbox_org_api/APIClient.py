@@ -291,7 +291,7 @@ class APIClient:
         """
         Function to get a specific invoice object for an account
         :param account: the account name
-        :param invoice_id: the id of the invoice to request
+        :param invoice_id: the ID of the invoice to request
         :return: the invoice as an Invoice object
         """
         # Get all invoices for the account
