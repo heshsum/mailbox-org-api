@@ -158,8 +158,9 @@ class APIClient:
         api_response = self.api_request('deauth', {})
         if api_response:
             # The auth header is stripped
-            self.session.headers.pop("HPLS-AUTH")
+            self.session.headers.pop("HPLS-AUTH", None)
             self.auth_id = None
+            self.level = None
             self.session.close()
         return api_response
 
