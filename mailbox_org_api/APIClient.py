@@ -933,10 +933,16 @@ class APIClient:
         if mail_addresses_to_add is None and mail_addresses_to_remove is None:
             raise ValueError('mail_addresses_to_add or mail_addresses_to_remove are required')
 
-        params = {'group_id': group_id, 'display_name': display_name, 'mail_addresses_to_add': mail_addresses_to_add,
-                  'mail_addresses_to_remove': mail_addresses_to_remove}
-        if account:
-            params['account'] = account
+        raw_params = {
+            'group_id': group_id,
+            'display_name': display_name,
+            'mail_addresses_to_add': mail_addresses_to_add,
+            'mail_addresses_to_remove': mail_addresses_to_remove,
+            'account': account,
+        }
+        # Filter out any keys whose values are None so they aren't serialized as `null`
+        params = {k: v for k, v in raw_params.items() if v is not None}
+
         return self.api_request('group.set', params)
 
     def mail_passwordreset_listmethods(self, mail: str) -> dict:
@@ -1025,8 +1031,15 @@ class APIClient:
         :param adminmail: admin email address of the mailing list (optional).
         :return: the mailbox API response for the request - True if the mailing list was changed, error code otherwise.
         """
-        return self.api_request('mailinglist.set', {'mailinglist': mailinglist, 'account': account,
-                                                    'password': password, 'adminmail': adminmail})
+        raw_params = {
+            'mailinglist': mailinglist,
+            'account': account,
+            'password': password,
+            'adminmail': adminmail
+        }
+        # Filter out any keys whose values are None so they aren't serialized as `null`
+        params = {k: v for k, v in raw_params.items() if v is not None}
+        return self.api_request('mailinglist.set', params)
 
     def mailinglist_del(self, mailinglist: str, account: str) -> dict:
         """
@@ -1077,21 +1090,26 @@ class APIClient:
         :param spam_folder: name of the spam folder.
         :return: the response for the request - True if adding was successful, error code otherwise.
         """
-        return self.api_request('additionalmailaccount.add', {'new_account_mail': new_account_mail,
-                                                              'new_account_password': new_account_password,
-                                                              'parent_mail': parent_mail,
-                                                              'primary_address': primary_address,
-                                                              'mail_server': mail_server, 'mail_port': str(mail_port),
-                                                              'transport_server': transport_server,
-                                                              'transport_port': str(transport_port),
-                                                              'mail_secure': mail_secure,
-                                                              'mail_starttls': mail_starttls,
-                                                              'transport_secure': transport_secure,
-                                                              'transport_starttls': transport_starttls,
-                                                              'trash_folder': trash_folder,
-                                                              'sent_folder': sent_folder,
-                                                              'drafts_folder': drafts_folder,
-                                                              'spam_folder': spam_folder})
+        raw_params = {
+            'new_account_mail': new_account_mail,
+            'new_account_password': new_account_password,
+            'parent_mail': parent_mail,
+            'primary_address': primary_address,
+            'mail_server': mail_server, 'mail_port': str(mail_port),
+            'transport_server': transport_server,
+            'transport_port': str(transport_port),
+            'mail_secure': mail_secure,
+            'mail_starttls': mail_starttls,
+            'transport_secure': transport_secure,
+            'transport_starttls': transport_starttls,
+            'trash_folder': trash_folder,
+            'sent_folder': sent_folder,
+            'drafts_folder': drafts_folder,
+            'spam_folder': spam_folder
+        }
+        # Filter out any keys whose values are None so they aren't serialized as `null`
+        params = {k: v for k, v in raw_params.items() if v is not None}
+        return self.api_request('additionalmailaccount.add', params)
 
     def additionalmailaccount_delete(self, parent_mail: str, account_mail: str) -> dict:
         """
