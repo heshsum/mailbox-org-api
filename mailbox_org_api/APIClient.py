@@ -229,7 +229,7 @@ class APIClient:
         result = self.api_request('account.get', {'account': account})
         account_object = Account(account)
         for k, v in result.items():
-            if v:
+            if v is not None:
                 setattr(account_object, k, v)
         return account_object
 
