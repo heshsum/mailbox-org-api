@@ -677,7 +677,7 @@ class APIClient:
         :return: the response for the request
         """
         plan = self.mail_get(mail)['plan']
-        return self.api_request('mail.set', {'mail': mail, 'plan': plan, 'additional_mail_quota': quota})
+        return self.mail_set(mail=mail, plan=plan, additional_mail_quota=quota)
 
     def mail_set_additional_cloud_quota(self, mail: str, quota: int) -> dict:
         """
@@ -687,8 +687,7 @@ class APIClient:
         :return: the response for the request
         """
         plan = self.mail_get(mail)['plan']
-        return self.api_request('mail.set', {'mail': mail, 'plan': plan,
-                                             'additional_cloud_quota': quota})
+        return self.mail_set(mail=mail, plan=plan, additional_cloud_quota=quota)
 
     def mail_set_deletion_date(self, mail: str, deletion_date: str) -> dict:
         """
