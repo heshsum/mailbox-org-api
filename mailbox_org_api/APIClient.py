@@ -604,11 +604,13 @@ class APIClient:
 
         validate_params(allowed_parameters, kwargs)
 
-        for k in keys_to_string:
-            if k in kwargs:
-                kwargs[k] = str(kwargs[k])
+        # Explicitly convert integer quota values to strings for API compatibility
+        quota_keys = ['additional_mail_quota', 'additional_cloud_quota']
+        for key in quota_keys:
+            if kwargs.get(key) is not None:
+                kwargs[key] = str(kwargs[key])
 
-        # After validation, build parameter list from mail and kwargs
+        # Build parameter dictionary excluding any None values
         params = {'mail': mail}
         params.update({k: v for k, v in kwargs.items() if v is not None})
 
@@ -677,7 +679,7 @@ class APIClient:
         :return: the response for the request
         """
         plan = self.mail_get(mail)['plan']
-        return self.api_request('mail.set', {'mail': mail, 'plan': plan, 'additional_mail_quota': quota})
+        return self.mail_set(mail=mail, plan=plan, additional_mail_quota=quota)
 
     def mail_set_additional_cloud_quota(self, mail: str, quota: int) -> dict:
         """
@@ -687,8 +689,7 @@ class APIClient:
         :return: the response for the request
         """
         plan = self.mail_get(mail)['plan']
-        return self.api_request('mail.set', {'mail': mail, 'plan': plan,
-                                             'additional_cloud_quota': quota})
+        return self.mail_set(mail=mail, plan=plan, additional_cloud_quota=quota)
 
     def mail_set_deletion_date(self, mail: str, deletion_date: str) -> dict:
         """
