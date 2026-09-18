@@ -1144,11 +1144,26 @@ class APIClient:
 
 
 def validate_params(allowed: dict, actual: dict) -> bool:
-    for arg in actual:
+    """
+    Validates parameter names and types against an allowed dictionary.
+    None values are permitted for allowed keys to support optional kwargs.
+    :param allowed: the allowed parameter names
+    :param actual: the actual parameter names
+    """
+    for arg, val in actual.items():
         if arg not in allowed:
-            raise ValueError(f'Parameter {arg} not a valid parameter.')
-        if not isinstance(actual[arg], allowed[arg]):
-            raise TypeError(f'Attribute {arg} must be of type {str(allowed[arg])}. {str(type(actual[arg]))} given')
+            raise ValueError(f'Parameter {arg} is not a valid parameter.')
+
+        # Skip type checking if the value is None (unset optional parameter)
+        if val is not None:
+            # Prevent bool from passing as int (in Python, isinstance(True, int) is True)
+            if allowed[arg] is int and isinstance(val, bool):
+                raise TypeError(f'Attribute {arg} must be of type int. bool given')
+
+            if not isinstance(val, allowed[arg]):
+                expected_type = getattr(allowed[arg], '__name__', str(allowed[arg]))
+                actual_type = type(val).__name__
+                raise TypeError(f'Attribute {arg} must be of type {expected_type}. {actual_type} given')
     return True
 
 
