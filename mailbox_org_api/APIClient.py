@@ -1,6 +1,7 @@
 """
 Module for the mailbox Business API client
 """
+import copy
 import base64
 import zlib
 from typing import Any
@@ -85,8 +86,6 @@ class APIClient:
         if self.debug_output:
             # Print the full request but redact sensitive information (passwords).
 
-            # On import copy module if needed
-            import copy
             # Create a deep copy of the dict, as not to overwrite information on the original
             print_request = copy.deepcopy(request)
 
