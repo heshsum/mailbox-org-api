@@ -585,7 +585,7 @@ class APIClient:
         :return: The API response for the request
         """
         # Allowed attributes as documented here: https://api.mailbox.org/v1/doc/methods/index.html#mail-set
-        allowed_parameters = {'password': str, 'password_hash': str, 'same_password_allowed': bool,
+        allowed_parameters = {'password': str, 'password_hash': str, 'same_password_disallowed': bool,
                               'require_reset_password': bool, 'plan': str, 'additional_mail_quota': int,
                               'additional_cloud_quota': int, 'first_name': str, 'last_name': str, 'inboxsave': bool,
                               'forwards': list, 'aliases': list, 'alternate_mail': str, 'memo': str, 'allow_nets': str,
