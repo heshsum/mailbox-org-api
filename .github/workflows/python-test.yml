@@ -11,6 +11,9 @@ on:
       - "requirements*.txt"
       - ".github/workflows/python-test.yml"
 
+permissions:
+  contents: read
+
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
