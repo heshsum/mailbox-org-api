@@ -43,7 +43,6 @@ class APIClient:
 
         # Initialize the session
         self.session = requests.Session()
-
         # Set default headers for the session
         self.session.headers.update({
             'Content-Type': 'application/json',
