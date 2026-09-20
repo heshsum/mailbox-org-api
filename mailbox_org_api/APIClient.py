@@ -802,6 +802,7 @@ class APIClient:
         if killlevel not in ('reject', 'route'):
             raise ValueError('''Invalid value for killlevel. Only 'reject' or 'route' are allowed''')
 
+        # 'killevel' is not a typo - it's a spelling error in the mailbox API
         return self.api_request('mail.spamprotect.set',
                                 {'mail': mail, 'greylist': bool2str(greylist),
                                  'smtp_plausibility': bool2str(smtp_plausibility), 'rbl': bool2str(rbl),
