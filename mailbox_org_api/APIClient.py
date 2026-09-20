@@ -489,10 +489,15 @@ class APIClient:
         # Filter None values
         params = {k: v for k, v in args.items() if v is not None}
 
-        # Check values (without triggering a KeyError)
-        # Logic: If page_size exists and is > 1, ensure page is also > 1
-        if params.get('page_size', 0) >= 1 > params.get('page', 0):
-            raise ValueError(f'''If 'page_size' is used, a 'page' >0 must be specified''')
+        # Validate pagination arguments
+        if page_size is not None:
+            if page_size < 1:
+                raise ValueError("Parameter 'page_size' must be >= 1.")
+            if page is None or page < 1:
+                raise ValueError("If 'page_size' is used, 'page' must be specified and >= 1.")
+        elif page is not None:
+            if page < 1:
+                raise ValueError("Parameter 'page' must be >= 1.")
 
         # 3. Use walrus operator to assign a value to a variable, but only if it exists
         if (field := params.get('sort_field')) and field not in mail_list_sort_field:
