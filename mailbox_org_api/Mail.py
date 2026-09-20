@@ -3,7 +3,7 @@ class Mail:
         self._mail = mail
         self._password = None
         self._password_hash = None
-        self._same_password_allowed = None
+        self._same_password_disallowed = None
         self._require_password_reset = None
         self._plan = None
         self._additional_mail_quota = None
@@ -61,12 +61,12 @@ class Mail:
         self._password_hash = password_hash
 
     @property
-    def same_password_allowed(self) -> bool:
-        return self._same_password_allowed
+    def same_password_disallowed(self) -> bool:
+        return self._same_password_disallowed
 
-    @same_password_allowed.setter
-    def same_password_allowed(self, same_password_allowed: bool):
-        self._same_password_allowed = same_password_allowed
+    @same_password_disallowed.setter
+    def same_password_disallowed(self, same_password_disallowed: bool):
+        self._same_password_disallowed = same_password_disallowed
 
     @property
     def require_password_reset(self) -> bool:
