@@ -1,7 +1,8 @@
 """
 Module for the mailbox Business API client
 """
-import json
+import base64
+import zlib
 from typing import Any
 
 import requests
@@ -356,9 +357,6 @@ class APIClient:
         if file_type not in ('csv', 'pdf', 'xml'):
             raise ValueError(file_type, 'is not a valid file type. Valid: csv, pdf and xml')
 
-        import base64
-        import zlib
-
         # Get the token and retrieve the invoice data
         response = self.api_request('account.invoice.get',
                                     {'account': account,
@@ -366,6 +364,8 @@ class APIClient:
                                      'type': file_type})
 
         # Take the Base64 encoded data (response['bin']), decode the Base 64, decompress the gz and return the bytes
+        # The mailbox documentation states that the data is gzipped,
+        # but gzip does not work because the data is zlib compressed
         return zlib.decompress(base64.b64decode(response['bin']))
 
     def domain_list(self, account: str, search_filter: str | None = None) -> dict:
