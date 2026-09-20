@@ -65,7 +65,7 @@ class TestAPIClient:
         api = APIClient.APIClient()
         assert api.auth_id is None
         assert api.level is None
-        assert api.jsonrpc_id is 0
+        assert api.jsonrpc_id == 0
 
     def test_hello_world(self):
         api = APIClient.APIClient()
