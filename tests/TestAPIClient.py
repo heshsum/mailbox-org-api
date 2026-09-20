@@ -275,7 +275,7 @@ class TestAPIClient:
         assert paginated_mails['results'] is not None
         with pytest.raises(APIError):
             api.mail_list(domain, page=2)
-        with pytest.raises(APIError):
+        with pytest.raises(ValueError):
             api.mail_list(domain, page_size=-1)
         with pytest.raises(ValueError):
             api.mail_list(domain, sort_order='wröng')
