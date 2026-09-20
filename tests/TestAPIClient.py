@@ -339,6 +339,7 @@ class TestAPIClient:
         api = APIClient.APIClient()
         api.auth(api_test_user, api_test_pass)
         mail = test_id + '@' + domain
+        uid_extern = generate_id()
 
         # Defining parameters and their values to test
         mail_set_tests = {'require_reset_password': True, 'plan': 'premium', 'first_name': test_id,
@@ -347,7 +348,7 @@ class TestAPIClient:
                           'memo': 'memo_string', 'active': True, 'title': 'Title', 'position': 'Job Position',
                           'department': 'Department', 'company': 'Company', 'street': 'Street 1',
                           'postal_code': '12345', 'city': 'City', 'phone': '+492345678', 'fax': '+492345678',
-                          'cell_phone': '+492345678', 'uid_extern': 'external_uid_value', 'language': 'de_DE'}
+                          'cell_phone': '+492345678', 'uid_extern': uid_extern, 'language': 'de_DE'}
 
         # Adding parameters to call
         params = {}
