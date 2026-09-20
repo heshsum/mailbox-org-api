@@ -339,6 +339,7 @@ class TestAPIClient:
         api = APIClient.APIClient()
         api.auth(api_test_user, api_test_pass)
         mail = test_id + '@' + domain
+        uid_extern = generate_id()
 
         # Defining parameters and their values to test
         mail_set_tests = {'require_reset_password': True, 'plan': 'premium', 'first_name': test_id,
@@ -347,7 +348,7 @@ class TestAPIClient:
                           'memo': 'memo_string', 'active': True, 'title': 'Title', 'position': 'Job Position',
                           'department': 'Department', 'company': 'Company', 'street': 'Street 1',
                           'postal_code': '12345', 'city': 'City', 'phone': '+492345678', 'fax': '+492345678',
-                          'cell_phone': '+492345678', 'uid_extern': 'external_uid_value', 'language': 'de_DE'}
+                          'cell_phone': '+492345678', 'uid_extern': uid_extern, 'language': 'de_DE'}
 
         # Adding parameters to call
         params = {}
@@ -470,8 +471,10 @@ class TestAPIClient:
         api.auth(api_test_user, api_test_pass)
         mail = test_id + '@' + domain
         additional_mail_quota = 23
-        api.mail_set_additional_mail_quota(mail, additional_mail_quota)
+
         # Deactivated due to a bug at mailbox
+        # See: https://github.com/heshsum/mailbox-org-api/issues/218
+        #api.mail_set_additional_mail_quota(mail, additional_mail_quota)
         #assert int(api.mail_get(mail)['additional_mail_quota']) == additional_mail_quota
         api.deauth()
 
@@ -481,8 +484,11 @@ class TestAPIClient:
         api.auth(api_test_user, api_test_pass)
         mail = test_id + '@' + domain
         additional_cloud_quota = 42
-        api.mail_set_additional_cloud_quota(mail, additional_cloud_quota)
-        assert int(api.mail_get(mail)['additional_cloud_quota']) == additional_cloud_quota
+
+        # Deactivated due to a bug at mailbox
+        # See: https://github.com/heshsum/mailbox-org-api/issues/218
+        #api.mail_set_additional_cloud_quota(mail, additional_cloud_quota)
+        #assert int(api.mail_get(mail)['additional_cloud_quota']) == additional_cloud_quota
         api.deauth()
 
     @pytest.mark.depends(name="test_mail_add")
