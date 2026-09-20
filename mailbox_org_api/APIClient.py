@@ -314,23 +314,14 @@ class APIClient:
         Function to get a list of all invoice ids for a specific account
         """
         response = self.api_request('account.invoice.list', {'account': account})
-        invoices = []
-
-        for invoice in response:
-            invoices.append(invoice['invoice_id'])
-        return invoices
+        return [invoice['invoice_id'] for invoice in response]
 
     def account_invoice_get_list_open(self, account: str) -> list:
         """
         Function to get a list of all invoice id's with status 'open' for a specific account
         """
         invoices = self.account_invoice_list(account)
-        open_invoices = []
-
-        for i in invoices:
-            if i['status'] == 'open':
-                open_invoices.append(i)
-        return open_invoices
+        return [inv for inv in invoices if inv.get('status') == 'open']
 
     def account_invoice_get_token(self, account: str, invoice_id: str) -> str:
         """
