@@ -342,16 +342,19 @@ class APIClient:
                 return invoice['token']
         raise ValueError('Invoice not found')
 
-    def account_invoice_get_file(self, account: str, invoice_id: str, file_type: str) -> bytes:
+    def account_invoice_get_file(self, account: str, invoice_id: str, file_type: str, token: str) -> bytes:
         """
         Function to get a specific invoice as a PDf-file
         :param account: the account name
         :param invoice_id: the invoice ID
         :param file_type: The file type to return. Valid: CSV, PDF and XML
+        :param token: Optional token for the invoice. If None, it is looked up automatically.
         :return: the file as bytes
         """
         if file_type not in ('csv', 'pdf', 'xml'):
             raise ValueError(file_type, 'is not a valid file type. Valid: csv, pdf and xml')
+        if token is None:
+            token = self.account_invoice_get_token(account, invoice_id)
 
         # Get the token and retrieve the invoice data
         response = self.api_request('account.invoice.get',
