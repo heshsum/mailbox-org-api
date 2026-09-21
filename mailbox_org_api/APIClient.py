@@ -342,7 +342,8 @@ class APIClient:
                 return invoice['token']
         raise ValueError('Invoice not found')
 
-    def account_invoice_get_file(self, account: str, invoice_id: str, file_type: str, token: str) -> bytes:
+    def account_invoice_get_file(self, account: str, invoice_id: str, file_type: str,
+                                 token: str | None = None) -> bytes:
         """
         Function to get a specific invoice as a PDf-file
         :param account: the account name
