@@ -351,8 +351,10 @@ class APIClient:
         :param token: Optional token for the invoice. If None, it is looked up automatically.
         :return: the file as bytes
         """
-        if file_type not in ('csv', 'pdf', 'xml'):
-            raise ValueError(file_type, 'is not a valid file type. Valid: csv, pdf and xml')
+        normalized_type = file_type.lower()
+        if normalized_type not in ('csv', 'pdf', 'xml'):
+            raise ValueError(f"'{file_type}' is not a valid file type. Valid: csv, pdf and xml")
+
         if token is None:
             token = self.account_invoice_get_token(account, invoice_id)
 
