@@ -4,7 +4,7 @@ class Mail:
         self._password = None
         self._password_hash = None
         self._same_password_disallowed = None
-        self._require_password_reset = None
+        self._require_reset_password = None
         self._plan = None
         self._additional_mail_quota = None
         self._additional_cloud_quota = None
@@ -69,12 +69,12 @@ class Mail:
         self._same_password_disallowed = same_password_disallowed
 
     @property
-    def require_password_reset(self) -> bool:
-        return self._require_password_reset
+    def require_reset_password(self) -> bool:
+        return self.require_reset_password
 
-    @require_password_reset.setter
-    def require_password_reset(self, require_password_reset: bool):
-        self._require_password_reset = require_password_reset
+    @require_reset_password.setter
+    def require_reset_password(self, require_reset_password: bool):
+        self.require_reset_password = require_reset_password
 
     @property
     def plan(self) -> str:
