@@ -361,8 +361,9 @@ class APIClient:
         # Get the token and retrieve the invoice data
         response = self.api_request('account.invoice.get',
                                     {'account': account,
-                                     'token': self.account_invoice_get_token(account, invoice_id),
-                                     'type': file_type})
+                                     'token': token,
+                                     'type': normalized_type
+                                     })
 
         # Take the Base64 encoded data (response['bin']), decode the Base 64, decompress the gz and return the bytes
         # The mailbox documentation states that the data is gzipped,
