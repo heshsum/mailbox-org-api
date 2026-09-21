@@ -137,31 +137,27 @@ class APIClient:
         :return: the API response for the request
         """
         api_response = self.api_request('auth', {'user': username, 'pass': password})
-        if api_response['session']:
-            # Level gives information about the calls available
-            self.level = api_response["level"]
-            print('Level:', self.level)
-
-            # The session id
+        if api_response.get('session'):
+            self.level = api_response.get("level")
             self.auth_id = str(api_response["session"])
-            print('Auth ID:', self.auth_id)
-            # The auth-header is added to the list of headers, as it has to be provided with each call
             self.session.headers.update({"HPLS-AUTH": self.auth_id})
+            if self.debug_output:
+                print('Level:', self.level)
+                print('Auth ID:', self.auth_id)
         return api_response
 
-    def deauth(self) -> dict:
+    def deauth(self) -> bool:
         """
         Function to close the current API session
-        :return: True if the API session is closed, False otherwise
+        :return: True if the API session was closed cleanly, False otherwise
         """
-        api_response = self.api_request('deauth', {})
-        if api_response:
-            # The auth header is stripped
+        try:
+            api_response = self.api_request('deauth', {})
+            return bool(api_response)
+        finally:
             self.session.headers.pop("HPLS-AUTH", None)
             self.auth_id = None
             self.level = None
-            self.session.close()
-        return api_response
 
     def hello_world(self):
         """
