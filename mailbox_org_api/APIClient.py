@@ -584,11 +584,13 @@ class APIClient:
                               'company': str, 'street': str, 'postal_code': str, 'city': str, 'phone': str, 'fax': str,
                               'cell_phone': str, 'uid_extern': str, 'language': str, 'deletion_date': str}
 
-        if 'password' in kwargs and 'password_hash' in kwargs:
-            raise KeyError('''Simultaneous usage of 'password' and 'password_hash' not allowed.''')
+        if kwargs.get('password') is not None and kwargs.get('password_hash') is not None:
+            raise KeyError("Simultaneous usage of 'password' and 'password_hash' not allowed.")
 
-        if ('additional_mail_quota' in kwargs or 'additional_cloud_quota' in kwargs) and 'plan' not in kwargs:
-            raise KeyError('''If setting additional quota, 'plan' must be given.''')
+        additional_quota = (kwargs.get('additional_mail_quota') is not None or
+                            kwargs.get('additional_cloud_quota') is not None)
+        if additional_quota and kwargs.get('plan') is None:
+            raise KeyError("If setting additional quota, 'plan' must be provided and cannot be None.")
 
         # Check for each argument in kwargs if it is a valid function parameter.
         # Check key and type of value. Raise errors if a check fails.
