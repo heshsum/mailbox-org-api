@@ -70,11 +70,11 @@ class Mail:
 
     @property
     def require_reset_password(self) -> bool:
-        return self.require_reset_password
+        return self._require_reset_password
 
     @require_reset_password.setter
     def require_reset_password(self, require_reset_password: bool):
-        self.require_reset_password = require_reset_password
+        self._require_reset_password = require_reset_password
 
     @property
     def plan(self) -> str:
