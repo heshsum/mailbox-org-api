@@ -1125,10 +1125,10 @@ class APIClient:
 
     def additionalmailaccount_delete(self, parent_mail: str, account_mail: str) -> dict:
         """
-        Function to delete an additional mail account
-        :param parent_mail: the mail address to delete
-        :param account_mail: the account to delete
-        :return: True if the account was deleted, error code otherwise
+        Function to delete an additional mail account.
+        :param parent_mail: the parent mail address to delete the account from.
+        :param account_mail: the account to delete.
+        :return: True if the account was deleted, error code otherwise.
         """
         return self.api_request('additionalmailaccount.delete',
                                 {'parent_mail': parent_mail, 'account_mail': account_mail})
