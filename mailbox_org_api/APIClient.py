@@ -18,7 +18,7 @@ from mailbox_org_api.Mail import Mail
 
 headers = {'content-type': 'application/json'}
 
-keys_to_string = ['additional_cloud_quota', 'additional_mail_quota']
+quota_keys = ['additional_cloud_quota', 'additional_mail_quota']
 
 
 class APIClient:
@@ -540,8 +540,8 @@ class APIClient:
 
         validate_params(allowed_parameters, kwargs)
 
-        for k in keys_to_string:
-            if k in kwargs:
+        for k in quota_keys:
+            if k in kwargs is not None:
                 kwargs[k] = str(kwargs[k])
 
         # After validation, build parameter list from mail and kwargs
@@ -598,10 +598,9 @@ class APIClient:
         validate_params(allowed_parameters, kwargs)
 
         # Explicitly convert integer quota values to strings for API compatibility
-        quota_keys = ['additional_mail_quota', 'additional_cloud_quota']
-        for key in quota_keys:
-            if kwargs.get(key) is not None:
-                kwargs[key] = str(kwargs[key])
+        for k in quota_keys:
+            if k in kwargs is not None:
+                kwargs[k] = str(kwargs[k])
 
         # Build parameter dictionary excluding any None values
         params = {'mail': mail}
