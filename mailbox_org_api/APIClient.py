@@ -714,7 +714,7 @@ class APIClient:
         """
         Function to set a domain capabilities
         :param mail: the mail to set the capabilities for
-        :param capabilities: a list of capabilities to set for the domain
+        :param capabilities: a list of capabilities to set for the mail
         :return: the API response
         """
         # Capabilities as documented here: https://api.mailbox.org/v1/doc/methods/index.html#mail-capabilities-set
