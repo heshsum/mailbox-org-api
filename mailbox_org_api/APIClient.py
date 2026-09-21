@@ -365,6 +365,10 @@ class APIClient:
                                      'type': normalized_type
                                      })
 
+        # Raise APIError if the response does not contain the binary data of the file
+        if not isinstance(response, dict) or 'bin' not in response:
+            raise APIError("Invoice data payload ('bin') not found in response", code=-32000)
+
         # Take the Base64 encoded data (response['bin']), decode the Base 64, decompress the gz and return the bytes
         # The mailbox documentation states that the data is gzipped,
         # but gzip does not work because the data is zlib compressed
