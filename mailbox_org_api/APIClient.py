@@ -813,7 +813,7 @@ class APIClient:
         :param rbl: (de-)activation of Real-time Blacklist checks for the mail
         :param bypass_banned_checks: (de-)activation of checks for executable files
         :param tag2level: float value for the spam filter (e.g. 5.5). Will be rounded to 1 decimal place
-        :param killlevel: reject or redirection of spam mails. Allowed values: 'reject' or 'redirection'
+        :param killlevel: reject or routing of spam mails. Allowed values: 'reject' or 'route'
         :param route_to: folder to route spam to
         :return: mailbox API response - an array with the spam settings
         """
