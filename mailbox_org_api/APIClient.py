@@ -159,6 +159,17 @@ class APIClient:
             self.auth_id = None
             self.level = None
 
+    def __enter__(self):
+        return self
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        if self.auth_id:
+            try:
+                self.deauth()
+            except APIError:
+                pass
+        self.session.close()
+
     def hello_world(self):
         """
         Function for hello world, just to test the connection
