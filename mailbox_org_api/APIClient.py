@@ -16,8 +16,6 @@ from mailbox_org_api.Account import Account
 from mailbox_org_api.Invoice import Invoice
 from mailbox_org_api.Mail import Mail
 
-headers = {'content-type': 'application/json'}
-
 quota_keys = ['additional_cloud_quota', 'additional_mail_quota']
 
 
