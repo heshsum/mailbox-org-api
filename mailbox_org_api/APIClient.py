@@ -342,22 +342,33 @@ class APIClient:
                 return invoice['token']
         raise ValueError('Invoice not found')
 
-    def account_invoice_get_file(self, account: str, invoice_id: str, file_type: str) -> bytes:
+    def account_invoice_get_file(self, account: str, invoice_id: str, file_type: str,
+                                 token: str | None = None) -> bytes:
         """
         Function to get a specific invoice as a PDf-file
         :param account: the account name
         :param invoice_id: the invoice ID
         :param file_type: The file type to return. Valid: CSV, PDF and XML
+        :param token: Optional token for the invoice. If None, it is looked up automatically.
         :return: the file as bytes
         """
-        if file_type not in ('csv', 'pdf', 'xml'):
-            raise ValueError(file_type, 'is not a valid file type. Valid: csv, pdf and xml')
+        normalized_type = file_type.lower()
+        if normalized_type not in ('csv', 'pdf', 'xml'):
+            raise ValueError(f"'{file_type}' is not a valid file type. Valid: csv, pdf and xml")
+
+        if token is None:
+            token = self.account_invoice_get_token(account, invoice_id)
 
         # Get the token and retrieve the invoice data
         response = self.api_request('account.invoice.get',
                                     {'account': account,
-                                     'token': self.account_invoice_get_token(account, invoice_id),
-                                     'type': file_type})
+                                     'token': token,
+                                     'type': normalized_type
+                                     })
+
+        # Raise APIError if the response does not contain the binary data of the file
+        if not isinstance(response, dict) or 'bin' not in response:
+            raise APIError("Invoice data payload ('bin') not found in response", code=-32000)
 
         # Take the Base64 encoded data (response['bin']), decode the Base 64, decompress the gz and return the bytes
         # The mailbox documentation states that the data is gzipped,
