@@ -39,12 +39,12 @@ class TestMail(unittest.TestCase):
         mail.same_password_disallowed = same_password_disallowed
         self.assertTrue(mail.same_password_disallowed)
 
-    def test_mail_require_password_reset(self):
+    def test_mail_require_reset_password(self):
         mail = Mail.Mail(mail_address)
-        self.assertEqual(mail.require_password_reset, None)
+        self.assertEqual(mail.require_reset_password, None)
         require_password_reset = True
-        mail.require_password_reset = require_password_reset
-        self.assertTrue(mail.require_password_reset)
+        mail.require_reset_password = require_password_reset
+        self.assertTrue(mail.require_reset_password)
 
     def test_mail_plan(self):
         mail = Mail.Mail(mail_address)
