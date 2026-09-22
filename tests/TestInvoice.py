@@ -45,3 +45,24 @@ class TestMail:
         token = '123456789'
         invoice.token = token
         assert invoice.token == token
+
+    def test_invoice_csv(self):
+        invoice = Invoice.Invoice(test_account, test_id)
+        assert invoice.csv is None
+        csv_data = 'date,services,description,quantity,currency,net,vat_percent,total'
+        invoice.csv = csv_data
+        assert invoice.csv == csv_data
+
+    def test_invoice_pdf(self):
+        invoice = Invoice.Invoice(test_account, test_id)
+        assert invoice.pdf is None
+        pdf_data = '%PDF-1.7'
+        invoice.pdf = pdf_data
+        assert invoice.pdf == pdf_data
+
+    def test_invoice_xml(self):
+        invoice = Invoice.Invoice(test_account, test_id)
+        assert invoice.xml is None
+        xml_data = '<?xml version="1.0" encoding="UTF-8"?>'
+        invoice.xml = xml_data
+        assert invoice.xml == xml_data
