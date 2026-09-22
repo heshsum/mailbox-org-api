@@ -1,180 +1,286 @@
 [![Python Test](https://github.com/heshsum/mailbox-org-api/actions/workflows/python-test.yml/badge.svg?branch=main)](https://github.com/heshsum/mailbox-org-api/actions/workflows/python-test.yml)
+[![PyPI version](https://img.shields.io/pypi/v/mailbox-org-api.svg)](https://pypi.org/project/mailbox-org-api/)
+[![Python Versions](https://img.shields.io/pypi/pyversions/mailbox-org-api.svg)](https://pypi.org/project/mailbox-org-api/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 # mailbox-org-api
-A library to access the [mailbox Business API](https://api.mailbox.org).
 
-## Motivation and purpose 
-The goal is to provide a comprehensive, easy to use library to integrate the business features of mailbox.  
-Primarily, the library should mirror all calls and features of the mailbox API.  
-As a secondary goal, the library should implement helper functions for common tasks.
+A Python library to access and automate the [mailbox.org Business API](https://api.mailbox.org).
+
+The primary goal of this package is to mirror all calls and features of the official mailbox.org Business API while providing high-level helper functions and object-oriented abstractions for common administrative tasks.
+
+> 📖 **Full Documentation**: Comprehensive documentation, method signatures, and guides are available on the [Project Wiki](https://github.com/heshsum/mailbox-org-api/wiki).
+
+---
+
+## Features
+
+- **Direct API Mirroring**: Straightforward mapping of mailbox.org JSON-RPC methods using Pythonic naming (e.g. `mail.add` &rarr; `mail_add`).
+- **Context Manager Support**: Clean session lifecycle handling via `with APIClient() as api:`, which automatically handles session termination (`deauth`) and connection cleanup.
+- **Convenience Helpers**: High-level helpers for everyday tasks such as password management, force-reset on login, plan upgrades, aliases, forwarders, storage quotas, vacation autoresponders, and invoice downloads.
+- **Object-Oriented Models**: Built-in models (`Mail`, `Account`, `Invoice`) for interacting with resources as Python objects.
+- **Pre-flight Validation**: Parameter names and types are validated prior to sending API requests to catch typos early.
+- **Automatic Retries**: Built-in exponential backoff for transient HTTP errors (e.g., 429, 500, 502, 503, 504).
+- **Safe Debug Logging**: Optional request and response inspection with automatic redaction of sensitive credentials (passwords, tokens, auth keys).
+
+---
 
 ## Installation
-### Using pip:
+
+Requires **Python >= 3.11**.
+
+### From PyPI
 ```bash
 pip install mailbox-org-api
 ```
 
-### Directly from source:
+### From Source
 ```bash
-pip install git+https://github.com/heshsum/mailbox-org-api
+pip install git+https://github.com/heshsum/mailbox-org-api.git
 ```
 
-## Usage and documentation
-Basic usage is fairly straightforward. The naming scheme of the functions is similar to the naming at mailbox.org,
-but instead of points, it uses underscores (e.g. instead of `mail.add` it's `mail_add`).
+For more details on requirements and installation options, see the [Installation Wiki](https://github.com/heshsum/mailbox-org-api/wiki/1.-Installation).
 
-Therefore, the functions mirror the functions as provided and documented at mailbox: 
-[api.mailbox.org](https://api.mailbox.org)
+---
 
-Additionally, some helper functions for common or more complicated tasks are included to make life a bit easier, 
-e.g. for changing plans, password and to retrieving invoices.
+## Quickstart
+
+All API interactions start with an instance of `APIClient`. Using a context manager (`with`) is recommended to ensure your session is always de-authenticated and connections are properly closed when done.
 
 ```python
-from mailbox_org_api import APIClient
+from mailbox_org_api.APIClient import APIClient
+from mailbox_org_api.APIError import APIError
 
-username = 'foo'
-password = 'bar'
+USERNAME = "YourAdminUsername"
+PASSWORD = "YourSecretPassword"
 
-# Initializing
-api = APIClient.APIClient()
+# Initialize client and authenticate using a context manager
+with APIClient() as api:
+    # Authenticate to begin an API session
+    api.auth(USERNAME, PASSWORD)
+    print(f"Logged in! Access level: {api.level}")
 
-# Testing with hello.world
-api.hello_world()
+    # Check connection
+    api.hello_innerworld()
 
-# Creating a new API session
-api.auth(username, password)
-
-# Testing the session with hello.innerworld
-api.hello_innerworld()
-
-# Changing account settings
-api.account_set('foo', payment_type='invoice')
-
-# Creating an inbox
-api.mail_add('foo@bar.com', 's3cr3tp4ssw0rd', 'standard', 'First Name', 'Last Name')
-
-# Here are some examples for helper functions provided by this package
-
-# Changing an inbox password
-api.mail_set_password('foo@bar.com', 'an0th3rS3cr3t')
-
-# Changing an inbox plan
-api.mail_set_plan('foo@bar.com', 'premium')
-
-# Deactivating an inbox
-api.mail_set_state('foo@bar.com', False)
-
-# Changing alias addresses
-api.mail_set_aliases('foo@bar.com', ['alias1@bar.com', 'alias2@bar.com'])
-
-# Changing forward addresses
-api.mail_set_forwards('foo@bar.com', ['forward1@bar.com', 'forward2@bar.com'])
-
-# Closing the session
-api.deauth()
+    # List all domains configured for this account
+    domains = api.domain_get_list(USERNAME)
+    print(f"Domains: {domains}")
 ```
 
-More information can be found in the [Wiki](https://github.com/heshsum/mailbox-org-api/wiki)
+> **Manual Session Management**: If not using a context manager, call `api.deauth()` when finished to close your session.
+> 
+> **Debug Mode**: Pass `debug_output=True` when creating the client (`APIClient(debug_output=True)`) to print all requests and responses with credentials safely redacted.
+> 
+> See the [Basic Usage Wiki](https://github.com/heshsum/mailbox-org-api/wiki/2.-Basic-usage) for details on naming conventions, validation, and return formats.
 
-## Common tasks
-mailbox_org_api includes a number of helper functions to make common tasks simpler. These include:
+---
 
-### mail_set_password
-This is a function to send a `mail.set`command and set a user's password.
+## Usage Examples
 
-Usage:
-```
-api.mail_set_password('user@testmail.tech', 'theNewPassword')
-```
+### 1. Managing Mailboxes (Inboxes)
 
-### mail_set_password_require_reset
-This function sends a `mail.set` command to set a user's password and require the user to change it upon the next login.
+The library provides both raw methods mirroring `mail.*` endpoints and convenient shortcuts for common mailbox operations.
 
-Usage:
+For a full list of parameters and options, see [Mail Methods in the Wiki](https://github.com/heshsum/mailbox-org-api/wiki/3.-Documentation-of-API-methods#mail).
+
 ```python
-api.mail_set_password('user@testmail.tech', 'theNewPassword')
+from mailbox_org_api.APIClient import APIClient
+
+with APIClient() as api:
+    api.auth("YourAdminUsername", "YourPassword")
+
+    mail = "jane.doe@example.com"
+
+    # 1. Create a new inbox
+    api.mail_add(
+        mail=mail,
+        password="InitialPassword123!",
+        plan="standard",
+        first_name="Jane",
+        last_name="Doe"
+    )
+
+    # 2. Change password & force the user to change it on next login
+    api.mail_set_password_require_reset(mail, "TemporaryPassword456!")
+
+    # 3. Upgrade or downgrade plan (e.g. 'light', 'standard', 'premium')
+    api.mail_set_plan(mail, "premium")
+
+    # 4. Set aliases and forwarders
+    api.mail_set_aliases(mail, ["j.doe@example.com", "jane@example.com"])
+    api.mail_set_forwards(mail, ["backup-inbox@example.com"])
+
+    # 5. Increase storage quotas (in GB)
+    api.mail_set_additional_mail_quota(mail, quota=10)
+    api.mail_set_additional_cloud_quota(mail, quota=5)
+
+    # 6. Configure Vacation / Out-of-Office autoresponder
+    api.mail_vacation_set(
+        mail=mail,
+        subject="Out of Office",
+        start_date="2026-07-01",
+        end_date="2026-07-15",
+        body="I am currently away and will reply upon my return."
+    )
+
+    # 7. Check vacation notice status
+    vacation = api.mail_vacation_get(mail)
+
+    # 8. Deactivate or re-activate an inbox
+    api.mail_set_state(mail, active=False)  # Deactivate
+    api.mail_set_state(mail, active=True)   # Re-activate
+
+    # 9. Schedule future mailbox deletion (or delete immediately)
+    api.mail_set_deletion_date(mail, deletion_date="2026-12-31")
+    # api.mail_del(mail)
 ```
 
-The function will automatically set `'require_reset':True` when sending the request.
+---
 
-### mail_set_plan
-This function sets the plan for an inbox.
+### 2. Managing Domains
 
-Usage:
+Manage domains associated with your account, configure capabilities, and verify DNS records.
+
+For all domain methods, see [Domain Methods in the Wiki](https://github.com/heshsum/mailbox-org-api/wiki/3.-Documentation-of-API-methods#domain).
+
 ```python
-api.mail_set_plan('user@testmail.tech', 'standard')
+with APIClient() as api:
+    api.auth("admin@example.com", "YourPassword")
+
+    account = "admin@example.com"
+    domain = "mycompany.com"
+
+    # List all domains for an account (returns names as a list)
+    domain_names = api.domain_get_list(account)
+
+    # Add a new domain
+    api.domain_add(account=account, domain=domain, password="DomainPassword123!")
+
+    # Configure domain capabilities
+    # Options: MAIL_SPAMPROTECTION, MAIL_BLACKLIST, MAIL_BACKUPRECOVER, MAIL_PASSWORDRESET_SMS
+    api.domain_capabilities_set(
+        domain=domain,
+        capabilities=["MAIL_SPAMPROTECTION", "MAIL_BLACKLIST"]
+    )
+
+    # Validate SPF DNS records for the domain
+    spf_status = api.domain_validate_spf(domain)
+    print(f"SPF validation result: {spf_status}")
 ```
 
+---
 
-### mail_set_forwards
-This function sets the forwards of an inbox.
+### 3. Account Settings & Downloading Invoices
 
-Usage:
+Retrieve account details, update company or payment information, and download billing invoices directly as PDF, CSV, or XML files.
+
+For more information, see [Account Methods](https://github.com/heshsum/mailbox-org-api/wiki/3.-Documentation-of-API-methods#account) and [Invoice Methods](https://github.com/heshsum/mailbox-org-api/wiki/3.-Documentation-of-API-methods#invoice) in the Wiki.
+
 ```python
-api.mail_set_forwards('user@testmail.tech', ['forward@testmail.tech', 'forward@testmail.tech'])
+with APIClient() as api:
+    api.auth("admin@example.com", "YourPassword")
+
+    account = "admin@example.com"
+
+    # Update account settings (e.g. payment method or contact details)
+    api.account_set(account, payment_type="invoice", company="Acme Corp")
+
+    # Get a list of all open invoice IDs
+    open_invoices = api.account_invoice_get_list_open(account)
+    print(f"Open invoices: {open_invoices}")
+
+    # Download an invoice as a PDF file
+    if open_invoices:
+        invoice_id = open_invoices[0]
+        
+        # account_invoice_get_file automatically handles token retrieval,
+        # Base64 decoding, and decompression, returning binary file bytes
+        pdf_bytes = api.account_invoice_get_file(account, invoice_id, file_type="pdf")
+
+        # Save to local file in binary mode ('wb')
+        with open(f"{invoice_id}.pdf", "wb") as f:
+            f.write(pdf_bytes)
+        print(f"Saved invoice to {invoice_id}.pdf")
 ```
 
-### mail_set_aliases
-This function sets the aliases of an inbox.
+---
 
-Usage:
+### 4. Object-Oriented Interface
+
+If you prefer working with objects rather than raw dictionaries, the library provides dedicated object models: `Mail`, `Account`, and `Invoice`.
+
+For full property tables and usage, see the [Object-Orientation Wiki](https://github.com/heshsum/mailbox-org-api/wiki/4.-Object-orientation).
+
 ```python
-api.mail_set_forwards('user@testmail.tech', ['alias1@testmail.tech', 'alias2@testmail.tech'])
+with APIClient() as api:
+    api.auth("admin@example.com", "YourPassword")
+
+    # Retrieve a Mail object
+    user = api.mail_get_object("jane.doe@example.com")
+    print(f"User: {user.first_name} {user.last_name}")
+    print(f"Plan: {user.plan}")
+    print(f"Active: {user.active}")
+    print(f"Aliases: {user.aliases}")
+
+    # Retrieve an Account object
+    acc = api.account_get_object("admin@example.com")
+    print(f"Account: {acc.name}, Status: {acc.status}, Plan: {acc.plan}")
+
+    # Retrieve an Invoice object
+    invoices = api.account_invoice_get_list("admin@example.com")
+    if invoices:
+        inv = api.account_invoice_get_object("admin@example.com", invoices[0])
+        print(f"Invoice {inv.invoice_id} dated {inv.date}, Status: {inv.status}")
 ```
 
-### mail_set_state
-With this function an inbox can be (de-)activated. It sends a `mail.set` command with the `active` parameter.
+---
 
-Usage:
+### 5. Error Handling
+
+API errors raise `APIError` with the corresponding error message and code returned by the mailbox.org Business API. Client-side input validation errors raise standard `ValueError` or `TypeError`.
+
 ```python
-# Deactivates an inbox
-api.mail_set_state('user@testmail.tech', 'False')
+from mailbox_org_api.APIClient import APIClient
+from mailbox_org_api.APIError import APIError
 
-# Activates an inbox
-api.mail_set_state('user@testmail.tech', 'True')
+with APIClient() as api:
+    api.auth("admin@example.com", "YourPassword")
+
+    try:
+        # Attempt an operation that might fail
+        api.mail_get("nonexistent@example.com")
+    except APIError as e:
+        print(f"API request failed with code {e.code}: {e.message}")
+    except (ValueError, TypeError) as e:
+        print(f"Invalid parameter supplied: {e}")
 ```
 
-### account_invoice_get_list
-This function makes retrieving a list of all invoices easier.  
-It returns a list of all invoice id's for a given account.
+---
 
-Usage:
-```python
-api.account_invoice_get_list('account_name')
-```
+## Wiki Documentation Reference
 
-### account_invoice_get_token
-In order to retrieve an invoice, a token is needed. Tokens change periodically.  
-This function helps to get the token for a given invoice ID.
+For in-depth guides and parameter reference tables, please visit the [Project Wiki](https://github.com/heshsum/mailbox-org-api/wiki):
 
-Usage:
-```python
-api.account_invoice_get_token('BMBO-1234-24')
-```
+| Topic | Wiki Page | Description |
+| --- | --- | --- |
+| **Installation** | [1. Installation](https://github.com/heshsum/mailbox-org-api/wiki/1.-Installation) | Package installation from PyPI and git source |
+| **Getting Started** | [2. Basic Usage](https://github.com/heshsum/mailbox-org-api/wiki/2.-Basic-usage) | Client initialisation, debug mode, parameter validation, and response structures |
+| **General Methods** | [3. Methods: General](https://github.com/heshsum/mailbox-org-api/wiki/3.-Documentation-of-API-methods#general) | `auth`, `deauth`, `hello_world`, `hello_innerworld` |
+| **Account Operations** | [3. Methods: Account](https://github.com/heshsum/mailbox-org-api/wiki/3.-Documentation-of-API-methods#account) | Account retrieval, listing, setting attributes, and deletion |
+| **Invoices** | [3. Methods: Invoice](https://github.com/heshsum/mailbox-org-api/wiki/3.-Documentation-of-API-methods#invoice) | Listing invoices, tokens, and binary file downloads (`csv`, `pdf`, `xml`) |
+| **Domain Management** | [3. Methods: Domain](https://github.com/heshsum/mailbox-org-api/wiki/3.-Documentation-of-API-methods#domain) | Domain administration, SPF verification, capabilities configuration |
+| **Mailbox Management** | [3. Methods: Mail](https://github.com/heshsum/mailbox-org-api/wiki/3.-Documentation-of-API-methods#mail) | Mailbox CRUD, password reset, aliases, forwards, quotas, and backups |
+| **Groups & Teams** | [3. Methods: Group](https://github.com/heshsum/mailbox-org-api/wiki/3.-Documentation-of-API-methods#group) | Listing, creating, updating, and deleting group accounts |
+| **Mailing Lists** | [3. Methods: Mailinglist](https://github.com/heshsum/mailbox-org-api/wiki/3.-Documentation-of-API-methods#mailinglist) | Managing mailing lists |
+| **Object Models** | [4. Object Orientation](https://github.com/heshsum/mailbox-org-api/wiki/4.-Object-orientation) | Details on `Account`, `Invoice`, and `Mail` domain objects |
 
-### account_invoice_get_file
-Invoices are provided as Based64 encoded gz Strings. This function
-1. takes the invoice ID
-2. retrieves the token for the invoice
-3. gets the binary data
-4. decodes the Base64
-5. decompresses it
-6. returns the bytes of the actual invoice file
+Official mailbox.org Business API documentation is available at [api.mailbox.org](https://api.mailbox.org).
 
-Usage
-```python
-invoice_id = 'BMBO-1234-24'
-account_name = 'foo'
-with open(invoice_id + '.pdf', 'w') as file:
-    file.write(api.account_invoice_get_file(account_name, invoice_id, 'PDF'))
-```
+---
 
-## Here be dragons
-1. I'm not a programmer. I'm not very good at this. Be aware of my incompetence.
-2. Implementation is not complete. Not all functions of the API have been implemented
-3. Type hinting is available for most functions, but not all of them.  
-E.g. `mail_set()` accepts kwargs due to the number of available attributes. 
-In that case type errors will be returned if wrong types are provided.
+## Contributing & License
 
-## API documentation
-mailbox.org provides API documentation here: [https://api.mailbox.org](https://api.mailbox.org)
+Contributions, bug reports, and pull requests are welcome on [GitHub](https://github.com/heshsum/mailbox-org-api).
+
+This project is licensed under the [MIT License](LICENSE).
