@@ -66,3 +66,10 @@ class TestMail:
         xml_data = '<?xml version="1.0" encoding="UTF-8"?>'
         invoice.xml = xml_data
         assert invoice.xml == xml_data
+
+    def test_invoice_str(self):
+        invoice = Invoice.Invoice(test_account, test_id)
+        result_str = str(invoice)
+        assert f'account: {test_account}' in result_str
+        assert f'invoice_id: {test_id}' in result_str
+
