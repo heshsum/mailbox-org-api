@@ -282,6 +282,11 @@ class TestAPIClient:
         for m in api.mail_list(domain):
             assert m['capabilities'] == []
 
+    def test_domain_capabilities_set_invalid(self):
+        api = APIClient.APIClient()
+        with pytest.raises(ValueError):
+            api.domain_capabilities_set(domain, ['INVALID_CAPABILITY'])
+
     def test_mail_list(self):
         api = APIClient.APIClient()
         api.auth(api_test_user, api_test_pass)
