@@ -120,6 +120,14 @@ class TestAPIClient:
         api.deauth()
         assert api.session.headers.get('HPLS-AUTH') is None
 
+    def test_context_manager(self):
+        with APIClient.APIClient() as api:
+            api.auth(api_test_user, api_test_pass)
+            assert api.auth_id is not None
+            assert api.level == 'account'
+        assert api.auth_id is None
+        assert api.level is None
+
     def test_account_get(self):
         api = APIClient.APIClient()
         api.auth(api_test_user, api_test_pass)
