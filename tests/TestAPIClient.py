@@ -694,8 +694,8 @@ class TestAPIClient:
 
         # Deactivated due to a bug at mailbox
         # See: https://github.com/heshsum/mailbox-org-api/issues/218
-        #api.mail_set_additional_mail_quota(mail, additional_mail_quota)
-        #assert int(api.mail_get(mail)['additional_mail_quota']) == additional_mail_quota
+        api.mail_set_additional_mail_quota(mail, additional_mail_quota)
+        assert int(api.mail_get(mail)['additional_mail_quota']) == additional_mail_quota
         api.deauth()
 
     @pytest.mark.depends(name="test_mail_add")
