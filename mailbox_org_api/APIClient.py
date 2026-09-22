@@ -911,9 +911,8 @@ class APIClient:
         :param account: optional parameter for the account to get the group for
         :return: mailbox API response - the list of groups of the account
         """
-        params = {'group_id': group_id}
-        if account:
         params: dict[str, Any] = {'group_id': group_id}
+        if account is not None:
             params['account'] = account
         return self.api_request('group.get', params)
 
