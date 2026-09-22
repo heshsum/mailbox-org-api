@@ -1,3 +1,4 @@
+import datetime
 import os
 import secrets
 import string
@@ -319,6 +320,68 @@ class TestAPIClient:
 
         api.mail_add(mail_address, generate_pw(), 'standard', test_id, test_id)
         assert api.mail_get(mail_address)['mail'] == mail_address
+        api.deauth()
+
+    @pytest.mark.depends(name='test_mail_add')
+    def test_mail_vacation_set(self):
+        api = APIClient.APIClient(debug_output=True)
+        api.auth(api_test_user, api_test_pass)
+        mail = test_id + '@' + domain
+        start_date = (datetime.date.today() + datetime.timedelta(days=1)).strftime('%Y-%m-%d')
+        end_date = (datetime.date.today() + datetime.timedelta(days=10)).strftime('%Y-%m-%d')
+        subject = 'Out of Office'
+        body = 'I am currently on vacation.'
+
+        assert api.mail_vacation_set(mail, subject, start_date, end_date, body=body) is True
+        api.deauth()
+
+    @pytest.mark.depends(name='test_mail_add')
+    @pytest.mark.depends(name='test_mail_vacation_set')
+    def test_mail_vacation_get(self):
+        api = APIClient.APIClient()
+        api.auth(api_test_user, api_test_pass)
+        mail = test_id + '@' + domain
+        start_date = (datetime.date.today() + datetime.timedelta(days=1)).strftime('%Y-%m-%d')
+        end_date = (datetime.date.today() + datetime.timedelta(days=10)).strftime('%Y-%m-%d')
+
+        vacation = api.mail_vacation_get(mail)
+        assert vacation['subject'] == 'Out of Office'
+        assert vacation['start_date'] == start_date
+        assert vacation['end_date'] == end_date
+        assert vacation['body'] == 'I am currently on vacation.'
+        api.deauth()
+
+    @pytest.mark.depends(name='test_mail_add')
+    @pytest.mark.depends(name='test_mail_vacation_set')
+    @pytest.mark.depends(name='test_mail_vacation_get')
+    def test_mail_vacation_delete(self):
+        api = APIClient.APIClient()
+        api.auth(api_test_user, api_test_pass)
+        mail = test_id + '@' + domain
+
+        assert api.mail_vacation_delete(mail) is True
+
+        vacation = api.mail_vacation_get(mail)
+        assert vacation.get('message') == 'no automatic mail response active'
+        api.deauth()
+
+    @pytest.mark.depends(name='test_mail_add')
+    @pytest.mark.depends(name='test_mail_vacation_delete')
+    def test_mail_vacation_delete_inactive(self):
+        api = APIClient.APIClient()
+        api.auth(api_test_user, api_test_pass)
+        mail = test_id + '@' + domain
+
+        # Deleting vacation when none is active should still succeed
+        assert api.mail_vacation_delete(mail) is True
+        api.deauth()
+
+    def test_mail_vacation_delete_invalid_mail(self):
+        api = APIClient.APIClient()
+        api.auth(api_test_user, api_test_pass)
+
+        with pytest.raises(APIError):
+            api.mail_vacation_delete('nonexistent_user_' + test_id + '@' + domain)
         api.deauth()
 
     def test_mail_externaluid(self):

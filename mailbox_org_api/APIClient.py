@@ -885,6 +885,13 @@ class APIClient:
 
         return self.api_request('mail.vacation.set', params)
 
+    def mail_vacation_delete(self, mail: str) -> bool:
+        """
+        Function to delete the vacation notice for a given mail
+        :param mail: the email address to delete the vacation notice for
+        :return: mailbox API response - True on success
+        """
+        return self.api_request('mail.vacation.delete', {'mail': mail})
 
     def group_list(self, account: str | None = None) -> dict:
         """
