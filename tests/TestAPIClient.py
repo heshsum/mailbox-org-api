@@ -295,6 +295,16 @@ class TestAPIClient:
         with pytest.raises(ValueError):
             api.domain_capabilities_set(domain, ['INVALID_CAPABILITY'])
 
+    def test_domain_validate_spf(self):
+        api = APIClient.APIClient()
+        api.auth(api_test_user, api_test_pass)
+        result = api.domain_validate_spf(domain)
+        assert result['domain'] == domain
+        assert 'spf_should' in result
+        assert 'valid' in result
+        assert isinstance(result['valid'], bool)
+        api.deauth()
+
     def test_mail_list(self):
         api = APIClient.APIClient()
         api.auth(api_test_user, api_test_pass)
