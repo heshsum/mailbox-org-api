@@ -529,6 +529,31 @@ class TestAPIClient:
             api.mail_capabilities_set(mail, ['INVALID_CAPABILITY'])
 
     @pytest.mark.depends(name='test_mail_add')
+    def test_mail_spamprotect(self):
+        api = APIClient.APIClient()
+        api.auth(api_test_user, api_test_pass)
+        mail = test_id + '@' + domain
+        api.mail_capabilities_set(mail, ['MAIL_SPAMPROTECTION'])
+
+        with pytest.raises(ValueError):
+            api.mail_spamprotect_set(mail, greylist=True, smtp_plausibility=True, rbl=True,
+                                     bypass_banned_checks=False, tag2level=5.0, killlevel='invalid', route_to='Spam')
+
+        spam_set = api.mail_spamprotect_set(mail, greylist=True, smtp_plausibility=True, rbl=True,
+                                            bypass_banned_checks=False, tag2level=5.0, killlevel='route', route_to='Spam')
+        assert spam_set['greylist'] == '1'
+        assert spam_set['killevel'] == 'route'
+        assert spam_set['route_to'] == 'Spam'
+
+        spam_get = api.mail_spamprotect_get(mail)
+        assert spam_get['greylist'] == '1'
+        assert spam_get['killevel'] == 'route'
+        assert spam_get['route_to'] == 'Spam'
+
+        api.mail_capabilities_set(mail, [])
+        api.deauth()
+
+    @pytest.mark.depends(name='test_mail_add')
     def test_mail_blacklist(self):
         api = APIClient.APIClient()
         api.auth(api_test_user, api_test_pass)
