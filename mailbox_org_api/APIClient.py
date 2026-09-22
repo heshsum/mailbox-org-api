@@ -885,7 +885,6 @@ class APIClient:
 
         return self.api_request('mail.vacation.set', params)
 
-        return self.api_request('mail.vacation.set', params)
 
     def group_list(self, account: str | None = None) -> dict:
         """
