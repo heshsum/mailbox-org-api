@@ -557,7 +557,7 @@ class APIClient:
         validate_params(allowed_parameters, kwargs)
 
         for k in quota_keys:
-            if k in kwargs is not None:
+            if kwargs.get(k) is not None:
                 kwargs[k] = str(kwargs[k])
 
         # After validation, build parameter list from mail and kwargs
@@ -615,7 +615,7 @@ class APIClient:
 
         # Explicitly convert integer quota values to strings for API compatibility
         for k in quota_keys:
-            if k in kwargs is not None:
+            if kwargs.get(k) is not None:
                 kwargs[k] = str(kwargs[k])
 
         # Build parameter dictionary excluding any None values
