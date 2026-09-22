@@ -79,6 +79,12 @@ class TestAPIClient:
         with pytest.raises(APIError):
             api.auth('wröng_üser?', 'wröng_pässwörd!')
 
+    def test_API_error_attributes(self):
+        err = APIError('Something went wrong', -32000)
+        assert err.message == 'Something went wrong'
+        assert err.code == -32000
+        assert str(err) == 'Error -32000 - Something went wrong'
+
     def test_login(self):
         api = APIClient.APIClient()
         assert api.jsonrpc_id == 0
