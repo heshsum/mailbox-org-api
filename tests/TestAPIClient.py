@@ -186,6 +186,13 @@ class TestAPIClient:
         assert invoice.date == invoices[0]['date']
         api.deauth()
 
+    def test_account_invoice_get_object_not_found(self):
+        api = APIClient.APIClient()
+        api.auth(api_test_user, api_test_pass)
+        with pytest.raises(ValueError, match='Invoice not found'):
+            api.account_invoice_get_object(api_test_user, 'NONEXISTENT_INVOICE_ID')
+        api.deauth()
+
     def test_account_invoice_get_file(self):
         api = APIClient.APIClient()
         api.auth(api_test_user, api_test_pass)
