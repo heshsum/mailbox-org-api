@@ -389,7 +389,7 @@ class TestAPIClient:
 
     @pytest.mark.depends(name='test_mail_add')
     def test_mail_vacation_set(self):
-        api = APIClient.APIClient(debug_output=True)
+        api = APIClient.APIClient()
         api.auth(api_test_user, api_test_pass)
         mail = test_id + '@' + domain
         start_date = (datetime.date.today() + datetime.timedelta(days=1)).strftime('%Y-%m-%d')
