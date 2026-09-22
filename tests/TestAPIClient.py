@@ -707,8 +707,8 @@ class TestAPIClient:
 
         # Deactivated due to a bug at mailbox
         # See: https://github.com/heshsum/mailbox-org-api/issues/218
-        #api.mail_set_additional_cloud_quota(mail, additional_cloud_quota)
-        #assert int(api.mail_get(mail)['additional_cloud_quota']) == additional_cloud_quota
+        api.mail_set_additional_cloud_quota(mail, additional_cloud_quota)
+        assert int(api.mail_get(mail)['additional_cloud_quota']) == additional_cloud_quota
         api.deauth()
 
     @pytest.mark.depends(name="test_mail_add")
