@@ -513,6 +513,31 @@ class TestAPIClient:
         assert api.mail_get(mail)['capabilities'] == []
         api.deauth()
 
+    @pytest.mark.depends(name='test_mail_add')
+    def test_mail_blacklist(self):
+        api = APIClient.APIClient()
+        api.auth(api_test_user, api_test_pass)
+        mail = test_id + '@' + domain
+        api.mail_capabilities_set(mail, ['MAIL_BLACKLIST'])
+
+        blacklist = api.mail_blacklist_list(mail)
+        assert isinstance(blacklist, list)
+
+        bad_address = 'bad@spammer.internal'
+        added = api.mail_blacklist_add(mail, bad_address)
+        assert bad_address in added
+
+        blacklist_after = api.mail_blacklist_list(mail)
+        assert bad_address in blacklist_after
+
+        deleted = api.mail_blacklist_del(mail, bad_address)
+        assert bad_address not in deleted
+
+        blacklist_final = api.mail_blacklist_list(mail)
+        assert bad_address not in blacklist_final
+
+        api.mail_capabilities_set(mail, [])
+        api.deauth()
 
     @pytest.mark.depends(name='test_mail_add')
     def test_mail_backup_list(self):
