@@ -4,4 +4,6 @@ class APIError(Exception):
     def __init__(self, message: str, code: int | None = None):
         self.message = message
         self.code = code
-        super().__init__(f'Error {code} - {message}')
+        err_str = f'Error {code} - {message}' if code is not None else message
+        super().__init__(err_str)
+
