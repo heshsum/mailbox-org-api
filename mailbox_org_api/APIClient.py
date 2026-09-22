@@ -860,26 +860,31 @@ class APIClient:
         """
         return self.api_request('mail.vacation.get', {'mail': mail})
 
-    def mail_vacation_set(self, mail: str, subject: str, body: str, start_date: str, end_date: str,
-                          additional_mail_addresses: list | None = None) -> dict:
+    def mail_vacation_set(self, mail: str, subject: str, start_date: str, end_date: str,
+                          body: str | None = None, additional_mail_addresses: list | None = None) -> dict:
         """
         Function to set the vacation notice for a given mail
         :param mail: the mail to get the vacation notice for
         :param subject: the subject of the vacation notice
-        :param body: the body of the vacation notice (optional)
         :param start_date: the start date of the vacation notice in format YYYY-MM-DD
         :param end_date: the end date of the vacation notice in format YYYY-MM-DD
+        :param body: the body of the vacation notice (optional)
         :param additional_mail_addresses: list of addresses to add to the vacation notice (optional)
         :return: mailbox API response - array with result 'true' of the request, code and message in case of an error
         """
-        params = {'mail': mail, 'subject': subject, 'body': body, 'start_date': start_date, 'end_date': end_date,
-                  'additional_mail_addresses': additional_mail_addresses}
-
-        # If no additional_mail_addresses are given, remove the parameter from the request
-        if not additional_mail_addresses:
-            params.pop('additional_mail_addresses')
+        params: dict[str, Any] = {
+            'mail': mail,
+            'subject': subject,
+            'start_date': start_date,
+            'end_date': end_date
+        }
+        if body is not None:
+            params['body'] = body
+        if additional_mail_addresses:
+            params['additional_mail_addresses'] = additional_mail_addresses
 
         return self.api_request('mail.vacation.set', params)
+
 
     def group_list(self, account: str | None = None) -> dict:
         """
