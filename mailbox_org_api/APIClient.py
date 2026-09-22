@@ -1,8 +1,8 @@
 """
 Module for the mailbox Business API client
 """
-import copy
 import base64
+import copy
 import zlib
 from typing import Any
 
