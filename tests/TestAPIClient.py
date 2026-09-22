@@ -389,7 +389,7 @@ class TestAPIClient:
 
     @pytest.mark.depends(name='test_mail_add')
     def test_mail_vacation_set(self):
-        api = APIClient.APIClient(debug_output=True)
+        api = APIClient.APIClient()
         api.auth(api_test_user, api_test_pass)
         mail = test_id + '@' + domain
         start_date = (datetime.date.today() + datetime.timedelta(days=1)).strftime('%Y-%m-%d')
@@ -694,8 +694,8 @@ class TestAPIClient:
 
         # Deactivated due to a bug at mailbox
         # See: https://github.com/heshsum/mailbox-org-api/issues/218
-        #api.mail_set_additional_mail_quota(mail, additional_mail_quota)
-        #assert int(api.mail_get(mail)['additional_mail_quota']) == additional_mail_quota
+        api.mail_set_additional_mail_quota(mail, additional_mail_quota)
+        assert int(api.mail_get(mail)['additional_mail_quota']) == additional_mail_quota
         api.deauth()
 
     @pytest.mark.depends(name="test_mail_add")
@@ -707,8 +707,8 @@ class TestAPIClient:
 
         # Deactivated due to a bug at mailbox
         # See: https://github.com/heshsum/mailbox-org-api/issues/218
-        #api.mail_set_additional_cloud_quota(mail, additional_cloud_quota)
-        #assert int(api.mail_get(mail)['additional_cloud_quota']) == additional_cloud_quota
+        api.mail_set_additional_cloud_quota(mail, additional_cloud_quota)
+        assert int(api.mail_get(mail)['additional_cloud_quota']) == additional_cloud_quota
         api.deauth()
 
     @pytest.mark.depends(name="test_mail_add")
