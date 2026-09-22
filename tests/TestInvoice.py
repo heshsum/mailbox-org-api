@@ -23,7 +23,7 @@ class TestMail:
         assert invoice.invoice_id == test_id
         id = 'BMBO-9876-25'
         invoice.invoice_id = id
-        assert invoice.invoice_id, id
+        assert invoice.invoice_id == id
 
     def test_invoice_status(self):
         invoice = Invoice.Invoice(test_account, test_id)
