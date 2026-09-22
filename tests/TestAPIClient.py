@@ -504,6 +504,18 @@ class TestAPIClient:
         assert api.mail_get(mail)['capabilities'] == []
         api.deauth()
 
+
+    @pytest.mark.depends(name='test_mail_add')
+    def test_mail_passwordreset_listmethods(self):
+        api = APIClient.APIClient()
+        api.auth(api_test_user, api_test_pass)
+        mail = test_id + '@' + domain
+
+        methods = api.mail_passwordreset_listmethods(mail)
+        assert isinstance(methods, list)
+
+        api.deauth()
+
     def test_mail_set_state(self):
         api = APIClient.APIClient()
         api.auth(api_test_user, api_test_pass)
