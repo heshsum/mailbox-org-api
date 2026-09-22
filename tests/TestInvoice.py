@@ -4,7 +4,7 @@ test_account = 'test_account'
 test_id = 'BMBO-1234-2025'
 
 
-class TestMail:
+class TestInvoice:
 
     def test_invoice_create(self):
         invoice = Invoice.Invoice(test_account, test_id)
