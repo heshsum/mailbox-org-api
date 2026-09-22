@@ -323,6 +323,17 @@ class TestAPIClient:
         api.deauth()
 
     @pytest.mark.depends(name='test_mail_add')
+    def test_mail_get_object(self):
+        api = APIClient.APIClient()
+        api.auth(api_test_user, api_test_pass)
+        mail = test_id + '@' + domain
+        mail_obj = api.mail_get_object(mail)
+        assert mail_obj.mail == mail
+        assert mail_obj.plan == 'standard'
+        assert mail_obj.type == 'inbox'
+        api.deauth()
+
+    @pytest.mark.depends(name='test_mail_add')
     def test_mail_vacation_set(self):
         api = APIClient.APIClient(debug_output=True)
         api.auth(api_test_user, api_test_pass)
