@@ -515,6 +515,19 @@ class TestAPIClient:
 
 
     @pytest.mark.depends(name='test_mail_add')
+    def test_mail_backup_list(self):
+        api = APIClient.APIClient()
+        api.auth(api_test_user, api_test_pass)
+        mail = test_id + '@' + domain
+        api.mail_capabilities_set(mail, ['MAIL_BACKUPRECOVER'])
+
+        backups = api.mail_backup_list(mail)
+        assert backups is False or isinstance(backups, list)
+
+        api.mail_capabilities_set(mail, [])
+        api.deauth()
+
+    @pytest.mark.depends(name='test_mail_add')
     def test_mail_passwordreset_listmethods(self):
         api = APIClient.APIClient()
         api.auth(api_test_user, api_test_pass)
