@@ -913,6 +913,7 @@ class APIClient:
         """
         params = {'group_id': group_id}
         if account:
+        params: dict[str, Any] = {'group_id': group_id}
             params['account'] = account
         return self.api_request('group.get', params)
 
@@ -923,7 +924,7 @@ class APIClient:
         :param account: optional parameter for the account to delete the group for
         :return: mailbox API response - True if the group was deleted, False otherwise
         """
-        params = {'group_id': group_id}
+        params: dict[str, Any] = {'group_id': group_id}
         if account:
             params['account'] = account
         return self.api_request('group.del', params)
