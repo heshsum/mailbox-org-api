@@ -74,6 +74,12 @@ class TestAPIClient:
         assert api.hello_world() == 'Hello World!'
         assert api.jsonrpc_id == 1
 
+    def test_hello_innerworld(self):
+        api = APIClient.APIClient()
+        api.auth(api_test_user, api_test_pass)
+        assert api.hello_innerworld() == 'Hello Inner-World!'
+        api.deauth()
+
     def test_API_error(self):
         api = APIClient.APIClient()
         with pytest.raises(APIError):
