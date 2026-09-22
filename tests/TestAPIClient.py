@@ -514,6 +514,13 @@ class TestAPIClient:
         api.deauth()
 
     @pytest.mark.depends(name='test_mail_add')
+    def test_mail_capabilities_set_invalid(self):
+        api = APIClient.APIClient()
+        mail = test_id + '@' + domain
+        with pytest.raises(ValueError):
+            api.mail_capabilities_set(mail, ['INVALID_CAPABILITY'])
+
+    @pytest.mark.depends(name='test_mail_add')
     def test_mail_blacklist(self):
         api = APIClient.APIClient()
         api.auth(api_test_user, api_test_pass)
