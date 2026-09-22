@@ -757,6 +757,14 @@ class TestAPIClient:
         assert sub in api.additionalmailaccount_list(parent)['additional_accounts']
         api.deauth()
 
+    def test_context_list(self):
+        api = APIClient.APIClient()
+        api.auth(api_test_user, api_test_pass)
+        contexts = api.context_list(api_test_user)
+        assert isinstance(contexts, dict)
+        assert len(contexts) > 0
+        api.deauth()
+
     # Removed test as the API is too unrealiable.
     # It oftentimes needs too much time to update and reply with the updated data for the test to work reliably
     # def test_additionalmailaccount_add(self):
