@@ -62,6 +62,14 @@ class TestAPIClient:
         with pytest.raises(TypeError):
             APIClient.validate_params(allowed, {'string': 123})
 
+    def test_get_jsonrpc_id(self):
+        api = APIClient.APIClient()
+        assert api.jsonrpc_id == 0
+        assert api.get_jsonrpc_id() == '1'
+        assert api.jsonrpc_id == 1
+        assert api.get_jsonrpc_id() == '2'
+        assert api.jsonrpc_id == 2
+
     def test_headers(self):
         api = APIClient.APIClient()
         assert api.auth_id is None
