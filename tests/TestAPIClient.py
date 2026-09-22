@@ -436,6 +436,16 @@ class TestAPIClient:
 
         api.deauth()
 
+    @pytest.mark.depends(name='test_mail_add')
+    def test_mail_set_conflicting_passwords(self):
+        api = APIClient.APIClient()
+        api.auth(api_test_user, api_test_pass)
+        mail = test_id + '@' + domain
+        with pytest.raises(KeyError):
+            api.mail_set(mail, password='pw1', password_hash='hash1')
+        api.deauth()
+
+
     @pytest.mark.depends(name="test_mail_add")
     def test_mail_capabilities_set(self):
         capabilities = ['MAIL_SPAMPROTECTION', 'MAIL_BLACKLIST', 'MAIL_BACKUPRECOVER', 'MAIL_PASSWORDRESET_SMS']
