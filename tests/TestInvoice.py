@@ -23,7 +23,7 @@ class TestMail:
         assert invoice.invoice_id == test_id
         id = 'BMBO-9876-25'
         invoice.invoice_id = id
-        assert invoice.invoice_id, id
+        assert invoice.invoice_id == id
 
     def test_invoice_status(self):
         invoice = Invoice.Invoice(test_account, test_id)
@@ -45,3 +45,31 @@ class TestMail:
         token = '123456789'
         invoice.token = token
         assert invoice.token == token
+
+    def test_invoice_csv(self):
+        invoice = Invoice.Invoice(test_account, test_id)
+        assert invoice.csv is None
+        csv_data = 'date,services,description,quantity,currency,net,vat_percent,total'
+        invoice.csv = csv_data
+        assert invoice.csv == csv_data
+
+    def test_invoice_pdf(self):
+        invoice = Invoice.Invoice(test_account, test_id)
+        assert invoice.pdf is None
+        pdf_data = '%PDF-1.7'
+        invoice.pdf = pdf_data
+        assert invoice.pdf == pdf_data
+
+    def test_invoice_xml(self):
+        invoice = Invoice.Invoice(test_account, test_id)
+        assert invoice.xml is None
+        xml_data = '<?xml version="1.0" encoding="UTF-8"?>'
+        invoice.xml = xml_data
+        assert invoice.xml == xml_data
+
+    def test_invoice_str(self):
+        invoice = Invoice.Invoice(test_account, test_id)
+        result_str = str(invoice)
+        assert f'account: {test_account}' in result_str
+        assert f'invoice_id: {test_id}' in result_str
+

@@ -255,8 +255,15 @@ class TestMail(unittest.TestCase):
         mail.plansavailable = plansavailable
         self.assertEqual(mail.plansavailable, plansavailable)
 
+    def test_mail_str(self):
+        mail = Mail.Mail(mail_address)
+        result_str = str(mail)
+        self.assertIn(f'mail: {mail_address}', result_str)
+        self.assertIn('plansavailable: []', result_str)
+
 
 if __name__ == '__main__':
     unittest.main()
 
 account = 'test_account'
+

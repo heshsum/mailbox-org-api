@@ -62,6 +62,18 @@ class TestAPIClient:
         with pytest.raises(TypeError):
             APIClient.validate_params(allowed, {'string': 123})
 
+    def test_bool2str(self):
+        assert APIClient.bool2str(True) == '1'
+        assert APIClient.bool2str(False) == '0'
+
+    def test_get_jsonrpc_id(self):
+        api = APIClient.APIClient()
+        assert api.jsonrpc_id == 0
+        assert api.get_jsonrpc_id() == '1'
+        assert api.jsonrpc_id == 1
+        assert api.get_jsonrpc_id() == '2'
+        assert api.jsonrpc_id == 2
+
     def test_headers(self):
         api = APIClient.APIClient()
         assert api.auth_id is None
@@ -74,10 +86,22 @@ class TestAPIClient:
         assert api.hello_world() == 'Hello World!'
         assert api.jsonrpc_id == 1
 
+    def test_hello_innerworld(self):
+        api = APIClient.APIClient()
+        api.auth(api_test_user, api_test_pass)
+        assert api.hello_innerworld() == 'Hello Inner-World!'
+        api.deauth()
+
     def test_API_error(self):
         api = APIClient.APIClient()
         with pytest.raises(APIError):
             api.auth('wröng_üser?', 'wröng_pässwörd!')
+
+    def test_API_error_attributes(self):
+        err = APIError('Something went wrong', -32000)
+        assert err.message == 'Something went wrong'
+        assert err.code == -32000
+        assert str(err) == 'Error -32000 - Something went wrong'
 
     def test_login(self):
         api = APIClient.APIClient()
@@ -95,6 +119,14 @@ class TestAPIClient:
         assert api.session.headers.get('HPLS-AUTH') is not None
         api.deauth()
         assert api.session.headers.get('HPLS-AUTH') is None
+
+    def test_context_manager(self):
+        with APIClient.APIClient() as api:
+            api.auth(api_test_user, api_test_pass)
+            assert api.auth_id is not None
+            assert api.level == 'account'
+        assert api.auth_id is None
+        assert api.level is None
 
     def test_account_get(self):
         api = APIClient.APIClient()
@@ -186,6 +218,13 @@ class TestAPIClient:
         assert invoice.date == invoices[0]['date']
         api.deauth()
 
+    def test_account_invoice_get_object_not_found(self):
+        api = APIClient.APIClient()
+        api.auth(api_test_user, api_test_pass)
+        with pytest.raises(ValueError, match='Invoice not found'):
+            api.account_invoice_get_object(api_test_user, 'NONEXISTENT_INVOICE_ID')
+        api.deauth()
+
     def test_account_invoice_get_file(self):
         api = APIClient.APIClient()
         api.auth(api_test_user, api_test_pass)
@@ -250,6 +289,21 @@ class TestAPIClient:
         api.domain_capabilities_set(domain, [])
         for m in api.mail_list(domain):
             assert m['capabilities'] == []
+
+    def test_domain_capabilities_set_invalid(self):
+        api = APIClient.APIClient()
+        with pytest.raises(ValueError):
+            api.domain_capabilities_set(domain, ['INVALID_CAPABILITY'])
+
+    def test_domain_validate_spf(self):
+        api = APIClient.APIClient()
+        api.auth(api_test_user, api_test_pass)
+        result = api.domain_validate_spf(domain)
+        assert result['domain'] == domain
+        assert 'spf_should' in result
+        assert 'valid' in result
+        assert isinstance(result['valid'], bool)
+        api.deauth()
 
     def test_mail_list(self):
         api = APIClient.APIClient()
@@ -320,6 +374,17 @@ class TestAPIClient:
 
         api.mail_add(mail_address, generate_pw(), 'standard', test_id, test_id)
         assert api.mail_get(mail_address)['mail'] == mail_address
+        api.deauth()
+
+    @pytest.mark.depends(name='test_mail_add')
+    def test_mail_get_object(self):
+        api = APIClient.APIClient()
+        api.auth(api_test_user, api_test_pass)
+        mail = test_id + '@' + domain
+        mail_obj = api.mail_get_object(mail)
+        assert mail_obj.mail == mail
+        assert mail_obj.plan == 'standard'
+        assert mail_obj.type == 'inbox'
         api.deauth()
 
     @pytest.mark.depends(name='test_mail_add')
@@ -436,6 +501,16 @@ class TestAPIClient:
 
         api.deauth()
 
+    @pytest.mark.depends(name='test_mail_add')
+    def test_mail_set_conflicting_passwords(self):
+        api = APIClient.APIClient()
+        api.auth(api_test_user, api_test_pass)
+        mail = test_id + '@' + domain
+        with pytest.raises(KeyError):
+            api.mail_set(mail, password='pw1', password_hash='hash1')
+        api.deauth()
+
+
     @pytest.mark.depends(name="test_mail_add")
     def test_mail_capabilities_set(self):
         capabilities = ['MAIL_SPAMPROTECTION', 'MAIL_BLACKLIST', 'MAIL_BACKUPRECOVER', 'MAIL_PASSWORDRESET_SMS']
@@ -454,6 +529,88 @@ class TestAPIClient:
             assert i in capabilities
         api.mail_capabilities_set(mail, [])
         assert api.mail_get(mail)['capabilities'] == []
+        api.deauth()
+
+    @pytest.mark.depends(name='test_mail_add')
+    def test_mail_capabilities_set_invalid(self):
+        api = APIClient.APIClient()
+        mail = test_id + '@' + domain
+        with pytest.raises(ValueError):
+            api.mail_capabilities_set(mail, ['INVALID_CAPABILITY'])
+
+    @pytest.mark.depends(name='test_mail_add')
+    def test_mail_spamprotect(self):
+        api = APIClient.APIClient()
+        api.auth(api_test_user, api_test_pass)
+        mail = test_id + '@' + domain
+        api.mail_capabilities_set(mail, ['MAIL_SPAMPROTECTION'])
+
+        with pytest.raises(ValueError):
+            api.mail_spamprotect_set(mail, greylist=True, smtp_plausibility=True, rbl=True,
+                                     bypass_banned_checks=False, tag2level=5.0, killlevel='invalid', route_to='Spam')
+
+        spam_set = api.mail_spamprotect_set(mail, greylist=True, smtp_plausibility=True, rbl=True,
+                                            bypass_banned_checks=False, tag2level=5.0, killlevel='route', route_to='Spam')
+        assert spam_set['greylist'] == '1'
+        assert spam_set['killevel'] == 'route'
+        assert spam_set['route_to'] == 'Spam'
+
+        spam_get = api.mail_spamprotect_get(mail)
+        assert spam_get['greylist'] == '1'
+        assert spam_get['killevel'] == 'route'
+        assert spam_get['route_to'] == 'Spam'
+
+        api.mail_capabilities_set(mail, [])
+        api.deauth()
+
+    @pytest.mark.depends(name='test_mail_add')
+    def test_mail_blacklist(self):
+        api = APIClient.APIClient()
+        api.auth(api_test_user, api_test_pass)
+        mail = test_id + '@' + domain
+        api.mail_capabilities_set(mail, ['MAIL_BLACKLIST'])
+
+        blacklist = api.mail_blacklist_list(mail)
+        assert isinstance(blacklist, list)
+
+        bad_address = 'bad@spammer.internal'
+        added = api.mail_blacklist_add(mail, bad_address)
+        assert bad_address in added
+
+        blacklist_after = api.mail_blacklist_list(mail)
+        assert bad_address in blacklist_after
+
+        deleted = api.mail_blacklist_del(mail, bad_address)
+        assert bad_address not in deleted
+
+        blacklist_final = api.mail_blacklist_list(mail)
+        assert bad_address not in blacklist_final
+
+        api.mail_capabilities_set(mail, [])
+        api.deauth()
+
+    @pytest.mark.depends(name='test_mail_add')
+    def test_mail_backup_list(self):
+        api = APIClient.APIClient()
+        api.auth(api_test_user, api_test_pass)
+        mail = test_id + '@' + domain
+        api.mail_capabilities_set(mail, ['MAIL_BACKUPRECOVER'])
+
+        backups = api.mail_backup_list(mail)
+        assert backups is False or isinstance(backups, list)
+
+        api.mail_capabilities_set(mail, [])
+        api.deauth()
+
+    @pytest.mark.depends(name='test_mail_add')
+    def test_mail_passwordreset_listmethods(self):
+        api = APIClient.APIClient()
+        api.auth(api_test_user, api_test_pass)
+        mail = test_id + '@' + domain
+
+        methods = api.mail_passwordreset_listmethods(mail)
+        assert isinstance(methods, list)
+
         api.deauth()
 
     def test_mail_set_state(self):
@@ -608,6 +765,14 @@ class TestAPIClient:
         parent = 'parent@testbmboapi.internal'
         sub = 'sub_mail@testbmboapi.internal'
         assert sub in api.additionalmailaccount_list(parent)['additional_accounts']
+        api.deauth()
+
+    def test_context_list(self):
+        api = APIClient.APIClient()
+        api.auth(api_test_user, api_test_pass)
+        contexts = api.context_list(api_test_user)
+        assert isinstance(contexts, dict)
+        assert len(contexts) > 0
         api.deauth()
 
     # Removed test as the API is too unrealiable.

@@ -119,14 +119,14 @@ class TestAccount:
         assert account.dta_allowed is None
         dta_allowed = 'test_dta_allowed'
         account.dta_allowed = dta_allowed
-        assert account.dta_allowed, dta_allowed
+        assert account.dta_allowed == dta_allowed
 
     def test_account_old_customer(self):
         account = Account.Account(account_name)
         assert account.old_customer is None
         old_customer = 'test_old_customer'
         account.old_customer = old_customer
-        assert account.old_customer, old_customer
+        assert account.old_customer == old_customer
 
     def test_account_plan(self):
         account = Account.Account(account_name)
