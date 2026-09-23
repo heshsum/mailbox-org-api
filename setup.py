@@ -6,7 +6,10 @@ setup(
     version='2.6',
     description='A library to access the mailbox Business API',
     author='Hendrik Schlange',
-    install_requires=['requests'],
+    install_requires=[
+        'requests>=2.32.3',
+        'urllib3>=2.8.0',
+    ],
     tests_require=['pytest'],
     test_suite='tests',
 )
