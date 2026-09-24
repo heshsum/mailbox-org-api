@@ -7,9 +7,12 @@ authors = [
 description = "A library to access the mailbox Business API."
 readme = "README.md"
 requires-python = ">=3.11"
+license = "MIT"
 classifiers = [
     "Programming Language :: Python :: 3",
-    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
     "Operating System :: OS Independent",
 ]
 dependencies = [
@@ -17,9 +20,22 @@ dependencies = [
     "urllib3>=2.8.0",
 ]
 
+[project.optional-dependencies]
+test = [
+    "pytest>=8.3.3",
+    "pytest-order>=1.3.0",
+    "pytest-depends>=1.0.1",
+]
+
 [project.urls]
 Homepage = "https://github.com/heshsum/mailbox-org-api"
+Documentation = "https://github.com/heshsum/mailbox-org-api/wiki"
 Issues = "https://github.com/heshsum/mailbox-org-api/issues"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["mailbox_org_api*"]
+exclude = ["tests*"]
 
 [build-system]
 requires = ["setuptools>=70.0"]
