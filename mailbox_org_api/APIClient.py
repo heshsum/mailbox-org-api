@@ -473,6 +473,22 @@ class APIClient:
         """
         return self.api_request('domain.validate.spf', {'domain': domain})
 
+    def domain_deletelist_search(self, domain: str) -> dict:
+        """
+        Function to list all deleted emails for a given domain
+        :param domain: The domain to search
+        :return: A dict of all deleted emails
+        """
+        return self.api_request('domain.deletelist.search', {'domain': domain})
+
+    def domain_deletelist_delete(self, mail: str) -> bool | Any:
+        """
+        Function to remove a deleted email from the delete list.
+        :param mail: The deleted mail to remove from the list
+        :return: True if the mail was successfully removed. And error otherwise.
+        """
+        return self.api_request('domain.deletelist.delete', {'mail': mail})
+
     def mail_list(self, domain: str, details: bool = False, page_size: int | None = None, page: int | None = None,
                   sort_field: str | None = None, sort_order: str | None = None) -> dict:
         """
