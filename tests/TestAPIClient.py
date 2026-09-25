@@ -229,20 +229,16 @@ class TestAPIClient:
         domains = api_client.domain_list(api_test_user)
         assert domains[0]['count_mails'] is not None
 
-    def test_domain_set(self):
-        api = APIClient.APIClient()
-        api.auth(api_test_user, api_test_pass)
-        api.domain_set(domain, memo=test_id)
-        assert api.domain_get(domain)['memo'] == test_id
+    def test_domain_set(self, api_client):
+        api_client.domain_set(domain, memo=test_id)
+        assert api_client.domain_get(domain)['memo'] == test_id
 
-    def test_domain_capabilities_set(self):
-        api = APIClient.APIClient()
-        api.auth(api_test_user, api_test_pass)
-        api.domain_capabilities_set(domain, ['MAIL_SPAMPROTECTION'])
-        for m in api.mail_list(domain):
+    def test_domain_capabilities_set(self, api_client):
+        api_client.domain_capabilities_set(domain, ['MAIL_SPAMPROTECTION'])
+        for m in api_client.mail_list(domain):
             assert m['capabilities'] == ['MAIL_SPAMPROTECTION']
-        api.domain_capabilities_set(domain, [])
-        for m in api.mail_list(domain):
+        api_client.domain_capabilities_set(domain, [])
+        for m in api_client.mail_list(domain):
             assert m['capabilities'] == []
 
     def test_domain_capabilities_set_invalid(self):
@@ -250,20 +246,15 @@ class TestAPIClient:
         with pytest.raises(ValueError):
             api.domain_capabilities_set(domain, ['INVALID_CAPABILITY'])
 
-    def test_domain_validate_spf(self):
-        api = APIClient.APIClient()
-        api.auth(api_test_user, api_test_pass)
-        result = api.domain_validate_spf(domain)
+    def test_domain_validate_spf(self, api_client):
+        result = api_client.domain_validate_spf(domain)
         assert result['domain'] == domain
         assert 'spf_should' in result
         assert 'valid' in result
         assert isinstance(result['valid'], bool)
-        api.deauth()
 
-    def test_mail_list(self):
-        api = APIClient.APIClient()
-        api.auth(api_test_user, api_test_pass)
-        mails = api.mail_list(domain)
+    def test_mail_list(self, api_client):
+        mails = api_client.mail_list(domain)
         assert mails is not None
         assert mails[0]['mail'] is not None
         assert '@' in mails[0]['mail'] and domain in mails[0]['mail']
@@ -278,34 +269,28 @@ class TestAPIClient:
                 ['MAIL_BLACKLIST', 'MAIL_SPAMPROTECTION', 'MAIL_PASSWORDRESET_SMS', 'MAIL_BACKUPRECOVER'])
         assert mails[0]['plan'] in ['premium', 'standard', 'light']
         assert mails[0]['creation_date'] is not None
-        paginated_mails = api.mail_list(domain, page_size=50, page=1)
+        paginated_mails = api_client.mail_list(domain, page_size=50, page=1)
         assert paginated_mails is not None
         assert paginated_mails['totalHits'] is not None
         assert paginated_mails['totalPages'] is not None
         assert paginated_mails['results'] is not None
         with pytest.raises(APIError):
-            api.mail_list(domain, page=2)
+            api_client.mail_list(domain, page=2)
         with pytest.raises(ValueError):
-            api.mail_list(domain, page_size=-1)
+            api_client.mail_list(domain, page_size=-1)
         with pytest.raises(ValueError):
-            api.mail_list(domain, sort_order='wröng')
-        api.deauth()
+            api_client.mail_list(domain, sort_order='wröng')
 
-    def test_mail_get_list(self):
-        api = APIClient.APIClient()
-        api.auth(api_test_user, api_test_pass)
-        mails = api.mail_list(domain)
-        mail_addresses = api.mail_get_list(domain)
+    def test_mail_get_list(self, api_client):
+        mails = api_client.mail_list(domain)
+        mail_addresses = api_client.mail_get_list(domain)
         assert len(mail_addresses) == len(mails)
         for i in mails:
             assert i['mail'] is not None
             assert i['mail'] in mail_addresses
-        api.deauth()
 
-    def test_mail_get(self):
-        api = APIClient.APIClient()
-        api.auth(api_test_user, api_test_pass)
-        mails = api.mail_list(domain)
+    def test_mail_get(self, api_client):
+        mails = api_client.mail_list(domain)
         mail = mails[0]
         assert '@' in mail['mail'] and domain in mail['mail']
         assert mail['parent_uid'] == api_test_user
@@ -319,57 +304,42 @@ class TestAPIClient:
                 ['MAIL_BLACKLIST', 'MAIL_SPAMPROTECTION', 'MAIL_PASSWORDRESET_SMS', 'MAIL_BACKUPRECOVER'])
         assert mail['plan'] in ['premium', 'standard', 'light']
         assert mail['creation_date'] is not None
-        api.deauth()
 
-    def test_mail_add(self):
-        api = APIClient.APIClient()
-        api.auth(api_test_user, api_test_pass)
-
+    def test_mail_add(self, api_client):
         mail_address = test_id + '@' + domain
-
-        api.mail_add(mail_address, generate_pw(), 'standard', test_id, test_id)
-        assert api.mail_get(mail_address)['mail'] == mail_address
-        api.deauth()
+        api_client.mail_add(mail_address, generate_pw(), 'standard', test_id, test_id)
+        assert api_client.mail_get(mail_address)['mail'] == mail_address
 
     @pytest.mark.depends(name='test_mail_add')
-    def test_mail_get_object(self):
-        api = APIClient.APIClient()
-        api.auth(api_test_user, api_test_pass)
+    def test_mail_get_object(self, api_client):
         mail = test_id + '@' + domain
-        mail_obj = api.mail_get_object(mail)
+        mail_obj = api_client.mail_get_object(mail)
         assert mail_obj.mail == mail
         assert mail_obj.plan == 'standard'
         assert mail_obj.type == 'inbox'
-        api.deauth()
 
     @pytest.mark.depends(name='test_mail_add')
-    def test_mail_vacation_set(self):
-        api = APIClient.APIClient()
-        api.auth(api_test_user, api_test_pass)
+    def test_mail_vacation_set(self, api_client):
         mail = test_id + '@' + domain
         start_date = (datetime.date.today() + datetime.timedelta(days=1)).strftime('%Y-%m-%d')
         end_date = (datetime.date.today() + datetime.timedelta(days=10)).strftime('%Y-%m-%d')
         subject = 'Out of Office'
         body = 'I am currently on vacation.'
 
-        assert api.mail_vacation_set(mail, subject, start_date, end_date, body=body) is True
-        api.deauth()
+        assert api_client.mail_vacation_set(mail, subject, start_date, end_date, body=body) is True
 
     @pytest.mark.depends(name='test_mail_add')
     @pytest.mark.depends(name='test_mail_vacation_set')
-    def test_mail_vacation_get(self):
-        api = APIClient.APIClient()
-        api.auth(api_test_user, api_test_pass)
+    def test_mail_vacation_get(self, api_client):
         mail = test_id + '@' + domain
         start_date = (datetime.date.today() + datetime.timedelta(days=1)).strftime('%Y-%m-%d')
         end_date = (datetime.date.today() + datetime.timedelta(days=10)).strftime('%Y-%m-%d')
 
-        vacation = api.mail_vacation_get(mail)
+        vacation = api_client.mail_vacation_get(mail)
         assert vacation['subject'] == 'Out of Office'
         assert vacation['start_date'] == start_date
         assert vacation['end_date'] == end_date
         assert vacation['body'] == 'I am currently on vacation.'
-        api.deauth()
 
     @pytest.mark.depends(name='test_mail_add')
     @pytest.mark.depends(name='test_mail_vacation_set')
