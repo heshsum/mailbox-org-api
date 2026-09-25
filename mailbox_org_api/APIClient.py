@@ -993,14 +993,16 @@ class APIClient:
         """
         return self.api_request('mail.passwordreset.listmethods', {'mail': mail})
 
-    def mail_passwordreset_sendsms(self, mail: str, cell_phone: str) -> dict:
+    def mail_passwordreset_sendsms(self, mail: str, cell_phone: str, expire_in_minutes: int = 15) -> dict:
         """
         Function to send a password reset for a mail via SMS
         :param mail: the mail to send the SMS for
         :param cell_phone: the cell phone number of the mailbox
+        :param expire_in_minutes: Number of minutes until the token expires (default: 15)
         :return: API response from mailbox - True if the SMS was sent, False otherwise
         """
-        return self.api_request('mail.passwordreset.sendsms', {'mail': mail, 'cell_phone': cell_phone})
+        return self.api_request('mail.passwordreset.sendsms', {'mail': mail, 'cell_phone': cell_phone,
+                                                               'expire_in_minutes': expire_in_minutes})
 
     def mail_passwordreset_setpassword(self, mail: str, token: str, password: str) -> dict:
         """
