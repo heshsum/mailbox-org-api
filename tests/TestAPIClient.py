@@ -165,99 +165,69 @@ class TestAPIClient:
         assert invoices[0]['invoice_id'] == 'BMBO-83002-25'
         assert invoices[0]['token'] is not None
 
-    def test_account_invoice_get_list(self):
-        api = APIClient.APIClient()
-        api.auth(api_test_user, api_test_pass)
-        invoices = api.account_invoice_get_list(api_test_user)
+    def test_account_invoice_get_list(self, api_client):
+        invoices = api_client.account_invoice_get_list(api_test_user)
         assert invoices is not None
         for invoice in invoices:
             assert str.startswith(invoice, 'BMBO-')
-        api.deauth()
 
-    def test_account_invoice_list_open(self):
-        api = APIClient.APIClient()
-        api.auth(api_test_user, api_test_pass)
-        invoices = api.account_invoice_get_list_open(api_test_user)
+    def test_account_invoice_list_open(self, api_client):
+        invoices = api_client.account_invoice_get_list_open(api_test_user)
         assert invoices is not None
         # The test account does not have any open invoices
         assert len(invoices) == 0
-        api.deauth()
 
-    def test_account_invoice_get(self):
-        api = APIClient.APIClient()
-        api.auth(api_test_user, api_test_pass)
-        invoices = api.account_invoice_list(api_test_user)
-        invoice = api.account_invoice_get(api_test_user, invoices[0]['token'])
+    def test_account_invoice_get(self, api_client):
+        invoices = api_client.account_invoice_list(api_test_user)
+        invoice = api_client.account_invoice_get(api_test_user, invoices[0]['token'])
         assert invoices[0]['invoice_id'] in str(invoice)
-        api.deauth()
 
-    def test_account_invoice_get_object(self):
-        api = APIClient.APIClient()
-        api.auth(api_test_user, api_test_pass)
-        invoices = api.account_invoice_list(api_test_user)
-        invoice = api.account_invoice_get_object(api_test_user, invoices[0]['invoice_id'])
+    def test_account_invoice_get_object(self, api_client):
+        invoices = api_client.account_invoice_list(api_test_user)
+        invoice = api_client.account_invoice_get_object(api_test_user, invoices[0]['invoice_id'])
         assert invoice.invoice_id == invoices[0]['invoice_id']
         assert invoice.status == invoices[0]['status']
         assert invoice.account == api_test_user
         assert invoice.token is not None
         assert invoice.date == invoices[0]['date']
-        api.deauth()
 
-    def test_account_invoice_get_object_not_found(self):
-        api = APIClient.APIClient()
-        api.auth(api_test_user, api_test_pass)
+    def test_account_invoice_get_object_not_found(self, api_client):
         with pytest.raises(ValueError, match='Invoice not found'):
-            api.account_invoice_get_object(api_test_user, 'NONEXISTENT_INVOICE_ID')
-        api.deauth()
+            api_client.account_invoice_get_object(api_test_user, 'NONEXISTENT_INVOICE_ID')
 
-    def test_account_invoice_get_file(self):
-        api = APIClient.APIClient()
-        api.auth(api_test_user, api_test_pass)
-        invoice = api.account_invoice_get_list(api_test_user)[0]
-        csv = api.account_invoice_get_file(api_test_user, invoice, 'csv')
+    def test_account_invoice_get_file(self, api_client):
+        invoice = api_client.account_invoice_get_list(api_test_user)[0]
+        csv = api_client.account_invoice_get_file(api_test_user, invoice, 'csv')
         assert 'date,services,description,quantity,currency,net,vat_percent,total' in str(csv)
-        pdf = api.account_invoice_get_file(api_test_user, invoice, 'pdf')
+        pdf = api_client.account_invoice_get_file(api_test_user, invoice, 'pdf')
         assert 'PDF-1.7' in str(pdf)
-        xml = api.account_invoice_get_file(api_test_user, invoice, 'xml')
+        xml = api_client.account_invoice_get_file(api_test_user, invoice, 'xml')
         assert 'xml version="1.0" encoding="UTF-8"' in str(xml)
-        api.deauth()
 
-    def test_account_invoice_get_token(self):
-        api = APIClient.APIClient()
-        api.auth(api_test_user, api_test_pass)
-        invoice = api.account_invoice_get_list(api_test_user)[0]
-        token = api.account_invoice_get_token(api_test_user, invoice_id=invoice)
+    def test_account_invoice_get_token(self, api_client):
+        invoice = api_client.account_invoice_get_list(api_test_user)[0]
+        token = api_client.account_invoice_get_token(api_test_user, invoice_id=invoice)
         assert len(token) > 0
         assert isinstance(token, str)
-        api.deauth()
 
-    def test_domain_list(self):
-        api = APIClient.APIClient()
-        api.auth(api_test_user, api_test_pass)
-        domains = api.domain_list(api_test_user)
+    def test_domain_list(self, api_client):
+        domains = api_client.domain_list(api_test_user)
         for d in domains:
             assert d['domain'] is not None
             assert d['count_mails'] is not None
             assert isinstance(d['domain'], str)
             assert isinstance(d['count_mails'], int)
-        api.deauth()
 
-    def test_domain_get_list(self):
-        api = APIClient.APIClient()
-        api.auth(api_test_user, api_test_pass)
-        domain_names = api.domain_get_list(api_test_user)
-        domains = api.domain_list(api_test_user)
+    def test_domain_get_list(self, api_client):
+        domain_names = api_client.domain_get_list(api_test_user)
+        domains = api_client.domain_list(api_test_user)
         assert len(domain_names) == len(domains)
         for d in domains:
             assert d['domain'] in domain_names
-        api.deauth()
 
-    def test_domain_get(self):
-        api = APIClient.APIClient()
-        api.auth(api_test_user, api_test_pass)
-        domains = api.domain_list(api_test_user)
+    def test_domain_get(self, api_client):
+        domains = api_client.domain_list(api_test_user)
         assert domains[0]['count_mails'] is not None
-        api.deauth()
 
     def test_domain_set(self):
         api = APIClient.APIClient()
