@@ -416,7 +416,6 @@ class TestAPIClient:
         with pytest.raises(KeyError):
             api_client.mail_set(mail, password='pw1', password_hash='hash1')
 
-
     @pytest.mark.depends(name="test_mail_add")
     def test_mail_capabilities_set(self, api_client):
         capabilities = ['MAIL_SPAMPROTECTION', 'MAIL_BLACKLIST', 'MAIL_BACKUPRECOVER', 'MAIL_PASSWORDRESET_SMS']
@@ -448,10 +447,12 @@ class TestAPIClient:
 
         with pytest.raises(ValueError):
             api_client.mail_spamprotect_set(mail, greylist=True, smtp_plausibility=True, rbl=True,
-                                     bypass_banned_checks=False, tag2level=5.0, killlevel='invalid', route_to='Spam')
+                                            bypass_banned_checks=False, tag2level=5.0, killlevel='invalid',
+                                            route_to='Spam')
 
         spam_set = api_client.mail_spamprotect_set(mail, greylist=True, smtp_plausibility=True, rbl=True,
-                                            bypass_banned_checks=False, tag2level=5.0, killlevel='route', route_to='Spam')
+                                                   bypass_banned_checks=False, tag2level=5.0, killlevel='route',
+                                                   route_to='Spam')
         assert spam_set['greylist'] == '1'
         assert spam_set['killevel'] == 'route'
         assert spam_set['route_to'] == 'Spam'
@@ -462,7 +463,6 @@ class TestAPIClient:
         assert spam_get['route_to'] == 'Spam'
 
         api_client.mail_capabilities_set(mail, [])
-
 
     @pytest.mark.depends(name='test_mail_add')
     def test_mail_blacklist(self, api_client):
@@ -503,7 +503,6 @@ class TestAPIClient:
 
         methods = api_client.mail_passwordreset_listmethods(mail)
         assert isinstance(methods, list)
-
 
     def test_mail_set_state(self, api_client):
         mails = api_client.mail_list(domain)
@@ -560,7 +559,6 @@ class TestAPIClient:
         # As the response is just the mailbox info, the assertion is a comparison with mail_get
         assert api_client.mail_set_password_require_reset(mail, generate_pw()) == api_client.mail_get(mail)
 
-
     def test_mail_set_additional_mail_quota(self, api_client):
         mail = test_id + '@' + domain
         additional_mail_quota = 23
@@ -569,7 +567,6 @@ class TestAPIClient:
         # See: https://github.com/heshsum/mailbox-org-api/issues/218
         api_client.mail_set_additional_mail_quota(mail, additional_mail_quota)
         assert int(api_client.mail_get(mail)['additional_mail_quota']) == additional_mail_quota
-
 
     @pytest.mark.depends(name="test_mail_add")
     def test_mail_set_additional_cloud_quota(self, api_client):
@@ -581,7 +578,6 @@ class TestAPIClient:
         api_client.mail_set_additional_cloud_quota(mail, additional_cloud_quota)
         assert int(api_client.mail_get(mail)['additional_cloud_quota']) == additional_cloud_quota
 
-
     @pytest.mark.depends(name="test_mail_add")
     def test_mail_apppassword_add(self, api_client):
         mail = test_id + '@' + domain
@@ -589,12 +585,10 @@ class TestAPIClient:
         api_client.mail_apppassword_add(mail, test_id, True, True)
         assert len(api_client.mail_apppassword_list(mail)) == len_before + 1
 
-
     @pytest.mark.depends(name="test_mail_add")
     def test_mail_apppassword_list(self, api_client):
         mail = test_id + '@' + domain
         assert len(api_client.mail_apppassword_list(mail)) > 0
-
 
     @pytest.mark.depends(name="test_mail_add")
     @pytest.mark.depends(name='test_mail_apppassword_add')
@@ -611,7 +605,6 @@ class TestAPIClient:
 
         # After deleting all app passwords, length should be 0
         assert len(api_client.mail_apppassword_list(mail)) == 0
-
 
     @pytest.mark.depends(name='test_mail_add')
     def test_mail_set_deletion_date(self, api_client):
