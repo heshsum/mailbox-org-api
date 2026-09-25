@@ -86,11 +86,8 @@ class TestAPIClient:
         assert api.hello_world() == 'Hello World!'
         assert api.jsonrpc_id == 1
 
-    def test_hello_innerworld(self):
-        api = APIClient.APIClient()
-        api.auth(api_test_user, api_test_pass)
-        assert api.hello_innerworld() == 'Hello Inner-World!'
-        api.deauth()
+    def test_hello_innerworld(self, api_client):
+        assert api_client.hello_innerworld() == 'Hello Inner-World!'
 
     def test_API_error(self):
         api = APIClient.APIClient()
@@ -128,10 +125,8 @@ class TestAPIClient:
         assert api.auth_id is None
         assert api.level is None
 
-    def test_account_get(self):
-        api = APIClient.APIClient()
-        api.auth(api_test_user, api_test_pass)
-        account = api.account_get(api_test_user)
+    def test_account_get(self, api_client):
+        account = api_client.account_get(api_test_user)
         assert account['account'] == 'test_bmbo_api'
         assert account['type'] == 'BMBO'
         assert account['status'] == 'aktiv'
@@ -139,12 +134,9 @@ class TestAPIClient:
         assert account['plan'] == 'basic'
         assert account['company'] == 'test_bmbo_api'
         assert account['ustid'] == 'DE1234567'
-        api.deauth()
 
-    def test_account_get_object(self):
-        api = APIClient.APIClient()
-        api.auth(api_test_user, api_test_pass)
-        account = api.account_get_object(api_test_user)
+    def test_account_get_object(self, api_client):
+        account = api_client.account_get_object(api_test_user)
         assert account.account == 'test_bmbo_api'
         assert account.type == 'BMBO'
         assert account.status == 'aktiv'
@@ -152,23 +144,17 @@ class TestAPIClient:
         assert account.plan == 'basic'
         assert account.company == 'test_bmbo_api'
         assert account.ustid == 'DE1234567'
-        api.deauth()
 
-    def test_account_set(self):
-        api = APIClient.APIClient()
-        api.auth(api_test_user, api_test_pass)
-        api.account_set(api_test_user, memo=test_id)
-        assert api.account_get(api_test_user)['memo'] == test_id
+    def test_account_set(self, api_client):
+        api_client.account_set(api_test_user, memo=test_id)
+        assert api_client.account_get(api_test_user)['memo'] == test_id
 
         test_id2 = str(int(time.time()))
-        api.account_set(api_test_user, memo=test_id2)
-        assert api.account_get(api_test_user)['memo'] == test_id2
-        api.deauth()
+        api_client.account_set(api_test_user, memo=test_id2)
+        assert api_client.account_get(api_test_user)['memo'] == test_id2
 
-    def test_account_invoice_list(self):
-        api = APIClient.APIClient()
-        api.auth(api_test_user, api_test_pass)
-        invoices = api.account_invoice_list(api_test_user)
+    def test_account_invoice_list(self, api_client):
+        invoices = api_client.account_invoice_list(api_test_user)
         for invoice in invoices:
             assert str.startswith(invoice['invoiceNumber'], 'BMBO-')
         assert invoices[0]['date'] == '2025-10-30'
@@ -178,7 +164,6 @@ class TestAPIClient:
         assert invoices[0]['availableDownloadFileTypes'] == ['csv', 'pdf', 'xml']
         assert invoices[0]['invoice_id'] == 'BMBO-83002-25'
         assert invoices[0]['token'] is not None
-        api.deauth()
 
     def test_account_invoice_get_list(self):
         api = APIClient.APIClient()
