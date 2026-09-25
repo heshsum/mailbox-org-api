@@ -30,15 +30,16 @@ jobs:
     steps:
       - uses: actions/checkout@v6
 
-      - name: Install uv
-        uses: astral-sh/setup-uv@v5
+      - name: Install the latest version of uv
+        uses: astral-sh/setup-uv@bec219d24cd3e171d82865faccec33120bb574f4 # v10.1.0
         with:
           enable-cache: true
+          # Use uv venv to activate a venv ready to be used by later steps
+          activate-environment: "false"
           python-version: ${{ matrix.python-version }}
 
       - name: Install dependencies
         run: |
-          uv venv
           uv pip install -r requirements.txt
 
       - name: Run tests
