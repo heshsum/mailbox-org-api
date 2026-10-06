@@ -492,20 +492,58 @@ class TestAPIClient:
 
     @pytest.mark.depends(name="test_mail_add")
     def test_mail_capabilities_set(self, api_client):
-        capabilities = ['MAIL_SPAMPROTECTION', 'MAIL_BLACKLIST', 'MAIL_BACKUPRECOVER', 'MAIL_PASSWORDRESET_SMS']
-
         mail = test_id + '@' + domain
 
         # Ensure that the plan supports capabilities
         api_client.mail_set_plan(mail, 'standard')
-        for i in capabilities:
-            api_client.mail_capabilities_set(mail, [i])
-            # The API returns a list of capabilities
-            capabilities = api_client.mail_get(mail)['capabilities']
-            assert len(capabilities) == 1
-            assert i in capabilities
-        api_client.mail_capabilities_set(mail, [])
-        assert api_client.mail_get(mail)['capabilities'] == []
+        try:
+            # Switch on each capability individually
+            for c in valid_capabilities:
+                assert api_client.mail_capabilities_set(mail, {c: 'on'}) is True
+                capability = api_client.mail_capabilities_get(mail)[c]
+                assert capability['intent'] == 'on'
+                assert capability['effective'] == 'on'
+                assert capability['source'] == 'mail'
+                assert c in api_client.mail_get(mail)['capabilities']
+
+            # Capabilities are a partial map - setting one to 'off' must not change the others.
+            # Because the account-level intent is 'off', setting the mailbox to 'off' normalizes
+            # the mailbox intent to 'inherit' (non-redundant exception) with effective 'off'.
+            api_client.mail_capabilities_set(mail, {'MAIL_SPAMPROTECTION': 'off'})
+            capabilities = api_client.mail_capabilities_get(mail)
+            assert capabilities['MAIL_SPAMPROTECTION']['effective'] == 'off'
+            assert capabilities['MAIL_SPAMPROTECTION']['intent'] == 'inherit'
+            assert capabilities['MAIL_SPAMPROTECTION']['source'] == 'account'
+            for c in valid_capabilities[1:]:
+                assert capabilities[c]['intent'] == 'on'
+                assert capabilities[c]['effective'] == 'on'
+            assert 'MAIL_SPAMPROTECTION' not in api_client.mail_get(mail)['capabilities']
+
+            # Setting a capability explicitly to 'inherit' clears any mailbox override
+            api_client.mail_capabilities_set(mail, {'MAIL_BLACKLIST': 'inherit'})
+            capabilities = api_client.mail_capabilities_get(mail)
+            assert capabilities['MAIL_BLACKLIST']['intent'] == 'inherit'
+            assert capabilities['MAIL_BLACKLIST']['source'] != 'mail'
+            assert 'MAIL_BLACKLIST' not in api_client.mail_get(mail)['capabilities']
+
+            # Set multiple capabilities at once: one 'on', others 'inherit'
+            api_client.mail_capabilities_set(mail, {'MAIL_SPAMPROTECTION': 'on', 'MAIL_BACKUPRECOVER': 'inherit'})
+            capabilities = api_client.mail_capabilities_get(mail)
+            assert capabilities['MAIL_SPAMPROTECTION']['intent'] == 'on'
+            assert capabilities['MAIL_BACKUPRECOVER']['intent'] == 'inherit'
+
+            # Clean up all capabilities back to 'inherit'
+            api_client.mail_capabilities_set(mail, {c: 'inherit' for c in valid_capabilities})
+            capabilities = api_client.mail_capabilities_get(mail)
+            for c in valid_capabilities:
+                assert capabilities[c]['intent'] == 'inherit'
+                assert capabilities[c]['source'] != 'mail'
+
+            # Invalid intents are rejected (by the API or client-side)
+            with pytest.raises((ValueError, APIError)):
+                api_client.mail_capabilities_set(mail, {'MAIL_SPAMPROTECTION': 'yes'})
+        finally:
+            api_client.mail_capabilities_set(mail, {c: 'inherit' for c in valid_capabilities})
 
     @pytest.mark.depends(name='test_mail_add')
     def test_mail_capabilities_set_invalid(self):
