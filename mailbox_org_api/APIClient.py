@@ -494,6 +494,9 @@ class APIClient:
         See documentation here: https://api.mailbox.org/v1/doc/methods/index.html#domain-add
         :return: the API response
         """
+        allowed_parameters = {'context_id': str, 'create_new_context_id': bool, 'memo': str}
+        validate_params(allowed_parameters, kwargs)
+
         params = {'account': account, 'domain': domain, 'password': password}
         params.update({k: v for k, v in kwargs.items() if v is not None})
         return self.api_request('domain.add', params)
