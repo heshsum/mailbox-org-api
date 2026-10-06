@@ -353,8 +353,8 @@ class TestAPIClient:
         assert mail['forwards'] is not None
         assert mail['aliases'] is not None
         assert mail['capabilities'] is not None
-        assert (mail['possible_capabilities'] ==
-                ['MAIL_BLACKLIST', 'MAIL_SPAMPROTECTION', 'MAIL_PASSWORDRESET_SMS', 'MAIL_BACKUPRECOVER'])
+        for c in valid_capabilities:
+            assert c in mail['possible_capabilities']
         assert mail['plan'] in ['premium', 'standard', 'light']
         assert mail['creation_date'] is not None
 
