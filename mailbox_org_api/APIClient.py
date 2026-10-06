@@ -680,7 +680,7 @@ class APIClient:
 
         return self.api_request('mail.set', params)
 
-    def mail_set_password(self, mail: str, password: str) -> dict:
+    def mail_set_password(self, mail: str, password: str) -> dict[str, Any]:
         """
         Function to set a new password for a mail
         :param mail: the mail to set the password for
@@ -699,7 +699,7 @@ class APIClient:
         return self.api_request('mail.set', {'mail': mail, 'password': password,
                                              'require_reset_password': True})
 
-    def mail_set_plan(self, mail: str, plan: str) -> dict:
+    def mail_set_plan(self, mail: str, plan: str) -> dict[str, Any]:
         """
         Function to set a new plan for a mail
         :param mail: the mail to set the plan for
@@ -708,7 +708,7 @@ class APIClient:
         """
         return self.api_request('mail.set', {'mail': mail, 'plan': plan})
 
-    def mail_set_forwards(self, mail: str, forwards: list) -> dict:
+    def mail_set_forwards(self, mail: str, forwards: list[str]) -> dict[str, Any]:
         """
         Function to set mail forwards
         :param mail: the mail to set the forwards for
@@ -717,7 +717,7 @@ class APIClient:
         """
         return self.api_request('mail.set', {'mail': mail, 'forwards': forwards})
 
-    def mail_set_aliases(self, mail: str, aliases: list) -> dict:
+    def mail_set_aliases(self, mail: str, aliases: list[str]) -> dict[str, Any]:
         """
         Function to set mail aliases
         :param mail: the mail to set the aliases for
@@ -726,7 +726,7 @@ class APIClient:
         """
         return self.api_request('mail.set', {'mail': mail, 'aliases': aliases})
 
-    def mail_set_state(self, mail: str, active: bool) -> dict:
+    def mail_set_state(self, mail: str, active: bool) -> dict[str, Any]:
         """
         Function to activate or deactivate a mail
         :param mail: the mail to set the status for
@@ -735,7 +735,7 @@ class APIClient:
         """
         return self.api_request('mail.set', {'mail': mail, 'active': active})
 
-    def mail_set_additional_mail_quota(self, mail: str, quota: int) -> dict:
+    def mail_set_additional_mail_quota(self, mail: str, quota: int) -> dict[str, Any]:
         """
         Function to set additional mail quota for a given mail
         :param mail: the mail to set the quota for
