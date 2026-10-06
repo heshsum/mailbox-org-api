@@ -469,6 +469,27 @@ class TestAPIClient:
         with pytest.raises(KeyError):
             api_client.mail_set(mail, password='pw1', password_hash='hash1')
 
+    @pytest.mark.depends(name='test_mail_add')
+    def test_mail_capabilities_get(self, api_client):
+        mail = test_id + '@' + domain
+        capabilities = api_client.mail_capabilities_get(mail)
+        assert isinstance(capabilities, dict)
+
+        expected_capabilities = [
+            'MAIL_SPAMPROTECTION', 'MAIL_BLACKLIST', 'MAIL_BACKUPRECOVER',
+            'MAIL_OTP', 'MAIL_PASSWORDRESET_SMS'
+        ]
+        for cap in expected_capabilities:
+            assert cap in capabilities
+            entry = capabilities[cap]
+            assert entry['intent'] in {'on', 'off', 'inherit'}
+            assert entry['effective'] in {'on', 'off'}
+            assert isinstance(entry['source'], str)
+            assert isinstance(entry['supported'], bool)
+
+        with pytest.raises(APIError):
+            api_client.mail_capabilities_get('nonexistent_' + test_id + '@' + domain)
+
     @pytest.mark.depends(name="test_mail_add")
     def test_mail_capabilities_set(self, api_client):
         capabilities = ['MAIL_SPAMPROTECTION', 'MAIL_BLACKLIST', 'MAIL_BACKUPRECOVER', 'MAIL_PASSWORDRESET_SMS']
