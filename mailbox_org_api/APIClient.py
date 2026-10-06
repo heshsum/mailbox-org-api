@@ -129,7 +129,9 @@ class APIClient:
         # In case of an error, the error is returned
         elif 'error' in api_response:
             error_data = api_response['error']
-            raise APIError(message=error_data.get('message'), code=error_data.get('code'))
+            if isinstance(error_data, dict):
+                raise APIError(message=error_data.get('message', 'Unknown error'), code=error_data.get('code'))
+            raise APIError(message=str(error_data))
 
         # If neither a success nor an error, the full response if returned
         return api_response
