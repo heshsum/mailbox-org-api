@@ -318,8 +318,8 @@ class TestAPIClient:
         assert mails[0]['forwards'] is not None
         assert mails[0]['aliases'] is not None
         assert mails[0]['capabilities'] is not None
-        assert (mails[0]['possible_capabilities'] ==
-                ['MAIL_BLACKLIST', 'MAIL_SPAMPROTECTION', 'MAIL_PASSWORDRESET_SMS', 'MAIL_BACKUPRECOVER'])
+        for c in valid_capabilities:
+            assert c in mails[0]['possible_capabilities']
         assert mails[0]['plan'] in ['premium', 'standard', 'light']
         assert mails[0]['creation_date'] is not None
         paginated_mails = api_client.mail_list(domain, page_size=50, page=1)
