@@ -475,11 +475,7 @@ class TestAPIClient:
         capabilities = api_client.mail_capabilities_get(mail)
         assert isinstance(capabilities, dict)
 
-        expected_capabilities = [
-            'MAIL_SPAMPROTECTION', 'MAIL_BLACKLIST', 'MAIL_BACKUPRECOVER',
-            'MAIL_OTP', 'MAIL_PASSWORDRESET_SMS'
-        ]
-        for cap in expected_capabilities:
+        for cap in valid_capabilities:
             assert cap in capabilities
             entry = capabilities[cap]
             assert entry['intent'] in {'on', 'off', 'inherit'}
