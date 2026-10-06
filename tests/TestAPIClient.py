@@ -12,6 +12,7 @@ from mailbox_org_api.APIError import APIError
 api_test_user = os.environ['API_TEST_USER']
 api_test_pass = os.environ['API_TEST_PASS']
 
+valid_capabilities = ['MAIL_SPAMPROTECTION', 'MAIL_OTP', 'MAIL_BLACKLIST', 'MAIL_BACKUPRECOVER', 'MAIL_PASSWORDRESET_SMS']
 
 # Create a unique ID String by using the Unix time,
 # converted to int (to get rid of the decimal) and then to String
