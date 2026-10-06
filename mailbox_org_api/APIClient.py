@@ -323,7 +323,7 @@ class APIClient:
         Function to get a specific invoice for an account
         :param account: the account name
         :param token: the token for the invoice
-        :return: the response from the mailbox.org Business API - the invoice as a Base64 encoded gzipped string
+        :return: a dict containing metadata of the invoice and the invoice as a Base64 encoded gzipped string
         """
         return self.api_request('account.invoice.get', {'account': account, 'token': token})
 
@@ -378,7 +378,7 @@ class APIClient:
     def account_invoice_get_file(self, account: str, invoice_id: str, file_type: str,
                                  token: str | None = None) -> bytes:
         """
-        Function to get a specific invoice as a PDf-file
+        Function to get a specific invoice as a file
         :param account: the account name
         :param invoice_id: the invoice ID
         :param file_type: The file type to return. Valid: CSV, PDF and XML
@@ -842,7 +842,7 @@ class APIClient:
         Function to get a mail using an external UID
         :param account: the account to get a mail for
         :param uid_extern: the external UID to get a mail for
-        :return: mailbox API response - an array with the mail details
+        :return: a dict with the mail details
         """
         return self.api_request('mail.externaluid', {'account': account, 'uid_extern': uid_extern})
 
@@ -870,7 +870,7 @@ class APIClient:
         """
         Function to retrieve the spam settings for a given mail
         :param mail: the mail to get the spam settings for
-        :return: mailbox API response - an array with the spam settings
+        :return: a dict with the spam settings
         """
         return self.api_request('mail.spamprotect.get', {'mail': mail})
 
@@ -943,7 +943,7 @@ class APIClient:
         :param end_date: the end date of the vacation notice in format YYYY-MM-DD
         :param body: the body of the vacation notice (optional)
         :param additional_mail_addresses: list of addresses to add to the vacation notice (optional)
-        :return: mailbox API response - array with result 'true' of the request, code and message in case of an error
+        :return: True if the vacation notice was set, APIError otherwise
         """
         params: dict[str, Any] = {
             'mail': mail,
@@ -982,7 +982,7 @@ class APIClient:
         Function to get a group from the account by the group id
         :param group_id: the id of the group to get
         :param account: optional parameter for the account to get the group for
-        :return: mailbox API response - the list of groups of the account
+        :return: a dict containing the requested group
         """
         params: dict[str, Any] = {'group_id': group_id}
         if account is not None:
@@ -1111,7 +1111,7 @@ class APIClient:
         """
         Function to list all contexts of a given account
         :param account: the account to list all contexts for
-        :return: mailbox API response - an array with key 'context id' and value 'associated domains'
+        :return: a dict with key 'context id' and value 'associated domains'
         """
         return self.api_request('context.list', {'account': account})
 
@@ -1121,7 +1121,7 @@ class APIClient:
         :param query: the query to search by
         :param get_account_summary: whether to return more information about accounts found
         :param get_extended_mail_result: whether to return more information about mailboxes found
-        :return: the mailbox API response for the request - an array with results for accounts, domains and mailboxes
+        :return: a dict with results for accounts, domains and mailboxes
         """
         return self.api_request('search', {'query': query, 'get_account_summary': get_account_summary,
                                            'get_extended_mail_result': get_extended_mail_result})
