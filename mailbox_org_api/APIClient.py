@@ -373,6 +373,13 @@ class APIClient:
         # but gzip does not work because the data is zlib compressed
         return zlib.decompress(base64.b64decode(response['bin']))
 
+    def account_capabilities_get(self, account: str) -> dict:
+        """
+        Function to get a list of all capabilities for an account
+        :param account: the account name
+        :return: the capabilities as a dict
+        """
+        return self.api_request('account.capabilities.get', {'account': account})
     def domain_list(self, account: str, search_filter: str | None = None) -> dict:
         """
         Function to list all domains
