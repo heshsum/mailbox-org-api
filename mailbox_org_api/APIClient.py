@@ -145,7 +145,7 @@ class APIClient:
         if api_response.get('session'):
             self.level = api_response.get("level")
             self.auth_id = str(api_response["session"])
-            self.session.headers.update({"HPLS-AUTH": self.auth_id})
+            self.session.headers.update({"HPLS-AUTH": str(self.auth_id)})
             if self.debug_output:
                 print('Level:', self.level)
                 print('Auth ID:', self.auth_id)
