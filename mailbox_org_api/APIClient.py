@@ -472,24 +472,6 @@ class APIClient:
         """
         return self.api_request('domain.get', {'domain': domain})
 
-    def domain_capabilities_set(self, domain: str, capabilities: list) -> dict:
-        """
-        Function to set a domain capabilities
-        :param domain: the domain to set the capabilities for
-        :param capabilities: List of capabilities to set.
-        Full list: https://api.mailbox.org/v1/doc/methods/index.html#domain-capabilities-set
-        :return: the API response
-        """
-        # Domain capabilities as documented here:
-        # https://api.mailbox.org/v1/doc/methods/index.html#domain-capabilities-set
-        domain_capabilities = ['MAIL_SPAMPROTECTION', 'MAIL_BLACKLIST', 'MAIL_BACKUPRECOVER', 'MAIL_PASSWORDRESET_SMS']
-
-        for c in capabilities:
-            if c not in domain_capabilities:
-                raise ValueError(f'Capability {c} is not a valid parameter for domain_capabilities_set.')
-        return self.api_request('domain.capabilities.set', params={'domain': domain,
-                                                                   'capabilities': capabilities})
-
     def domain_set(self, domain: str, **kwargs) -> dict:
         """
         Function to set a domain
