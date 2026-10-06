@@ -560,7 +560,7 @@ class TestAPIClient:
     @pytest.mark.depends(name='test_mail_add')
     def test_mail_spamprotect(self, api_client):
         mail = test_id + '@' + domain
-        api_client.mail_capabilities_set(mail, ['MAIL_SPAMPROTECTION'])
+        api_client.mail_capabilities_set(mail, {'MAIL_SPAMPROTECTION': 'on'})
 
         with pytest.raises(ValueError):
             api_client.mail_spamprotect_set(mail, greylist=True, smtp_plausibility=True, rbl=True,
@@ -579,12 +579,12 @@ class TestAPIClient:
         assert spam_get['killevel'] == 'route'
         assert spam_get['route_to'] == 'Spam'
 
-        api_client.mail_capabilities_set(mail, [])
+        api_client.mail_capabilities_set(mail, {'MAIL_SPAMPROTECTION': 'inherit'})
 
     @pytest.mark.depends(name='test_mail_add')
     def test_mail_blacklist(self, api_client):
         mail = test_id + '@' + domain
-        api_client.mail_capabilities_set(mail, ['MAIL_BLACKLIST'])
+        api_client.mail_capabilities_set(mail, {'MAIL_BLACKLIST': 'on'})
 
         blacklist = api_client.mail_blacklist_list(mail)
         assert isinstance(blacklist, list)
@@ -602,17 +602,17 @@ class TestAPIClient:
         blacklist_final = api_client.mail_blacklist_list(mail)
         assert bad_address not in blacklist_final
 
-        api_client.mail_capabilities_set(mail, [])
+        api_client.mail_capabilities_set(mail, {'MAIL_BLACKLIST': 'off'})
 
     @pytest.mark.depends(name='test_mail_add')
     def test_mail_backup_list(self, api_client):
         mail = test_id + '@' + domain
-        api_client.mail_capabilities_set(mail, ['MAIL_BACKUPRECOVER'])
+        api_client.mail_capabilities_set(mail, {'MAIL_BACKUPRECOVER': 'on'})
 
         backups = api_client.mail_backup_list(mail)
         assert backups is False or isinstance(backups, list)
 
-        api_client.mail_capabilities_set(mail, [])
+        api_client.mail_capabilities_set(mail, {'MAIL_BACKUPRECOVER': 'off'})
 
     @pytest.mark.depends(name='test_mail_add')
     def test_mail_passwordreset_listmethods(self, api_client):
