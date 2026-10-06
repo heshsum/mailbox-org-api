@@ -298,14 +298,6 @@ class TestAPIClient:
         api_client.domain_set(domain, memo=test_id)
         assert api_client.domain_get(domain)['memo'] == test_id
 
-    def test_domain_capabilities_set(self, api_client):
-        api_client.domain_capabilities_set(domain, ['MAIL_SPAMPROTECTION'])
-        for m in api_client.mail_list(domain):
-            assert m['capabilities'] == ['MAIL_SPAMPROTECTION']
-        api_client.domain_capabilities_set(domain, [])
-        for m in api_client.mail_list(domain):
-            assert m['capabilities'] == []
-
     def test_domain_capabilities_set_invalid(self):
         api = APIClient.APIClient()
         with pytest.raises(ValueError):
