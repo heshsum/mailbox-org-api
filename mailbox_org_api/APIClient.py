@@ -478,7 +478,7 @@ class APIClient:
         """
         return self.api_request('domain.get', {'domain': domain})
 
-    def domain_set(self, domain: str, **kwargs) -> dict:
+    def domain_set(self, domain: str, **kwargs: Any) -> dict[str, Any]:
         """
         Function to set a domain
         :param domain: the domain to update
