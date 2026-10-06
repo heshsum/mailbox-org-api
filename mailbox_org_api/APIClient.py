@@ -274,7 +274,7 @@ class APIClient:
 
         return self.api_request('account.set', params)
 
-    def account_del(self, account: str) -> dict:
+    def account_del(self, account: str) -> bool:
         """
         Function to delete a specific account
         :param account: the account name to delete
