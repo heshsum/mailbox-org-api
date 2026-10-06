@@ -16,27 +16,33 @@ from mailbox_org_api.Account import Account
 from mailbox_org_api.Invoice import Invoice
 from mailbox_org_api.Mail import Mail
 
-quota_keys = ['additional_cloud_quota', 'additional_mail_quota']
-valid_capabilities = ['MAIL_SPAMPROTECTION', 'MAIL_OTP', 'MAIL_BLACKLIST', 'MAIL_BACKUPRECOVER', 'MAIL_PASSWORDRESET_SMS']
-capability_intents = {'on', 'off', 'inherit'}
+quota_keys: list[str] = ['additional_cloud_quota', 'additional_mail_quota']
+valid_capabilities: list[str] = ['MAIL_SPAMPROTECTION', 'MAIL_OTP', 'MAIL_BLACKLIST', 'MAIL_BACKUPRECOVER', 'MAIL_PASSWORDRESET_SMS']
+capability_intents: set[str] = {'on', 'off', 'inherit'}
 
 class APIClient:
     """
     Object for API Client
     """
 
-    def __init__(self, debug_output=False, max_retries=5, request_timeout: int = 30):
+    def __init__(self, debug_output: bool = False, max_retries: int = 5, request_timeout: int = 30) -> None:
+        """
+        Constructor for API Client
+        :param debug_output: True to enable simple debug outputs. Defaults to False
+        :param max_retries: Number of times to retry the API request. Defaults to 5
+        :param request_timeout: Sets the network timeout in seconds. Defaults to 30
+        """
         # URL of the API
         self.url = "https://api.mailbox.org/v1/"
 
         # JSON RPC ID - a unique ID is required for each request during a session
-        self.jsonrpc_id = 0
+        self.jsonrpc_id: int = 0
 
         # This saves the access level of the user
-        self.level = None
+        self.level: str | None = None
 
         # Session ID when authenticating
-        self.auth_id = None
+        self.auth_id: str | None = None
 
         self.debug_output = debug_output
 
@@ -63,12 +69,12 @@ class APIClient:
         self.request_timeout = request_timeout
 
     # Increment the request ID
-    def get_jsonrpc_id(self):
+    def get_jsonrpc_id(self) -> str:
         """Method to create the JSON RPC request ID. """
         self.jsonrpc_id += 1
         return str(self.jsonrpc_id)
 
-    def api_request(self, method: str, params: dict) -> dict | Any:
+    def api_request(self, method: str, params: dict[str, Any]) -> Any:
         """
         Function to send API calls
         :param method: the method to call
@@ -128,7 +134,7 @@ class APIClient:
         # If neither a success nor an error, the full response if returned
         return api_response
 
-    def auth(self, username, password) -> dict:
+    def auth(self, username: str, password: str) -> dict[str, Any]:
         """
         Function to authenticate and create a new API session
         :param username: the username
@@ -158,10 +164,10 @@ class APIClient:
             self.auth_id = None
             self.level = None
 
-    def __enter__(self):
+    def __enter__(self) -> 'APIClient':
         return self
 
-    def __exit__(self, exc_type, exc_val, exc_tb):
+    def __exit__(self, exc_type: Any, exc_val: Any, exc_tb: Any) -> None:
         if self.auth_id:
             try:
                 self.deauth()
@@ -169,21 +175,21 @@ class APIClient:
                 pass
         self.session.close()
 
-    def hello_world(self):
+    def hello_world(self) -> str:
         """
         Function for hello world, just to test the connection
         :return: The response from the mailbox.org Business API
         """
         return self.api_request('hello.world', {})
 
-    def hello_innerworld(self):
+    def hello_innerworld(self) -> str:
         """
         Hello World function to test the authentication
         :return: The response from the mailbox.org Business API
         """
         return self.api_request('hello.innerworld', {})
 
-    def account_list(self, query: str, extended_results: bool = False) -> dict:
+    def account_list(self, query: str, extended_results: bool = False) -> list[dict[str, Any]] | dict[str, Any]:
         """
         Function to get a list of accounts
         :param query: the query to search for
@@ -192,7 +198,7 @@ class APIClient:
         """
         return self.api_request('account.list', {'query': query, 'extended_results': extended_results})
 
-    def account_add(self, account: str, password: str, plan: str, **kwargs) -> dict:
+    def account_add(self, account: str, password: str, plan: str, **kwargs: Any) -> dict[str, Any]:
         """
         Function to create a new account
         :param account: the account name to create
@@ -222,7 +228,7 @@ class APIClient:
         params.update({k: v for k, v in kwargs.items() if v is not None})
         return self.api_request('account.add', params)
 
-    def account_get(self, account: str) -> dict:
+    def account_get(self, account: str) -> dict[str, Any]:
         """
         Function to get a specific account
         :param account: the account name to get
@@ -238,7 +244,7 @@ class APIClient:
                 setattr(account_object, k, v)
         return account_object
 
-    def account_set(self, account: str, **kwargs) -> dict:
+    def account_set(self, account: str, **kwargs: Any) -> dict[str, Any]:
         """
         Function to update a specific account
         :param account: the account name to update
@@ -268,7 +274,7 @@ class APIClient:
 
         return self.api_request('account.set', params)
 
-    def account_del(self, account: str) -> dict:
+    def account_del(self, account: str) -> bool:
         """
         Function to delete a specific account
         :param account: the account name to delete
@@ -276,7 +282,7 @@ class APIClient:
         """
         return self.api_request('account.del', {'account': account})
 
-    def account_invoice_list(self, account: str) -> dict:
+    def account_invoice_list(self, account: str) -> list[dict[str, Any]]:
         """
         Function to list all invoices for a specific account
         :param account: the account name to list
@@ -284,7 +290,7 @@ class APIClient:
         """
         return self.api_request('account.invoice.list', {'account': account})
 
-    def account_invoice_get(self, account: str, token: str) -> dict:
+    def account_invoice_get(self, account: str, token: str) -> dict[str, Any]:
         """
         Function to get a specific invoice for an account
         :param account: the account name
@@ -314,14 +320,14 @@ class APIClient:
                 return invoice
         raise ValueError('Invoice not found')
 
-    def account_invoice_get_list(self, account: str) -> list:
+    def account_invoice_get_list(self, account: str) -> list[str]:
         """
         Function to get a list of all invoice ids for a specific account
         """
         response = self.api_request('account.invoice.list', {'account': account})
         return [invoice['invoice_id'] for invoice in response]
 
-    def account_invoice_get_list_open(self, account: str) -> list:
+    def account_invoice_get_list_open(self, account: str) -> list[str]:
         """
         Function to get a list of all invoice id's with status 'open' for a specific account
         """
@@ -374,7 +380,7 @@ class APIClient:
         # but gzip does not work because the data is zlib compressed
         return zlib.decompress(base64.b64decode(response['bin']))
 
-    def account_capabilities_get(self, account: str) -> dict:
+    def account_capabilities_get(self, account: str) -> dict[str, Any]:
         """
         Function to get a list of all capabilities for an account
         :param account: the account name
@@ -382,8 +388,8 @@ class APIClient:
         """
         return self.api_request('account.capabilities.get', {'account': account})
 
-    def account_capabilities_set(self, account: str, capabilities: dict,
-                                 exceptions: dict | None = None) -> dict[Any, Any]:
+    def account_capabilities_set(self, account: str, capabilities: dict[str, str],
+                                 exceptions: dict[str, list[str]] | None = None) -> bool:
         """
         Function to modify the capabilities of mailboxes for an account.
         Changes to the mailboxes are done asynchronously.
@@ -408,7 +414,7 @@ class APIClient:
             raise ValueError(f'Invalid capability intents found: {invalid}. '
                              f'Allowed values: {", ".join(sorted(capability_intents))}')
 
-        params = {'account': account, 'capabilities': capabilities}
+        params: dict[str, Any] = {'account': account, 'capabilities': capabilities}
 
         if exceptions is not None:
             if not isinstance(exceptions, dict):
@@ -425,7 +431,7 @@ class APIClient:
 
         return self.api_request('account.capabilities.set', params)
 
-    def domain_list(self, account: str, search_filter: str | None = None) -> dict:
+    def domain_list(self, account: str, search_filter: str | None = None) -> list[dict[str, Any]]:
         """
         Function to list all domains
         :param account: the account to list domains for
@@ -437,7 +443,7 @@ class APIClient:
             params.update({'filter': str(search_filter)})
         return self.api_request('domain.list', params)
 
-    def domain_get_list(self, account: str, search_filter: str | None = None) -> list:
+    def domain_get_list(self, account: str, search_filter: str | None = None) -> list[str]:
         """
         Function to get a List object with domain names for a given account
         :param account: the account to list domains for
@@ -450,7 +456,7 @@ class APIClient:
             domains.append(i['domain'])
         return domains
 
-    def domain_add(self, account: str, domain: str, password: str, **kwargs) -> dict:
+    def domain_add(self, account: str, domain: str, password: str, **kwargs: Any) -> dict[str, Any]:
         """
         Function to add a domain
         :param account: the account to add a domain for
@@ -464,7 +470,7 @@ class APIClient:
         params.update({k: v for k, v in kwargs.items() if v is not None})
         return self.api_request('domain.add', params)
 
-    def domain_get(self, domain: str) -> dict:
+    def domain_get(self, domain: str) -> dict[str, Any]:
         """
         Function to get a specific domain
         :param domain: the domain to get
@@ -472,7 +478,7 @@ class APIClient:
         """
         return self.api_request('domain.get', {'domain': domain})
 
-    def domain_set(self, domain: str, **kwargs) -> dict:
+    def domain_set(self, domain: str, **kwargs: Any) -> dict[str, Any]:
         """
         Function to set a domain
         :param domain: the domain to update
@@ -490,7 +496,7 @@ class APIClient:
 
         return self.api_request('domain.set', params)
 
-    def domain_del(self, account: str, domain: str) -> dict:
+    def domain_del(self, account: str, domain: str) -> bool:
         """
         Function to delete a domain
         :param account: the account to delete a domain in
@@ -499,7 +505,7 @@ class APIClient:
         """
         return self.api_request('domain.del', {'account': account, 'domain': domain})
 
-    def domain_validate_spf(self, domain: str) -> dict:
+    def domain_validate_spf(self, domain: str) -> dict[str, Any]:
         """
         Function to validate the SPF entry of a domain
         :param domain: the domain to validate
@@ -507,7 +513,7 @@ class APIClient:
         """
         return self.api_request('domain.validate.spf', {'domain': domain})
 
-    def domain_deletelist_search(self, domain: str) -> dict:
+    def domain_deletelist_search(self, domain: str) -> list[dict[str, Any]]:
         """
         Function to list all deleted emails for a given domain
         :param domain: The domain to search
@@ -515,7 +521,7 @@ class APIClient:
         """
         return self.api_request('domain.deletelist.search', {'domain': domain})
 
-    def domain_deletelist_delete(self, mail: str) -> bool | Any:
+    def domain_deletelist_delete(self, mail: str) -> bool:
         """
         Function to remove a deleted email from the delete list.
         :param mail: The deleted mail to remove from the list
@@ -524,7 +530,7 @@ class APIClient:
         return self.api_request('domain.deletelist.delete', {'mail': mail})
 
     def mail_list(self, domain: str, details: bool = False, page_size: int | None = None, page: int | None = None,
-                  sort_field: str | None = None, sort_order: str | None = None) -> dict:
+                  sort_field: str | None = None, sort_order: str | None = None) -> list[dict[str, Any]] | dict[str, Any]:
         """
         Function to list all mailboxes
         :param domain: the domain to list
@@ -563,7 +569,7 @@ class APIClient:
 
         return self.api_request('mail.list', params)
 
-    def mail_get_list(self, domain: str) -> list:
+    def mail_get_list(self, domain: str) -> list[str]:
         """
         Function to get a list of all mailboxes of a domain as a List object.
         :param domain: the domain to list all mailboxes for.
@@ -576,7 +582,7 @@ class APIClient:
         return mails
 
     def mail_add(self, mail: str, password: str, plan: str, first_name: str, last_name: str, inboxsave: bool = True,
-                 forwards: list | None = None, **kwargs) -> dict:
+                 forwards: list[str] | None = None, **kwargs: Any) -> dict[str, Any]:
         """
         Function to add a mail
         :param mail: the mail to add
@@ -616,7 +622,7 @@ class APIClient:
         params.update({k: v for k, v in kwargs.items() if v is not None})
         return self.api_request('mail.add', params)
 
-    def mail_get(self, mail: str, include_quota_usage: bool = False) -> dict:
+    def mail_get(self, mail: str, include_quota_usage: bool = False) -> dict[str, Any]:
         """
         Function to retrieve a mail address
         :param mail: the mail to retrieve
@@ -633,7 +639,7 @@ class APIClient:
                 setattr(mail_object, k, v)
         return mail_object
 
-    def mail_set(self, mail: str, **kwargs):
+    def mail_set(self, mail: str, **kwargs: Any) -> dict[str, Any]:
         """
         Function to update a mail
         :param mail: the mail to update
@@ -674,7 +680,7 @@ class APIClient:
 
         return self.api_request('mail.set', params)
 
-    def mail_set_password(self, mail: str, password: str) -> dict:
+    def mail_set_password(self, mail: str, password: str) -> dict[str, Any]:
         """
         Function to set a new password for a mail
         :param mail: the mail to set the password for
@@ -683,7 +689,7 @@ class APIClient:
         """
         return self.api_request('mail.set', {'mail': mail, 'password': password})
 
-    def mail_set_password_require_reset(self, mail: str, password: str) -> dict:
+    def mail_set_password_require_reset(self, mail: str, password: str) -> dict[str, Any]:
         """
         Function to set a new password for a mail and force the user to set a new password on the next login
         :param mail: the mail to set the password for
@@ -693,7 +699,7 @@ class APIClient:
         return self.api_request('mail.set', {'mail': mail, 'password': password,
                                              'require_reset_password': True})
 
-    def mail_set_plan(self, mail: str, plan: str) -> dict:
+    def mail_set_plan(self, mail: str, plan: str) -> dict[str, Any]:
         """
         Function to set a new plan for a mail
         :param mail: the mail to set the plan for
@@ -702,7 +708,7 @@ class APIClient:
         """
         return self.api_request('mail.set', {'mail': mail, 'plan': plan})
 
-    def mail_set_forwards(self, mail: str, forwards: list) -> dict:
+    def mail_set_forwards(self, mail: str, forwards: list[str]) -> dict[str, Any]:
         """
         Function to set mail forwards
         :param mail: the mail to set the forwards for
@@ -711,7 +717,7 @@ class APIClient:
         """
         return self.api_request('mail.set', {'mail': mail, 'forwards': forwards})
 
-    def mail_set_aliases(self, mail: str, aliases: list) -> dict:
+    def mail_set_aliases(self, mail: str, aliases: list[str]) -> dict[str, Any]:
         """
         Function to set mail aliases
         :param mail: the mail to set the aliases for
@@ -720,7 +726,7 @@ class APIClient:
         """
         return self.api_request('mail.set', {'mail': mail, 'aliases': aliases})
 
-    def mail_set_state(self, mail: str, active: bool) -> dict:
+    def mail_set_state(self, mail: str, active: bool) -> dict[str, Any]:
         """
         Function to activate or deactivate a mail
         :param mail: the mail to set the status for
@@ -729,7 +735,7 @@ class APIClient:
         """
         return self.api_request('mail.set', {'mail': mail, 'active': active})
 
-    def mail_set_additional_mail_quota(self, mail: str, quota: int) -> dict:
+    def mail_set_additional_mail_quota(self, mail: str, quota: int) -> dict[str, Any]:
         """
         Function to set additional mail quota for a given mail
         :param mail: the mail to set the quota for
@@ -739,7 +745,7 @@ class APIClient:
         plan = self.mail_get(mail)['plan']
         return self.mail_set(mail=mail, plan=plan, additional_mail_quota=quota)
 
-    def mail_set_additional_cloud_quota(self, mail: str, quota: int) -> dict:
+    def mail_set_additional_cloud_quota(self, mail: str, quota: int) -> dict[str, Any]:
         """
         Function to set additional cloud quota for a given mail
         :param mail: the mail to set the quota for
@@ -749,7 +755,7 @@ class APIClient:
         plan = self.mail_get(mail)['plan']
         return self.mail_set(mail=mail, plan=plan, additional_cloud_quota=quota)
 
-    def mail_set_deletion_date(self, mail: str, deletion_date: str) -> dict:
+    def mail_set_deletion_date(self, mail: str, deletion_date: str) -> dict[str, Any]:
         """
         Function to delete an inbox at a given date.
         To unset, use mail_set_state and set 'active = True'
@@ -760,7 +766,7 @@ class APIClient:
         return self.api_request('mail.set', {'mail': mail, 'deletion_date': deletion_date,
                                              'active': False})
 
-    def mail_del(self, mail: str) -> dict:
+    def mail_del(self, mail: str) -> bool:
         """
         Function to delete a mail
         :param mail: the mail to delete
@@ -768,7 +774,7 @@ class APIClient:
         """
         return self.api_request('mail.del', {'mail': mail})
 
-    def mail_apppassword_list(self, mail: str) -> dict:
+    def mail_apppassword_list(self, mail: str) -> list[dict[str, Any]]:
         """
         Function to list all app passwords of a given mail
         :param mail: the mail to list app passwords for
@@ -776,7 +782,7 @@ class APIClient:
         """
         return self.api_request('mail.apppassword.list', {'mail': mail})
 
-    def mail_apppassword_add(self, mail: str, memo: str, imap_allowed: bool = True, smtp_allowed: bool = True) -> dict:
+    def mail_apppassword_add(self, mail: str, memo: str, imap_allowed: bool = True, smtp_allowed: bool = True) -> str | dict[str, Any]:
         """
         Function to generate a new mail app password for a mail
         :param mail: the mail to generate a new mail app password
@@ -788,7 +794,7 @@ class APIClient:
         return self.api_request('mail.apppassword.add', {'mail': mail, 'memo': memo,
                                                          'imap_allowed': imap_allowed, 'smtp_allowed': smtp_allowed})
 
-    def mail_apppassword_del(self, apppassword_id: int) -> dict:
+    def mail_apppassword_del(self, apppassword_id: int) -> bool:
         """
         Function to delete a mail app password
         :param apppassword_id: the id of the mail app password
@@ -796,7 +802,7 @@ class APIClient:
         """
         return self.api_request('mail.apppassword.del', {'id': apppassword_id})
 
-    def mail_externaluid(self, account: str, uid_extern: str) -> dict:
+    def mail_externaluid(self, account: str, uid_extern: str) -> dict[str, Any]:
         """
         Function to get a mail using an external UID
         :param account: the account to get a mail for
@@ -805,7 +811,7 @@ class APIClient:
         """
         return self.api_request('mail.externaluid', {'account': account, 'uid_extern': uid_extern})
 
-    def mail_backup_list(self, mail: str) -> dict:
+    def mail_backup_list(self, mail: str) -> list[dict[str, Any]] | bool:
         """
         Function to list all backups for a given mail
         :param mail: the mail to list backups for
@@ -813,7 +819,7 @@ class APIClient:
         """
         return self.api_request('mail.backup.list', {'mail': mail})
 
-    def mail_backup_import(self, mail: str, backup_id: str, time: str, backup_filter: str) -> dict:
+    def mail_backup_import(self, mail: str, backup_id: str, time: str, backup_filter: str) -> dict[str, Any] | bool:
         """
         Function to import a backup for a mail
         :param mail: the mail to import
@@ -825,7 +831,7 @@ class APIClient:
         return self.api_request('mail.backup.import',
                                 {'mail': mail, 'id': backup_id, 'time': time, 'filter': backup_filter})
 
-    def mail_spamprotect_get(self, mail: str) -> dict:
+    def mail_spamprotect_get(self, mail: str) -> dict[str, Any]:
         """
         Function to retrieve the spam settings for a given mail
         :param mail: the mail to get the spam settings for
@@ -834,7 +840,7 @@ class APIClient:
         return self.api_request('mail.spamprotect.get', {'mail': mail})
 
     def mail_spamprotect_set(self, mail: str, greylist: bool, smtp_plausibility: bool, rbl: bool,
-                             bypass_banned_checks: bool, tag2level: float, killlevel: str, route_to: str) -> dict:
+                             bypass_banned_checks: bool, tag2level: float | int, killlevel: str, route_to: str) -> dict[str, Any]:
         """
         Function to set the spam settings for a given mail
         :param mail: the mail to set the spam settings for
@@ -853,12 +859,12 @@ class APIClient:
         # 'killevel' is not a typo - it's a spelling error in the mailbox API
         return self.api_request('mail.spamprotect.set',
                                 {'mail': mail, 'greylist': bool2str(greylist),
-                                 'smtp_plausibility': bool2str(smtp_plausibility), 'rbl': bool2str(rbl),
-                                 'bypass_banned_checks': bool2str(bypass_banned_checks),
-                                 'tag2level': round(tag2level, 1),
-                                 'killevel': killlevel, 'route_to': route_to})
+                                  'smtp_plausibility': bool2str(smtp_plausibility), 'rbl': bool2str(rbl),
+                                  'bypass_banned_checks': bool2str(bypass_banned_checks),
+                                  'tag2level': round(tag2level, 1),
+                                  'killevel': killlevel, 'route_to': route_to})
 
-    def mail_blacklist_list(self, mail: str) -> dict:
+    def mail_blacklist_list(self, mail: str) -> list[str]:
         """
         Function to list the mail blacklist for a given mail address.
         :param mail: the mail to list the blacklist for.
@@ -866,7 +872,7 @@ class APIClient:
         """
         return self.api_request('mail.blacklist.list', {'mail': mail})
 
-    def mail_blacklist_add(self, mail: str, add_address: str) -> dict:
+    def mail_blacklist_add(self, mail: str, add_address: str) -> list[str]:
         """
         Function to add a mail to a blacklist of a mail address.
         :param mail: the mail of the owner of the blacklist.
@@ -875,7 +881,7 @@ class APIClient:
         """
         return self.api_request('mail.blacklist.add', {'mail': mail, 'add_address': add_address})
 
-    def mail_blacklist_del(self, mail: str, delete_address: str) -> dict:
+    def mail_blacklist_del(self, mail: str, delete_address: str) -> list[str]:
         """
         Function to delete a mail from a blacklist
         :param mail: the mail of the owner of the blacklist
@@ -884,7 +890,7 @@ class APIClient:
         """
         return self.api_request('mail.blacklist.del', {'mail': mail, 'delete_address': delete_address})
 
-    def mail_vacation_get(self, mail: str) -> dict:
+    def mail_vacation_get(self, mail: str) -> dict[str, Any]:
         """
         Function to get the vacation notice for a given mail
         :param mail: the mail to get the vacation notice for
@@ -893,7 +899,7 @@ class APIClient:
         return self.api_request('mail.vacation.get', {'mail': mail})
 
     def mail_vacation_set(self, mail: str, subject: str, start_date: str, end_date: str,
-                          body: str | None = None, additional_mail_addresses: list | None = None) -> dict:
+                          body: str | None = None, additional_mail_addresses: list[str] | None = None) -> bool:
         """
         Function to set the vacation notice for a given mail
         :param mail: the mail to get the vacation notice for
@@ -925,7 +931,7 @@ class APIClient:
         """
         return self.api_request('mail.vacation.delete', {'mail': mail})
 
-    def group_list(self, account: str | None = None) -> dict:
+    def group_list(self, account: str | None = None) -> list[dict[str, Any]]:
         """
         Function to list all groups for an account
         :param account: optional parameter for the account to list the groups for
@@ -936,7 +942,7 @@ class APIClient:
             params['account'] = account
         return self.api_request('group.list', params)
 
-    def group_get(self, group_id: int, account: str | None = None) -> dict:
+    def group_get(self, group_id: int, account: str | None = None) -> dict[str, Any]:
         """
         Function to get a group from the account by the group id
         :param group_id: the id of the group to get
@@ -948,7 +954,7 @@ class APIClient:
             params['account'] = account
         return self.api_request('group.get', params)
 
-    def group_del(self, group_id: int, account: str | None = None) -> dict:
+    def group_del(self, group_id: int, account: str | None = None) -> bool:
         """
         Function to delete a group
         :param group_id: the group's id of the group to delete
@@ -960,7 +966,7 @@ class APIClient:
             params['account'] = account
         return self.api_request('group.del', params)
 
-    def group_add(self, name: str, display_name: str, mail_addresses_to_add: list, account: str | None = None) -> dict:
+    def group_add(self, name: str, display_name: str, mail_addresses_to_add: list[str], account: str | None = None) -> bool:
         """
         Function to add a group
         :param name: the group name
@@ -974,8 +980,8 @@ class APIClient:
             params['account'] = account
         return self.api_request('group.add', params)
 
-    def group_set(self, group_id: int, display_name: str, mail_addresses_to_add: list | None = None,
-                  mail_addresses_to_remove: list | None = None, account: str | None = None) -> dict:
+    def group_set(self, group_id: int, display_name: str, mail_addresses_to_add: list[str] | None = None,
+                  mail_addresses_to_remove: list[str] | None = None, account: str | None = None) -> bool:
         """
         Function to modify a group. Either mail_addresses_to_add or mail_addresses_to_remove have to be specified.
         :param group_id: the group's id of the group to modify
@@ -1001,7 +1007,7 @@ class APIClient:
 
         return self.api_request('group.set', params)
 
-    def mail_passwordreset_listmethods(self, mail: str) -> dict:
+    def mail_passwordreset_listmethods(self, mail: str) -> list[str]:
         """
         Function to list all available password reset methods for a given mail
         :param mail: the mail to query
@@ -1009,7 +1015,7 @@ class APIClient:
         """
         return self.api_request('mail.passwordreset.listmethods', {'mail': mail})
 
-    def mail_passwordreset_sendsms(self, mail: str, cell_phone: str, expire_in_minutes: int = 15) -> dict:
+    def mail_passwordreset_sendsms(self, mail: str, cell_phone: str, expire_in_minutes: int = 15) -> bool:
         """
         Function to send a password reset for a mail via SMS
         :param mail: the mail to send the SMS for
@@ -1020,7 +1026,7 @@ class APIClient:
         return self.api_request('mail.passwordreset.sendsms', {'mail': mail, 'cell_phone': cell_phone,
                                                                'expire_in_minutes': expire_in_minutes})
 
-    def mail_passwordreset_setpassword(self, mail: str, token: str, password: str) -> dict:
+    def mail_passwordreset_setpassword(self, mail: str, token: str, password: str) -> bool:
         """
         Function to set a password reset for a mail using a token
         :param mail: the mail to set the password for
@@ -1031,7 +1037,7 @@ class APIClient:
         return self.api_request('mail.passwordreset.setpassword',
                                 {'mail': mail, 'token': token, 'password': password})
 
-    def mail_capabilities_get(self, mail: str) -> dict:
+    def mail_capabilities_get(self, mail: str) -> dict[str, Any]:
         """
         Function to get a list of all capabilities for an account
         :param mail: the mail account
@@ -1039,7 +1045,7 @@ class APIClient:
         """
         return self.api_request('mail.capabilities.get', {'mail': mail})
 
-    def mail_capabilities_set(self, mail: str, capabilities: dict) -> dict[Any, Any]:
+    def mail_capabilities_set(self, mail: str, capabilities: dict[str, str]) -> bool:
         """
         Function to modify the capabilities of mailboxes for an account.
         Changes to the mailboxes are done asynchronously.
@@ -1066,7 +1072,7 @@ class APIClient:
 
         return self.api_request('mail.capabilities.set', params)
 
-    def context_list(self, account: str) -> dict:
+    def context_list(self, account: str) -> dict[str, Any]:
         """
         Function to list all contexts of a given account
         :param account: the account to list all contexts for
@@ -1074,7 +1080,7 @@ class APIClient:
         """
         return self.api_request('context.list', {'account': account})
 
-    def search(self, query: str, get_account_summary: bool = False, get_extended_mail_result: bool = False) -> dict:
+    def search(self, query: str, get_account_summary: bool = False, get_extended_mail_result: bool = False) -> dict[str, Any]:
         """
         Function to search for accounts, domains and email addresses
         :param query: the query to search by
@@ -1085,7 +1091,7 @@ class APIClient:
         return self.api_request('search', {'query': query, 'get_account_summary': get_account_summary,
                                            'get_extended_mail_result': get_extended_mail_result})
 
-    def mailinglist_list(self, account: str) -> dict:
+    def mailinglist_list(self, account: str) -> list[dict[str, Any]]:
         """
         Function to list all mailing lists for a given account
         :param account: the account to list all mailing lists for
@@ -1093,7 +1099,7 @@ class APIClient:
         """
         return self.api_request('mailinglist.list', {'account': account})
 
-    def mailinglist_add(self, mailinglist: str, password: str, account: str, adminmail: str | None = None) -> dict:
+    def mailinglist_add(self, mailinglist: str, password: str, account: str, adminmail: str | None = None) -> bool:
         """
         Function to add a mailing list
         :param mailinglist: the mailing list to add
@@ -1105,7 +1111,7 @@ class APIClient:
         return self.api_request('mailinglist.add', {'mailinglist': mailinglist, 'password': password,
                                                     'account': account, 'adminmail': adminmail})
 
-    def mailinglist_get(self, mailinglist: str, account: str) -> dict:
+    def mailinglist_get(self, mailinglist: str, account: str) -> dict[str, Any]:
         """
         Function to get a mailing list
         :param mailinglist: the mailing list to get
@@ -1115,7 +1121,7 @@ class APIClient:
         return self.api_request('mailinglist.get', {'mailinglist': mailinglist, 'account': account})
 
     def mailinglist_set(self, mailinglist: str, account: str, password: str | None = None,
-                        adminmail: str | None = None) -> dict:
+                        adminmail: str | None = None) -> bool:
         """
         Function to change a mailing list.
         :param mailinglist: the mailing list to change.
@@ -1134,7 +1140,7 @@ class APIClient:
         params = {k: v for k, v in raw_params.items() if v is not None}
         return self.api_request('mailinglist.set', params)
 
-    def mailinglist_del(self, mailinglist: str, account: str) -> dict:
+    def mailinglist_del(self, mailinglist: str, account: str) -> bool:
         """
         Function to delete a mailing list
         :param mailinglist: the mailing list to delete
@@ -1143,7 +1149,7 @@ class APIClient:
         """
         return self.api_request('mailinglist.del', {'mailinglist': mailinglist, 'account': account})
 
-    def additionalmailaccount_list(self, parent_mail: str) -> dict:
+    def additionalmailaccount_list(self, parent_mail: str) -> dict[str, Any]:
         """
         Function to list all additional mail accounts for a given parent mail
         :param parent_mail: the parent mail to list additional mail accounts for
@@ -1157,7 +1163,7 @@ class APIClient:
                                   transport_server: str = 'smtp.mailbox.org', transport_port: int = 465,
                                   transport_secure: bool = True, transport_starttls: bool = False,
                                   trash_folder: str = 'Trash', sent_folder: str = 'Sent', drafts_folder: str = 'Drafts',
-                                  spam_folder: str = 'Junk') -> dict:
+                                  spam_folder: str = 'Junk') -> bool:
         """
         Function to add an extra mail account to a mail address. Default values are the values of mailbox.org.
         Order and syntax of the call deviate slightly from the mailbox.org API:
@@ -1204,7 +1210,7 @@ class APIClient:
         params = {k: v for k, v in raw_params.items() if v is not None}
         return self.api_request('additionalmailaccount.add', params)
 
-    def additionalmailaccount_delete(self, parent_mail: str, account_mail: str) -> dict:
+    def additionalmailaccount_delete(self, parent_mail: str, account_mail: str) -> bool:
         """
         Function to delete an additional mail account.
         :param parent_mail: the parent mail address to delete the account from.
@@ -1214,7 +1220,7 @@ class APIClient:
         return self.api_request('additionalmailaccount.delete',
                                 {'parent_mail': parent_mail, 'account_mail': account_mail})
 
-    def evac_resetaccount(self, delete_mail_accounts_and_domains: bool = False) -> dict:
+    def evac_resetaccount(self, delete_mail_accounts_and_domains: bool = False) -> dict[str, Any] | bool:
         """
         Function to reset a mailbox EVAC account.
         Note: this needs a special permission from mailbox.
@@ -1225,7 +1231,7 @@ class APIClient:
                                 {'delete_mail_accounts_and_domains': delete_mail_accounts_and_domains})
 
 
-def validate_params(allowed: dict, actual: dict) -> bool:
+def validate_params(allowed: dict[str, Any], actual: dict[str, Any]) -> bool:
     """
     Validates parameter names and types against an allowed dictionary.
     None values are permitted for allowed keys to support optional kwargs.
