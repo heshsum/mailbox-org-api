@@ -211,6 +211,21 @@ class TestAPIClient:
         assert len(token) > 0
         assert isinstance(token, str)
 
+    def test_account_capabilities_get(self, api_client):
+        capabilities = api_client.account_capabilities_get(api_test_user)
+        assert isinstance(capabilities, dict)
+
+        for cap in valid_capabilities:
+            assert cap in capabilities
+            entry = capabilities[cap]
+            assert entry['intent'] in {'on', 'off', 'inherit'}
+            assert entry['effective'] in {'on', 'off'}
+            assert isinstance(entry['source'], str)
+            assert isinstance(entry['exceptions'], list)
+
+        with pytest.raises(APIError):
+            api_client.account_capabilities_get('nonexistent_account_' + api_test_user)
+
     def test_account_capabilities_set(self, api_client):
         original = api_client.account_capabilities_get(api_test_user)
         mail = api_client.mail_get_list(domain)[0]
