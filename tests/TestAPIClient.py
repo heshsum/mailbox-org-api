@@ -545,12 +545,17 @@ class TestAPIClient:
         finally:
             api_client.mail_capabilities_set(mail, {c: 'inherit' for c in valid_capabilities})
 
-    @pytest.mark.depends(name='test_mail_add')
     def test_mail_capabilities_set_invalid(self):
         api = APIClient.APIClient()
         mail = test_id + '@' + domain
+        # Invalid capability
         with pytest.raises(ValueError):
-            api.mail_capabilities_set(mail, ['INVALID_CAPABILITY'])
+            api.mail_capabilities_set(mail, {'INVALID_CAPABILITY': 'on'})
+        # Capabilities must be a dict
+        with pytest.raises(TypeError):
+            api.mail_capabilities_set(mail, ['MAIL_SPAMPROTECTION'])
+        # No request must have been sent
+        assert api.jsonrpc_id == 0
 
     @pytest.mark.depends(name='test_mail_add')
     def test_mail_spamprotect(self, api_client):
