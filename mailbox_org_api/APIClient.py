@@ -1231,7 +1231,7 @@ class APIClient:
                                 {'delete_mail_accounts_and_domains': delete_mail_accounts_and_domains})
 
 
-def validate_params(allowed: dict, actual: dict) -> bool:
+def validate_params(allowed: dict[str, Any], actual: dict[str, Any]) -> bool:
     """
     Validates parameter names and types against an allowed dictionary.
     None values are permitted for allowed keys to support optional kwargs.
