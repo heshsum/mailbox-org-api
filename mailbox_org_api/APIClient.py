@@ -18,7 +18,7 @@ from mailbox_org_api.Mail import Mail
 
 quota_keys = ['additional_cloud_quota', 'additional_mail_quota']
 valid_capabilities = ['MAIL_SPAMPROTECTION', 'MAIL_OTP', 'MAIL_BLACKLIST', 'MAIL_BACKUPRECOVER', 'MAIL_PASSWORDRESET_SMS']
-capability_modes = {'on', 'off', 'inherit'}
+capability_intents = {'on', 'off', 'inherit'}
 
 class APIClient:
     """
@@ -403,10 +403,10 @@ class APIClient:
         invalid_capabilities = set(capabilities) - set(valid_capabilities)
         if invalid_capabilities:
             raise ValueError(f'Invalid capabilities found: {", ".join(sorted(invalid_capabilities))}')
-        invalid = {k: v for k, v in capabilities.items() if v not in capability_modes}
+        invalid = {k: v for k, v in capabilities.items() if v not in capability_intents}
         if invalid:
             raise ValueError(f'Invalid capability intents found: {invalid}. '
-                             f'Allowed values: {", ".join(sorted(capability_modes))}')
+                             f'Allowed values: {", ".join(sorted(capability_intents))}')
 
         params = {'account': account, 'capabilities': capabilities}
 
@@ -1057,10 +1057,10 @@ class APIClient:
         invalid_capabilities = set(capabilities) - set(valid_capabilities)
         if invalid_capabilities:
             raise ValueError(f'Invalid capabilities found: {", ".join(sorted(invalid_capabilities))}')
-        invalid = {k: v for k, v in capabilities.items() if v not in capability_modes}
+        invalid = {k: v for k, v in capabilities.items() if v not in capability_intents}
         if invalid:
             raise ValueError(f'Invalid capability intents found: {invalid}. '
-                             f'Allowed values: {", ".join(sorted(capability_modes))}')
+                             f'Allowed values: {", ".join(sorted(capability_intents))}')
 
         params = {'mail': mail, 'capabilities': capabilities}
 
