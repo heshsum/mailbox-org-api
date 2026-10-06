@@ -282,7 +282,7 @@ class APIClient:
         """
         return self.api_request('account.del', {'account': account})
 
-    def account_invoice_list(self, account: str) -> dict:
+    def account_invoice_list(self, account: str) -> list[dict[str, Any]]:
         """
         Function to list all invoices for a specific account
         :param account: the account name to list
@@ -431,7 +431,7 @@ class APIClient:
 
         return self.api_request('account.capabilities.set', params)
 
-    def domain_list(self, account: str, search_filter: str | None = None) -> dict:
+    def domain_list(self, account: str, search_filter: str | None = None) -> list[dict[str, Any]]:
         """
         Function to list all domains
         :param account: the account to list domains for
@@ -496,7 +496,7 @@ class APIClient:
 
         return self.api_request('domain.set', params)
 
-    def domain_del(self, account: str, domain: str) -> dict:
+    def domain_del(self, account: str, domain: str) -> bool:
         """
         Function to delete a domain
         :param account: the account to delete a domain in
@@ -521,7 +521,7 @@ class APIClient:
         """
         return self.api_request('domain.deletelist.search', {'domain': domain})
 
-    def domain_deletelist_delete(self, mail: str) -> bool | Any:
+    def domain_deletelist_delete(self, mail: str) -> bool:
         """
         Function to remove a deleted email from the delete list.
         :param mail: The deleted mail to remove from the list
@@ -766,7 +766,7 @@ class APIClient:
         return self.api_request('mail.set', {'mail': mail, 'deletion_date': deletion_date,
                                              'active': False})
 
-    def mail_del(self, mail: str) -> dict:
+    def mail_del(self, mail: str) -> bool:
         """
         Function to delete a mail
         :param mail: the mail to delete
@@ -774,7 +774,7 @@ class APIClient:
         """
         return self.api_request('mail.del', {'mail': mail})
 
-    def mail_apppassword_list(self, mail: str) -> dict:
+    def mail_apppassword_list(self, mail: str) -> list[dict[str, Any]]:
         """
         Function to list all app passwords of a given mail
         :param mail: the mail to list app passwords for
@@ -794,7 +794,7 @@ class APIClient:
         return self.api_request('mail.apppassword.add', {'mail': mail, 'memo': memo,
                                                          'imap_allowed': imap_allowed, 'smtp_allowed': smtp_allowed})
 
-    def mail_apppassword_del(self, apppassword_id: int) -> dict:
+    def mail_apppassword_del(self, apppassword_id: int) -> bool:
         """
         Function to delete a mail app password
         :param apppassword_id: the id of the mail app password
@@ -811,7 +811,7 @@ class APIClient:
         """
         return self.api_request('mail.externaluid', {'account': account, 'uid_extern': uid_extern})
 
-    def mail_backup_list(self, mail: str) -> dict:
+    def mail_backup_list(self, mail: str) -> list[dict[str, Any]] | bool:
         """
         Function to list all backups for a given mail
         :param mail: the mail to list backups for
@@ -864,7 +864,7 @@ class APIClient:
                                  'tag2level': round(tag2level, 1),
                                  'killevel': killlevel, 'route_to': route_to})
 
-    def mail_blacklist_list(self, mail: str) -> dict:
+    def mail_blacklist_list(self, mail: str) -> list[str]:
         """
         Function to list the mail blacklist for a given mail address.
         :param mail: the mail to list the blacklist for.
@@ -872,7 +872,7 @@ class APIClient:
         """
         return self.api_request('mail.blacklist.list', {'mail': mail})
 
-    def mail_blacklist_add(self, mail: str, add_address: str) -> dict:
+    def mail_blacklist_add(self, mail: str, add_address: str) -> list[str]:
         """
         Function to add a mail to a blacklist of a mail address.
         :param mail: the mail of the owner of the blacklist.
@@ -881,7 +881,7 @@ class APIClient:
         """
         return self.api_request('mail.blacklist.add', {'mail': mail, 'add_address': add_address})
 
-    def mail_blacklist_del(self, mail: str, delete_address: str) -> dict:
+    def mail_blacklist_del(self, mail: str, delete_address: str) -> list[str]:
         """
         Function to delete a mail from a blacklist
         :param mail: the mail of the owner of the blacklist
@@ -931,7 +931,7 @@ class APIClient:
         """
         return self.api_request('mail.vacation.delete', {'mail': mail})
 
-    def group_list(self, account: str | None = None) -> dict:
+    def group_list(self, account: str | None = None) -> list[dict[str, Any]]:
         """
         Function to list all groups for an account
         :param account: optional parameter for the account to list the groups for
@@ -954,7 +954,7 @@ class APIClient:
             params['account'] = account
         return self.api_request('group.get', params)
 
-    def group_del(self, group_id: int, account: str | None = None) -> dict:
+    def group_del(self, group_id: int, account: str | None = None) -> bool:
         """
         Function to delete a group
         :param group_id: the group's id of the group to delete
