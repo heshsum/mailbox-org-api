@@ -134,7 +134,7 @@ class APIClient:
         # If neither a success nor an error, the full response if returned
         return api_response
 
-    def auth(self, username, password) -> dict:
+    def auth(self, username: str, password: str) -> dict[str, Any]:
         """
         Function to authenticate and create a new API session
         :param username: the username
