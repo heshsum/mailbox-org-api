@@ -1015,7 +1015,7 @@ class APIClient:
         """
         return self.api_request('mail.passwordreset.listmethods', {'mail': mail})
 
-    def mail_passwordreset_sendsms(self, mail: str, cell_phone: str, expire_in_minutes: int = 15) -> dict:
+    def mail_passwordreset_sendsms(self, mail: str, cell_phone: str, expire_in_minutes: int = 15) -> bool:
         """
         Function to send a password reset for a mail via SMS
         :param mail: the mail to send the SMS for
@@ -1026,7 +1026,7 @@ class APIClient:
         return self.api_request('mail.passwordreset.sendsms', {'mail': mail, 'cell_phone': cell_phone,
                                                                'expire_in_minutes': expire_in_minutes})
 
-    def mail_passwordreset_setpassword(self, mail: str, token: str, password: str) -> dict:
+    def mail_passwordreset_setpassword(self, mail: str, token: str, password: str) -> bool:
         """
         Function to set a password reset for a mail using a token
         :param mail: the mail to set the password for
@@ -1045,7 +1045,7 @@ class APIClient:
         """
         return self.api_request('mail.capabilities.get', {'mail': mail})
 
-    def mail_capabilities_set(self, mail: str, capabilities: dict) -> dict[Any, Any]:
+    def mail_capabilities_set(self, mail: str, capabilities: dict[str, str]) -> bool:
         """
         Function to modify the capabilities of mailboxes for an account.
         Changes to the mailboxes are done asynchronously.
@@ -1099,7 +1099,7 @@ class APIClient:
         """
         return self.api_request('mailinglist.list', {'account': account})
 
-    def mailinglist_add(self, mailinglist: str, password: str, account: str, adminmail: str | None = None) -> dict:
+    def mailinglist_add(self, mailinglist: str, password: str, account: str, adminmail: str | None = None) -> bool:
         """
         Function to add a mailing list
         :param mailinglist: the mailing list to add
@@ -1121,7 +1121,7 @@ class APIClient:
         return self.api_request('mailinglist.get', {'mailinglist': mailinglist, 'account': account})
 
     def mailinglist_set(self, mailinglist: str, account: str, password: str | None = None,
-                        adminmail: str | None = None) -> dict:
+                        adminmail: str | None = None) -> bool:
         """
         Function to change a mailing list.
         :param mailinglist: the mailing list to change.
@@ -1140,7 +1140,7 @@ class APIClient:
         params = {k: v for k, v in raw_params.items() if v is not None}
         return self.api_request('mailinglist.set', params)
 
-    def mailinglist_del(self, mailinglist: str, account: str) -> dict:
+    def mailinglist_del(self, mailinglist: str, account: str) -> bool:
         """
         Function to delete a mailing list
         :param mailinglist: the mailing list to delete
@@ -1163,7 +1163,7 @@ class APIClient:
                                   transport_server: str = 'smtp.mailbox.org', transport_port: int = 465,
                                   transport_secure: bool = True, transport_starttls: bool = False,
                                   trash_folder: str = 'Trash', sent_folder: str = 'Sent', drafts_folder: str = 'Drafts',
-                                  spam_folder: str = 'Junk') -> dict:
+                                  spam_folder: str = 'Junk') -> bool:
         """
         Function to add an extra mail account to a mail address. Default values are the values of mailbox.org.
         Order and syntax of the call deviate slightly from the mailbox.org API:
