@@ -388,8 +388,8 @@ class APIClient:
         """
         return self.api_request('account.capabilities.get', {'account': account})
 
-    def account_capabilities_set(self, account: str, capabilities: dict,
-                                 exceptions: dict | None = None) -> dict[Any, Any]:
+    def account_capabilities_set(self, account: str, capabilities: dict[str, str],
+                                 exceptions: dict[str, list[str]] | None = None) -> bool:
         """
         Function to modify the capabilities of mailboxes for an account.
         Changes to the mailboxes are done asynchronously.
