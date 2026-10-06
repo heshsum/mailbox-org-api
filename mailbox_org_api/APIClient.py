@@ -244,7 +244,7 @@ class APIClient:
                 setattr(account_object, k, v)
         return account_object
 
-    def account_set(self, account: str, **kwargs) -> dict:
+    def account_set(self, account: str, **kwargs: Any) -> dict[str, Any]:
         """
         Function to update a specific account
         :param account: the account name to update
