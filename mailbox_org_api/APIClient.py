@@ -69,7 +69,7 @@ class APIClient:
         self.request_timeout = request_timeout
 
     # Increment the request ID
-    def get_jsonrpc_id(self):
+    def get_jsonrpc_id(self) -> str:
         """Method to create the JSON RPC request ID. """
         self.jsonrpc_id += 1
         return str(self.jsonrpc_id)
