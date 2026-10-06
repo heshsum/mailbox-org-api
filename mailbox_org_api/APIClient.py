@@ -380,6 +380,50 @@ class APIClient:
         :return: the capabilities as a dict
         """
         return self.api_request('account.capabilities.get', {'account': account})
+
+    def account_capabilities_set(self, account: str, capabilities: dict,
+                                 exceptions: dict | None = None) -> dict[Any, Any]:
+        """
+        Function to modify the capabilities of mailboxes for an account.
+        Changes to the mailboxes are done asynchronously.
+        Documentation: https://api.mailbox.org/v1/doc/methods/index.html#account-capabilities-set
+        :param account: the account name
+        :param capabilities: partial map of capability to 'on', 'off' or 'inherit',
+                             e.g. {'MAIL_SPAMPROTECTION': 'on', 'MAIL_BLACKLIST': 'inherit'}
+        :param exceptions: Optional full mailbox exception lists for capabilities included in capabilities,
+                           e.g. {'MAIL_SPAMPROTECTION': ['user@example.com']}
+        :return: True if the capabilities were set successfully
+        """
+        # Allowed capabilities (same as for domains) and intent values as documented here:
+        # https://api.mailbox.org/v1/doc/methods/index.html#account-capabilities-set
+
+        if not isinstance(capabilities, dict):
+            raise TypeError('Parameter capabilities must be a dict.')
+        invalid_capabilities = set(capabilities) - set(valid_capabilities)
+        if invalid_capabilities:
+            raise ValueError(f'Invalid capabilities found: {", ".join(sorted(invalid_capabilities))}')
+        invalid = {k: v for k, v in capabilities.items() if v not in capability_modes}
+        if invalid:
+            raise ValueError(f'Invalid capability intents found: {invalid}. '
+                             f'Allowed values: {", ".join(sorted(capability_modes))}')
+
+        params = {'account': account, 'capabilities': capabilities}
+
+        if exceptions is not None:
+            if not isinstance(exceptions, dict):
+                raise TypeError('Parameter exceptions must be a dict.')
+            # Exceptions are only allowed for capabilities included in capabilities
+            invalid_capabilities = set(exceptions) - set(capabilities)
+            if invalid_capabilities:
+                raise ValueError(f'Exceptions given for capabilities not included in capabilities: '
+                                 f'{", ".join(sorted(invalid_capabilities))}')
+            for k, v in exceptions.items():
+                if not isinstance(v, list):
+                    raise TypeError(f'Exceptions for capability {k} must be a list of mailboxes.')
+            params['exceptions'] = exceptions
+
+        return self.api_request('account.capabilities.set', params)
+
     def domain_list(self, account: str, search_filter: str | None = None) -> dict:
         """
         Function to list all domains
