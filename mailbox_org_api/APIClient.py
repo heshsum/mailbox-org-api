@@ -25,7 +25,13 @@ class APIClient:
     Object for API Client
     """
 
-    def __init__(self, debug_output=False, max_retries=5, request_timeout: int = 30):
+    def __init__(self, debug_output: bool = False, max_retries: int = 5, request_timeout: int = 30) -> None:
+        """
+        Constructor for API Client
+        :param debug_output: True to enable simple debug outputs. Defaults to False
+        :param max_retries: Number of times to retry the API request. Defaults to 5
+        :param request_timeout: Sets the network timeout in seconds. Defaults to 30
+        """
         # URL of the API
         self.url = "https://api.mailbox.org/v1/"
 
