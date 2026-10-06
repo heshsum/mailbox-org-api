@@ -819,7 +819,7 @@ class APIClient:
         """
         return self.api_request('mail.backup.list', {'mail': mail})
 
-    def mail_backup_import(self, mail: str, backup_id: str, time: str, backup_filter: str) -> dict:
+    def mail_backup_import(self, mail: str, backup_id: str, time: str, backup_filter: str) -> dict[str, Any] | bool:
         """
         Function to import a backup for a mail
         :param mail: the mail to import
