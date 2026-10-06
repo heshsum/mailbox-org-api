@@ -637,6 +637,11 @@ class APIClient:
         return self.api_request('mail.get', {'mail': mail, 'include_quota_usage': include_quota_usage})
 
     def mail_get_object(self, mail: str) -> Mail:
+        """
+        Function to retrieve a mail as a Mail object
+        :param mail: the mail to retrieve
+        :return: the mail as a Mail object
+        """
         result = self.api_request('mail.get', {'mail': mail, 'include_quota_usage': False})
         mail_object = Mail(mail)
         for k, v in result.items():
