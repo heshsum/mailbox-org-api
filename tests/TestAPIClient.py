@@ -210,6 +210,71 @@ class TestAPIClient:
         assert len(token) > 0
         assert isinstance(token, str)
 
+    def test_account_capabilities_set(self, api_client):
+        original = api_client.account_capabilities_get(api_test_user)
+        mail = api_client.mail_get_list(domain)[0]
+        try:
+            # Set a single capability, others must remain unchanged (partial map)
+            assert api_client.account_capabilities_set(api_test_user, {'MAIL_SPAMPROTECTION': 'on'}) is True
+            capabilities = api_client.account_capabilities_get(api_test_user)
+            assert capabilities['MAIL_SPAMPROTECTION']['intent'] == 'on'
+            assert capabilities['MAIL_BLACKLIST']['intent'] == original['MAIL_BLACKLIST']['intent']
+
+            # Set multiple capabilities at once
+            api_client.account_capabilities_set(api_test_user, {'MAIL_SPAMPROTECTION': 'off',
+                                                                'MAIL_BLACKLIST': 'on'})
+            capabilities = api_client.account_capabilities_get(api_test_user)
+            assert capabilities['MAIL_SPAMPROTECTION']['intent'] == 'off'
+            assert capabilities['MAIL_BLACKLIST']['intent'] == 'on'
+
+            # Set a capability with a mailbox exception
+            api_client.account_capabilities_set(api_test_user, {'MAIL_SPAMPROTECTION': 'on'},
+                                                exceptions={'MAIL_SPAMPROTECTION': [mail]})
+            capabilities = api_client.account_capabilities_get(api_test_user)
+            assert capabilities['MAIL_SPAMPROTECTION']['intent'] == 'on'
+            # The API returns exceptions as objects with the mail and its (inverted) state
+            assert {'mail': mail, 'state': 'off'} in capabilities['MAIL_SPAMPROTECTION']['exceptions']
+
+            # Remove the exception again
+            api_client.account_capabilities_set(api_test_user, {'MAIL_SPAMPROTECTION': 'on'},
+                                                exceptions={'MAIL_SPAMPROTECTION': []})
+            capabilities = api_client.account_capabilities_get(api_test_user)
+            assert capabilities['MAIL_SPAMPROTECTION']['exceptions'] == []
+        finally:
+            # Restore the original intents and exceptions.
+            # account.capabilities.get returns exceptions as objects, account.capabilities.set expects mail addresses.
+            caps = ['MAIL_SPAMPROTECTION', 'MAIL_BLACKLIST', 'MAIL_BACKUPRECOVER', 'MAIL_PASSWORDRESET_SMS']
+            api_client.account_capabilities_set(api_test_user,
+                                                {c: original[c]['intent'] for c in caps},
+                                                exceptions={c: [e['mail'] for e in original[c]['exceptions']]
+                                                            for c in caps})
+
+    def test_account_capabilities_set_invalid(self):
+        api = APIClient.APIClient()
+        # Invalid capability
+        with pytest.raises(ValueError):
+            api.account_capabilities_set(api_test_user, {'INVALID_CAPABILITY': 'on'})
+        # Invalid mode
+        with pytest.raises(ValueError):
+            api.account_capabilities_set(api_test_user, {'MAIL_SPAMPROTECTION': 'yes'})
+        # Capabilities not a dict
+        with pytest.raises(TypeError):
+            api.account_capabilities_set(api_test_user, ['MAIL_SPAMPROTECTION'])
+        # Exception for a capability not included in capabilities
+        with pytest.raises(ValueError):
+            api.account_capabilities_set(api_test_user, {'MAIL_SPAMPROTECTION': 'on'},
+                                         exceptions={'MAIL_BLACKLIST': []})
+        # Exceptions not a dict
+        with pytest.raises(TypeError):
+            api.account_capabilities_set(api_test_user, {'MAIL_SPAMPROTECTION': 'on'},
+                                         exceptions=['user@example.com'])
+        # Exceptions not a list
+        with pytest.raises(TypeError):
+            api.account_capabilities_set(api_test_user, {'MAIL_SPAMPROTECTION': 'on'},
+                                         exceptions={'MAIL_SPAMPROTECTION': 'user@example.com'})
+        # No request must have been sent
+        assert api.jsonrpc_id == 0
+
     def test_domain_list(self, api_client):
         domains = api_client.domain_list(api_test_user)
         for d in domains:
