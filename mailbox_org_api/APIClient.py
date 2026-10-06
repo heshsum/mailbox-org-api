@@ -237,6 +237,11 @@ class APIClient:
         return self.api_request('account.get', {'account': account})
 
     def account_get_object(self, account: str) -> Account:
+        """
+        Function to get a specific account as an Account object
+        :param account: the name of the account to get
+        :return: the account as an Account object
+        """
         result = self.api_request('account.get', {'account': account})
         account_object = Account(account)
         for k, v in result.items():
