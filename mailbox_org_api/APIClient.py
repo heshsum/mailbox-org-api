@@ -175,14 +175,14 @@ class APIClient:
                 pass
         self.session.close()
 
-    def hello_world(self):
+    def hello_world(self) -> str:
         """
         Function for hello world, just to test the connection
         :return: The response from the mailbox.org Business API
         """
         return self.api_request('hello.world', {})
 
-    def hello_innerworld(self):
+    def hello_innerworld(self) -> str:
         """
         Hello World function to test the authentication
         :return: The response from the mailbox.org Business API
