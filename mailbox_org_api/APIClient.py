@@ -414,7 +414,7 @@ class APIClient:
             raise ValueError(f'Invalid capability intents found: {invalid}. '
                              f'Allowed values: {", ".join(sorted(capability_intents))}')
 
-        params = {'account': account, 'capabilities': capabilities}
+        params: dict[str, Any] = {'account': account, 'capabilities': capabilities}
 
         if exceptions is not None:
             if not isinstance(exceptions, dict):
