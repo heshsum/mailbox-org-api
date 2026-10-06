@@ -17,7 +17,8 @@ from mailbox_org_api.Invoice import Invoice
 from mailbox_org_api.Mail import Mail
 
 quota_keys = ['additional_cloud_quota', 'additional_mail_quota']
-valid_capabilities = ['MAIL_SPAMPROTECTION', 'MAIL_BLACKLIST', 'MAIL_BACKUPRECOVER', 'MAIL_PASSWORDRESET_SMS']
+valid_capabilities = ['MAIL_SPAMPROTECTION', 'MAIL_OTP', 'MAIL_BLACKLIST', 'MAIL_BACKUPRECOVER', 'MAIL_PASSWORDRESET_SMS']
+capability_modes = {'on', 'off', 'inherit'}
 
 class APIClient:
     """
