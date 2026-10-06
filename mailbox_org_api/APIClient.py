@@ -17,7 +17,8 @@ from mailbox_org_api.Invoice import Invoice
 from mailbox_org_api.Mail import Mail
 
 quota_keys = ['additional_cloud_quota', 'additional_mail_quota']
-
+valid_capabilities = ['MAIL_SPAMPROTECTION', 'MAIL_OTP', 'MAIL_BLACKLIST', 'MAIL_BACKUPRECOVER', 'MAIL_PASSWORDRESET_SMS']
+capability_intents = {'on', 'off', 'inherit'}
 
 class APIClient:
     """
@@ -373,6 +374,57 @@ class APIClient:
         # but gzip does not work because the data is zlib compressed
         return zlib.decompress(base64.b64decode(response['bin']))
 
+    def account_capabilities_get(self, account: str) -> dict:
+        """
+        Function to get a list of all capabilities for an account
+        :param account: the account name
+        :return: the capabilities as a dict
+        """
+        return self.api_request('account.capabilities.get', {'account': account})
+
+    def account_capabilities_set(self, account: str, capabilities: dict,
+                                 exceptions: dict | None = None) -> dict[Any, Any]:
+        """
+        Function to modify the capabilities of mailboxes for an account.
+        Changes to the mailboxes are done asynchronously.
+        Documentation: https://api.mailbox.org/v1/doc/methods/index.html#account-capabilities-set
+        :param account: the account name
+        :param capabilities: partial map of capability to 'on', 'off' or 'inherit',
+                             e.g. {'MAIL_SPAMPROTECTION': 'on', 'MAIL_BLACKLIST': 'inherit'}
+        :param exceptions: Optional full mailbox exception lists for capabilities included in capabilities,
+                           e.g. {'MAIL_SPAMPROTECTION': ['user@example.com']}
+        :return: True if the capabilities were set successfully
+        """
+        # Allowed capabilities (same as for domains) and intent values as documented here:
+        # https://api.mailbox.org/v1/doc/methods/index.html#account-capabilities-set
+
+        if not isinstance(capabilities, dict):
+            raise TypeError('Parameter capabilities must be a dict.')
+        invalid_capabilities = set(capabilities) - set(valid_capabilities)
+        if invalid_capabilities:
+            raise ValueError(f'Invalid capabilities found: {", ".join(sorted(invalid_capabilities))}')
+        invalid = {k: v for k, v in capabilities.items() if v not in capability_intents}
+        if invalid:
+            raise ValueError(f'Invalid capability intents found: {invalid}. '
+                             f'Allowed values: {", ".join(sorted(capability_intents))}')
+
+        params = {'account': account, 'capabilities': capabilities}
+
+        if exceptions is not None:
+            if not isinstance(exceptions, dict):
+                raise TypeError('Parameter exceptions must be a dict.')
+            # Exceptions are only allowed for capabilities included in capabilities
+            invalid_capabilities = set(exceptions) - set(capabilities)
+            if invalid_capabilities:
+                raise ValueError(f'Exceptions given for capabilities not included in capabilities: '
+                                 f'{", ".join(sorted(invalid_capabilities))}')
+            for k, v in exceptions.items():
+                if not isinstance(v, list):
+                    raise TypeError(f'Exceptions for capability {k} must be a list of mailboxes.')
+            params['exceptions'] = exceptions
+
+        return self.api_request('account.capabilities.set', params)
+
     def domain_list(self, account: str, search_filter: str | None = None) -> dict:
         """
         Function to list all domains
@@ -419,24 +471,6 @@ class APIClient:
         :return: the API response
         """
         return self.api_request('domain.get', {'domain': domain})
-
-    def domain_capabilities_set(self, domain: str, capabilities: list) -> dict:
-        """
-        Function to set a domain capabilities
-        :param domain: the domain to set the capabilities for
-        :param capabilities: List of capabilities to set.
-        Full list: https://api.mailbox.org/v1/doc/methods/index.html#domain-capabilities-set
-        :return: the API response
-        """
-        # Domain capabilities as documented here:
-        # https://api.mailbox.org/v1/doc/methods/index.html#domain-capabilities-set
-        domain_capabilities = ['MAIL_SPAMPROTECTION', 'MAIL_BLACKLIST', 'MAIL_BACKUPRECOVER', 'MAIL_PASSWORDRESET_SMS']
-
-        for c in capabilities:
-            if c not in domain_capabilities:
-                raise ValueError(f'Capability {c} is not a valid parameter for domain_capabilities_set.')
-        return self.api_request('domain.capabilities.set', params={'domain': domain,
-                                                                   'capabilities': capabilities})
 
     def domain_set(self, domain: str, **kwargs) -> dict:
         """
@@ -726,24 +760,6 @@ class APIClient:
         return self.api_request('mail.set', {'mail': mail, 'deletion_date': deletion_date,
                                              'active': False})
 
-    def mail_capabilities_set(self, mail: str, capabilities: list) -> dict:
-        """
-        Function to set a domain capabilities
-        :param mail: the mail to set the capabilities for
-        :param capabilities: a list of capabilities to set for the mail
-        :return: the API response
-        """
-        # Capabilities as documented here: https://api.mailbox.org/v1/doc/methods/index.html#mail-capabilities-set
-        mail_capabilities = ['MAIL_SPAMPROTECTION', 'MAIL_BLACKLIST', 'MAIL_BACKUPRECOVER', 'MAIL_OTP',
-                             'MAIL_PASSWORDRESET_SMS']
-
-        # Validate the input - check capabilities against available capabilities
-        invalid = set(capabilities) - set(mail_capabilities)
-        if invalid:
-            raise ValueError(f'Invalid capabilities found: {", ".join(invalid)}')
-        params = {'mail': mail, 'capabilities': list(capabilities)}
-        return self.api_request('mail.capabilities.set', params)
-
     def mail_del(self, mail: str) -> dict:
         """
         Function to delete a mail
@@ -1014,6 +1030,41 @@ class APIClient:
         """
         return self.api_request('mail.passwordreset.setpassword',
                                 {'mail': mail, 'token': token, 'password': password})
+
+    def mail_capabilities_get(self, mail: str) -> dict:
+        """
+        Function to get a list of all capabilities for an account
+        :param mail: the mail account
+        :return: the capabilities as a dict
+        """
+        return self.api_request('mail.capabilities.get', {'mail': mail})
+
+    def mail_capabilities_set(self, mail: str, capabilities: dict) -> dict[Any, Any]:
+        """
+        Function to modify the capabilities of mailboxes for an account.
+        Changes to the mailboxes are done asynchronously.
+        Documentation: https://api.mailbox.org/v1/doc/methods/index.html#mail-capabilities-set
+        :param mail: the mail to set the capabilities for
+        :param capabilities: partial map of capability to 'on', 'off' or 'inherit',
+                             e.g. {'MAIL_SPAMPROTECTION': 'on', 'MAIL_BLACKLIST': 'inherit'}
+        :return: True if the capabilities were set successfully
+        """
+        # Allowed capabilities (same as for domains) and intent values as documented here:
+        # https://api.mailbox.org/v1/doc/methods/index.html#account-capabilities-set
+
+        if not isinstance(capabilities, dict):
+            raise TypeError('Parameter capabilities must be a dict.')
+        invalid_capabilities = set(capabilities) - set(valid_capabilities)
+        if invalid_capabilities:
+            raise ValueError(f'Invalid capabilities found: {", ".join(sorted(invalid_capabilities))}')
+        invalid = {k: v for k, v in capabilities.items() if v not in capability_intents}
+        if invalid:
+            raise ValueError(f'Invalid capability intents found: {invalid}. '
+                             f'Allowed values: {", ".join(sorted(capability_intents))}')
+
+        params = {'mail': mail, 'capabilities': capabilities}
+
+        return self.api_request('mail.capabilities.set', params)
 
     def context_list(self, account: str) -> dict:
         """

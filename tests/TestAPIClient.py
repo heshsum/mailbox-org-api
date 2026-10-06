@@ -12,6 +12,7 @@ from mailbox_org_api.APIError import APIError
 api_test_user = os.environ['API_TEST_USER']
 api_test_pass = os.environ['API_TEST_PASS']
 
+valid_capabilities = ['MAIL_SPAMPROTECTION', 'MAIL_OTP', 'MAIL_BLACKLIST', 'MAIL_BACKUPRECOVER', 'MAIL_PASSWORDRESET_SMS']
 
 # Create a unique ID String by using the Unix time,
 # converted to int (to get rid of the decimal) and then to String
@@ -210,6 +211,86 @@ class TestAPIClient:
         assert len(token) > 0
         assert isinstance(token, str)
 
+    def test_account_capabilities_get(self, api_client):
+        capabilities = api_client.account_capabilities_get(api_test_user)
+        assert isinstance(capabilities, dict)
+
+        for cap in valid_capabilities:
+            assert cap in capabilities
+            entry = capabilities[cap]
+            assert entry['intent'] in {'on', 'off', 'inherit'}
+            assert entry['effective'] in {'on', 'off'}
+            assert isinstance(entry['source'], str)
+            assert isinstance(entry['exceptions'], list)
+
+        with pytest.raises(APIError):
+            api_client.account_capabilities_get('nonexistent_account_' + api_test_user)
+
+    def test_account_capabilities_set(self, api_client):
+        original = api_client.account_capabilities_get(api_test_user)
+        mail = api_client.mail_get_list(domain)[0]
+        try:
+            # Set a single capability, others must remain unchanged (partial map)
+            assert api_client.account_capabilities_set(api_test_user, {'MAIL_SPAMPROTECTION': 'on'}) is True
+            capabilities = api_client.account_capabilities_get(api_test_user)
+            assert capabilities['MAIL_SPAMPROTECTION']['intent'] == 'on'
+            assert capabilities['MAIL_BLACKLIST']['intent'] == original['MAIL_BLACKLIST']['intent']
+
+            # Set multiple capabilities at once
+            api_client.account_capabilities_set(api_test_user, {'MAIL_SPAMPROTECTION': 'off',
+                                                                'MAIL_BLACKLIST': 'on'})
+            capabilities = api_client.account_capabilities_get(api_test_user)
+            assert capabilities['MAIL_SPAMPROTECTION']['intent'] == 'off'
+            assert capabilities['MAIL_BLACKLIST']['intent'] == 'on'
+
+            # Set a capability with a mailbox exception
+            api_client.account_capabilities_set(api_test_user, {'MAIL_SPAMPROTECTION': 'on'},
+                                                exceptions={'MAIL_SPAMPROTECTION': [mail]})
+            capabilities = api_client.account_capabilities_get(api_test_user)
+            assert capabilities['MAIL_SPAMPROTECTION']['intent'] == 'on'
+            # The API returns exceptions as objects with the mail and its (inverted) state
+            assert {'mail': mail, 'state': 'off'} in capabilities['MAIL_SPAMPROTECTION']['exceptions']
+
+            # Remove the exception again
+            api_client.account_capabilities_set(api_test_user, {'MAIL_SPAMPROTECTION': 'on'},
+                                                exceptions={'MAIL_SPAMPROTECTION': []})
+            capabilities = api_client.account_capabilities_get(api_test_user)
+            assert capabilities['MAIL_SPAMPROTECTION']['exceptions'] == []
+        finally:
+            # Restore the original intents and exceptions.
+            # account.capabilities.get returns exceptions as objects, account.capabilities.set expects mail addresses.
+            caps = ['MAIL_SPAMPROTECTION', 'MAIL_BLACKLIST', 'MAIL_BACKUPRECOVER', 'MAIL_PASSWORDRESET_SMS']
+            api_client.account_capabilities_set(api_test_user,
+                                                {c: original[c]['intent'] for c in caps},
+                                                exceptions={c: [e['mail'] for e in original[c]['exceptions']]
+                                                            for c in caps})
+
+    def test_account_capabilities_set_invalid(self):
+        api = APIClient.APIClient()
+        # Invalid capability
+        with pytest.raises(ValueError):
+            api.account_capabilities_set(api_test_user, {'INVALID_CAPABILITY': 'on'})
+        # Invalid mode
+        with pytest.raises(ValueError):
+            api.account_capabilities_set(api_test_user, {'MAIL_SPAMPROTECTION': 'yes'})
+        # Capabilities not a dict
+        with pytest.raises(TypeError):
+            api.account_capabilities_set(api_test_user, ['MAIL_SPAMPROTECTION'])
+        # Exception for a capability not included in capabilities
+        with pytest.raises(ValueError):
+            api.account_capabilities_set(api_test_user, {'MAIL_SPAMPROTECTION': 'on'},
+                                         exceptions={'MAIL_BLACKLIST': []})
+        # Exceptions not a dict
+        with pytest.raises(TypeError):
+            api.account_capabilities_set(api_test_user, {'MAIL_SPAMPROTECTION': 'on'},
+                                         exceptions=['user@example.com'])
+        # Exceptions not a list
+        with pytest.raises(TypeError):
+            api.account_capabilities_set(api_test_user, {'MAIL_SPAMPROTECTION': 'on'},
+                                         exceptions={'MAIL_SPAMPROTECTION': 'user@example.com'})
+        # No request must have been sent
+        assert api.jsonrpc_id == 0
+
     def test_domain_list(self, api_client):
         domains = api_client.domain_list(api_test_user)
         for d in domains:
@@ -233,19 +314,6 @@ class TestAPIClient:
         api_client.domain_set(domain, memo=test_id)
         assert api_client.domain_get(domain)['memo'] == test_id
 
-    def test_domain_capabilities_set(self, api_client):
-        api_client.domain_capabilities_set(domain, ['MAIL_SPAMPROTECTION'])
-        for m in api_client.mail_list(domain):
-            assert m['capabilities'] == ['MAIL_SPAMPROTECTION']
-        api_client.domain_capabilities_set(domain, [])
-        for m in api_client.mail_list(domain):
-            assert m['capabilities'] == []
-
-    def test_domain_capabilities_set_invalid(self):
-        api = APIClient.APIClient()
-        with pytest.raises(ValueError):
-            api.domain_capabilities_set(domain, ['INVALID_CAPABILITY'])
-
     def test_domain_validate_spf(self, api_client):
         result = api_client.domain_validate_spf(domain)
         assert result['domain'] == domain
@@ -265,8 +333,8 @@ class TestAPIClient:
         assert mails[0]['forwards'] is not None
         assert mails[0]['aliases'] is not None
         assert mails[0]['capabilities'] is not None
-        assert (mails[0]['possible_capabilities'] ==
-                ['MAIL_BLACKLIST', 'MAIL_SPAMPROTECTION', 'MAIL_PASSWORDRESET_SMS', 'MAIL_BACKUPRECOVER'])
+        for c in valid_capabilities:
+            assert c in mails[0]['possible_capabilities']
         assert mails[0]['plan'] in ['premium', 'standard', 'light']
         assert mails[0]['creation_date'] is not None
         paginated_mails = api_client.mail_list(domain, page_size=50, page=1)
@@ -300,8 +368,8 @@ class TestAPIClient:
         assert mail['forwards'] is not None
         assert mail['aliases'] is not None
         assert mail['capabilities'] is not None
-        assert (mail['possible_capabilities'] ==
-                ['MAIL_BLACKLIST', 'MAIL_SPAMPROTECTION', 'MAIL_PASSWORDRESET_SMS', 'MAIL_BACKUPRECOVER'])
+        for c in valid_capabilities:
+            assert c in mail['possible_capabilities']
         assert mail['plan'] in ['premium', 'standard', 'light']
         assert mail['creation_date'] is not None
 
@@ -416,34 +484,94 @@ class TestAPIClient:
         with pytest.raises(KeyError):
             api_client.mail_set(mail, password='pw1', password_hash='hash1')
 
+    @pytest.mark.depends(name='test_mail_add')
+    def test_mail_capabilities_get(self, api_client):
+        mail = test_id + '@' + domain
+        capabilities = api_client.mail_capabilities_get(mail)
+        assert isinstance(capabilities, dict)
+
+        for cap in valid_capabilities:
+            assert cap in capabilities
+            entry = capabilities[cap]
+            assert entry['intent'] in {'on', 'off', 'inherit'}
+            assert entry['effective'] in {'on', 'off'}
+            assert isinstance(entry['source'], str)
+            assert isinstance(entry['supported'], bool)
+
+        with pytest.raises(APIError):
+            api_client.mail_capabilities_get('nonexistent_' + test_id + '@' + domain)
+
     @pytest.mark.depends(name="test_mail_add")
     def test_mail_capabilities_set(self, api_client):
-        capabilities = ['MAIL_SPAMPROTECTION', 'MAIL_BLACKLIST', 'MAIL_BACKUPRECOVER', 'MAIL_PASSWORDRESET_SMS']
-
         mail = test_id + '@' + domain
 
         # Ensure that the plan supports capabilities
         api_client.mail_set_plan(mail, 'standard')
-        for i in capabilities:
-            api_client.mail_capabilities_set(mail, [i])
-            # The API returns a list of capabilities
-            capabilities = api_client.mail_get(mail)['capabilities']
-            assert len(capabilities) == 1
-            assert i in capabilities
-        api_client.mail_capabilities_set(mail, [])
-        assert api_client.mail_get(mail)['capabilities'] == []
+        try:
+            # Switch on each capability individually
+            for c in valid_capabilities:
+                assert api_client.mail_capabilities_set(mail, {c: 'on'}) is True
+                capability = api_client.mail_capabilities_get(mail)[c]
+                assert capability['intent'] == 'on'
+                assert capability['effective'] == 'on'
+                assert capability['source'] == 'mail'
+                assert c in api_client.mail_get(mail)['capabilities']
 
-    @pytest.mark.depends(name='test_mail_add')
+            # Capabilities are a partial map - setting one to 'off' must not change the others.
+            # Because the account-level intent is 'off', setting the mailbox to 'off' normalizes
+            # the mailbox intent to 'inherit' (non-redundant exception) with effective 'off'.
+            api_client.mail_capabilities_set(mail, {'MAIL_SPAMPROTECTION': 'off'})
+            capabilities = api_client.mail_capabilities_get(mail)
+            assert capabilities['MAIL_SPAMPROTECTION']['effective'] == 'off'
+            assert capabilities['MAIL_SPAMPROTECTION']['intent'] == 'inherit'
+            assert capabilities['MAIL_SPAMPROTECTION']['source'] == 'account'
+            for c in valid_capabilities[1:]:
+                assert capabilities[c]['intent'] == 'on'
+                assert capabilities[c]['effective'] == 'on'
+            assert 'MAIL_SPAMPROTECTION' not in api_client.mail_get(mail)['capabilities']
+
+            # Setting a capability explicitly to 'inherit' clears any mailbox override
+            api_client.mail_capabilities_set(mail, {'MAIL_BLACKLIST': 'inherit'})
+            capabilities = api_client.mail_capabilities_get(mail)
+            assert capabilities['MAIL_BLACKLIST']['intent'] == 'inherit'
+            assert capabilities['MAIL_BLACKLIST']['source'] != 'mail'
+            assert 'MAIL_BLACKLIST' not in api_client.mail_get(mail)['capabilities']
+
+            # Set multiple capabilities at once: one 'on', others 'inherit'
+            api_client.mail_capabilities_set(mail, {'MAIL_SPAMPROTECTION': 'on', 'MAIL_BACKUPRECOVER': 'inherit'})
+            capabilities = api_client.mail_capabilities_get(mail)
+            assert capabilities['MAIL_SPAMPROTECTION']['intent'] == 'on'
+            assert capabilities['MAIL_BACKUPRECOVER']['intent'] == 'inherit'
+
+            # Clean up all capabilities back to 'inherit'
+            api_client.mail_capabilities_set(mail, {c: 'inherit' for c in valid_capabilities})
+            capabilities = api_client.mail_capabilities_get(mail)
+            for c in valid_capabilities:
+                assert capabilities[c]['intent'] == 'inherit'
+                assert capabilities[c]['source'] != 'mail'
+
+            # Invalid intents are rejected (by the API or client-side)
+            with pytest.raises((ValueError, APIError)):
+                api_client.mail_capabilities_set(mail, {'MAIL_SPAMPROTECTION': 'yes'})
+        finally:
+            api_client.mail_capabilities_set(mail, {c: 'inherit' for c in valid_capabilities})
+
     def test_mail_capabilities_set_invalid(self):
         api = APIClient.APIClient()
         mail = test_id + '@' + domain
+        # Invalid capability
         with pytest.raises(ValueError):
-            api.mail_capabilities_set(mail, ['INVALID_CAPABILITY'])
+            api.mail_capabilities_set(mail, {'INVALID_CAPABILITY': 'on'})
+        # Capabilities must be a dict
+        with pytest.raises(TypeError):
+            api.mail_capabilities_set(mail, ['MAIL_SPAMPROTECTION'])
+        # No request must have been sent
+        assert api.jsonrpc_id == 0
 
     @pytest.mark.depends(name='test_mail_add')
     def test_mail_spamprotect(self, api_client):
         mail = test_id + '@' + domain
-        api_client.mail_capabilities_set(mail, ['MAIL_SPAMPROTECTION'])
+        api_client.mail_capabilities_set(mail, {'MAIL_SPAMPROTECTION': 'on'})
 
         with pytest.raises(ValueError):
             api_client.mail_spamprotect_set(mail, greylist=True, smtp_plausibility=True, rbl=True,
@@ -462,12 +590,12 @@ class TestAPIClient:
         assert spam_get['killevel'] == 'route'
         assert spam_get['route_to'] == 'Spam'
 
-        api_client.mail_capabilities_set(mail, [])
+        api_client.mail_capabilities_set(mail, {'MAIL_SPAMPROTECTION': 'inherit'})
 
     @pytest.mark.depends(name='test_mail_add')
     def test_mail_blacklist(self, api_client):
         mail = test_id + '@' + domain
-        api_client.mail_capabilities_set(mail, ['MAIL_BLACKLIST'])
+        api_client.mail_capabilities_set(mail, {'MAIL_BLACKLIST': 'on'})
 
         blacklist = api_client.mail_blacklist_list(mail)
         assert isinstance(blacklist, list)
@@ -485,17 +613,17 @@ class TestAPIClient:
         blacklist_final = api_client.mail_blacklist_list(mail)
         assert bad_address not in blacklist_final
 
-        api_client.mail_capabilities_set(mail, [])
+        api_client.mail_capabilities_set(mail, {'MAIL_BLACKLIST': 'off'})
 
     @pytest.mark.depends(name='test_mail_add')
     def test_mail_backup_list(self, api_client):
         mail = test_id + '@' + domain
-        api_client.mail_capabilities_set(mail, ['MAIL_BACKUPRECOVER'])
+        api_client.mail_capabilities_set(mail, {'MAIL_BACKUPRECOVER': 'on'})
 
         backups = api_client.mail_backup_list(mail)
         assert backups is False or isinstance(backups, list)
 
-        api_client.mail_capabilities_set(mail, [])
+        api_client.mail_capabilities_set(mail, {'MAIL_BACKUPRECOVER': 'off'})
 
     @pytest.mark.depends(name='test_mail_add')
     def test_mail_passwordreset_listmethods(self, api_client):
