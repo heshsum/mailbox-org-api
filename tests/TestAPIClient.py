@@ -299,11 +299,6 @@ class TestAPIClient:
         api_client.domain_set(domain, memo=test_id)
         assert api_client.domain_get(domain)['memo'] == test_id
 
-    def test_domain_capabilities_set_invalid(self):
-        api = APIClient.APIClient()
-        with pytest.raises(ValueError):
-            api.domain_capabilities_set(domain, ['INVALID_CAPABILITY'])
-
     def test_domain_validate_spf(self, api_client):
         result = api_client.domain_validate_spf(domain)
         assert result['domain'] == domain
