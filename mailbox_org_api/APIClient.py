@@ -456,7 +456,7 @@ class APIClient:
             domains.append(i['domain'])
         return domains
 
-    def domain_add(self, account: str, domain: str, password: str, **kwargs) -> dict:
+    def domain_add(self, account: str, domain: str, password: str, **kwargs: Any) -> dict[str, Any]:
         """
         Function to add a domain
         :param account: the account to add a domain for
