@@ -1049,6 +1049,13 @@ class APIClient:
         return self.api_request('mail.passwordreset.setpassword',
                                 {'mail': mail, 'token': token, 'password': password})
 
+    def mail_capabilities_get(self, mail: str) -> dict:
+        """
+        Function to get a list of all capabilities for an account
+        :param mail: the mail account
+        :return: the capabilities as a dict
+        """
+        return self.api_request('mail.capabilities.get', {'mail': mail})
     def context_list(self, account: str) -> dict:
         """
         Function to list all contexts of a given account
