@@ -287,10 +287,12 @@ class APIClient:
                               'address_main_country': str, 'address_payment_same_as_main': bool,
                               'address_payment_first_name': str, 'address_payment_last_name': str,
                               'address_payment_company': str, 'address_payment_street': str,
-                              'address_payment_zipcode': str, 'address_payment_town': str, 'company': str,
+                              'address_payment_zipcode': str, 'address_payment_town': str,
+                              'address_payment_countr': str, 'company': str,
                               'bank_iban': str, 'bank_bic': str, 'bank_account_owner': str, 'payment_type': str,
                               'ustid': str, 'av_contract_accept_name': str, 'max_mailinglist': int,
-                              'tarifflimits': dict, 'av_contract_professional_secrecy': bool, 'language': str}
+                              'tarifflimits': dict, 'salutation':str, 'mail_forwarding': str,
+                              'av_contract_professional_secrecy': bool, 'language': str}
 
         validate_params(allowed_parameters, kwargs)
 
