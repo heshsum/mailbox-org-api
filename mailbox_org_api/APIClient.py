@@ -518,7 +518,6 @@ class APIClient:
         :return:
         """
         allowed_parameters = {'password': str, 'context_id': str, 'create_new_context_id': bool, 'memo': str}
-
         validate_params(allowed_parameters, kwargs)
 
         # After validation, build parameter list from mail and kwargs
