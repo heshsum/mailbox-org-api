@@ -1210,7 +1210,7 @@ class APIClient:
         params = {k: v for k, v in raw_params.items() if v is not None}
         return self.api_request('additionalmailaccount.add', params)
 
-    def additionalmailaccount_delete(self, parent_mail: str, account_mail: str) -> dict:
+    def additionalmailaccount_delete(self, parent_mail: str, account_mail: str) -> bool:
         """
         Function to delete an additional mail account.
         :param parent_mail: the parent mail address to delete the account from.
