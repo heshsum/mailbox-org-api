@@ -1220,7 +1220,7 @@ class APIClient:
         return self.api_request('additionalmailaccount.delete',
                                 {'parent_mail': parent_mail, 'account_mail': account_mail})
 
-    def evac_resetaccount(self, delete_mail_accounts_and_domains: bool = False) -> dict:
+    def evac_resetaccount(self, delete_mail_accounts_and_domains: bool = False) -> dict[str, Any] | bool:
         """
         Function to reset a mailbox EVAC account.
         Note: this needs a special permission from mailbox.
