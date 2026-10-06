@@ -30,13 +30,13 @@ class APIClient:
         self.url = "https://api.mailbox.org/v1/"
 
         # JSON RPC ID - a unique ID is required for each request during a session
-        self.jsonrpc_id = 0
+        self.jsonrpc_id: int = 0
 
         # This saves the access level of the user
-        self.level = None
+        self.level: str | None = None
 
         # Session ID when authenticating
-        self.auth_id = None
+        self.auth_id: str | None = None
 
         self.debug_output = debug_output
 
