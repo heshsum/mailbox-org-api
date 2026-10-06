@@ -164,10 +164,10 @@ class APIClient:
             self.auth_id = None
             self.level = None
 
-    def __enter__(self):
+    def __enter__(self) -> 'APIClient':
         return self
 
-    def __exit__(self, exc_type, exc_val, exc_tb):
+    def __exit__(self, exc_type: Any, exc_val: Any, exc_tb: Any) -> None:
         if self.auth_id:
             try:
                 self.deauth()
