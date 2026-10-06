@@ -937,7 +937,7 @@ class APIClient:
                           body: str | None = None, additional_mail_addresses: list[str] | None = None) -> bool:
         """
         Function to set the vacation notice for a given mail
-        :param mail: the mail to get the vacation notice for
+        :param mail: the mail to set the vacation notice for
         :param subject: the subject of the vacation notice
         :param start_date: the start date of the vacation notice in format YYYY-MM-DD
         :param end_date: the end date of the vacation notice in format YYYY-MM-DD
@@ -1161,7 +1161,7 @@ class APIClient:
         Function to change a mailing list.
         :param mailinglist: the mailing list to change.
         :param password: the password of the mailing list.
-        :param account: the account of the mailing list (optional).
+        :param account: the account of the mailing list.
         :param adminmail: admin email address of the mailing list (optional).
         :return: the mailbox API response for the request - True if the mailing list was changed, error code otherwise.
         """
