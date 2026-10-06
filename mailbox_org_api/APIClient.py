@@ -74,7 +74,7 @@ class APIClient:
         self.jsonrpc_id += 1
         return str(self.jsonrpc_id)
 
-    def api_request(self, method: str, params: dict) -> dict | Any:
+    def api_request(self, method: str, params: dict[str, Any]) -> Any:
         """
         Function to send API calls
         :param method: the method to call
