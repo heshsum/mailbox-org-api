@@ -167,9 +167,28 @@ class APIClient:
             self.level = None
 
     def __enter__(self) -> 'APIClient':
+        """
+        Enter the runtime context for using the APIClient as a context manager.
+
+        Allows the client to be used with Python's ``with`` statement
+        (e.g., ``with APIClient() as client:``).
+
+        :return: The APIClient instance
+        """
         return self
 
-    def __exit__(self, exc_type: Any, exc_val: Any, exc_tb: Any) -> None:
+        """
+        Exit the runtime context for the APIClient.
+
+        Automatically closes the underlying HTTP session and logs out of the API
+        session by calling ``deauth()`` if the client is currently authenticated.
+        Any APIError encountered during logout is suppressed.
+
+        :param exc_type: The exception class raised within the context, if any
+        :param exc_val: The exception instance raised within the context, if any
+        :param exc_tb: The traceback associated with the exception, if any
+        :return: None
+        """
         if self.auth_id:
             try:
                 self.deauth()
