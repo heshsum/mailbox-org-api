@@ -198,7 +198,7 @@ class APIClient:
         """
         return self.api_request('account.list', {'query': query, 'extended_results': extended_results})
 
-    def account_add(self, account: str, password: str, plan: str, **kwargs) -> dict:
+    def account_add(self, account: str, password: str, plan: str, **kwargs: Any) -> dict[str, Any]:
         """
         Function to create a new account
         :param account: the account name to create
