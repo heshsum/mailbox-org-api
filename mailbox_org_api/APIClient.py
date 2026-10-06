@@ -1080,7 +1080,7 @@ class APIClient:
         """
         return self.api_request('context.list', {'account': account})
 
-    def search(self, query: str, get_account_summary: bool = False, get_extended_mail_result: bool = False) -> dict:
+    def search(self, query: str, get_account_summary: bool = False, get_extended_mail_result: bool = False) -> dict[str, Any]:
         """
         Function to search for accounts, domains and email addresses
         :param query: the query to search by
