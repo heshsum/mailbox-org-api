@@ -859,10 +859,10 @@ class APIClient:
         # 'killevel' is not a typo - it's a spelling error in the mailbox API
         return self.api_request('mail.spamprotect.set',
                                 {'mail': mail, 'greylist': bool2str(greylist),
-                                 'smtp_plausibility': bool2str(smtp_plausibility), 'rbl': bool2str(rbl),
-                                 'bypass_banned_checks': bool2str(bypass_banned_checks),
-                                 'tag2level': round(tag2level, 1),
-                                 'killevel': killlevel, 'route_to': route_to})
+                                  'smtp_plausibility': bool2str(smtp_plausibility), 'rbl': bool2str(rbl),
+                                  'bypass_banned_checks': bool2str(bypass_banned_checks),
+                                  'tag2level': round(tag2level, 1),
+                                  'killevel': killlevel, 'route_to': route_to})
 
     def mail_blacklist_list(self, mail: str) -> list[str]:
         """
