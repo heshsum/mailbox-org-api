@@ -189,7 +189,7 @@ class APIClient:
         """
         return self.api_request('hello.innerworld', {})
 
-    def account_list(self, query: str, extended_results: bool = False) -> dict:
+    def account_list(self, query: str, extended_results: bool = False) -> list[dict[str, Any]] | dict[str, Any]:
         """
         Function to get a list of accounts
         :param query: the query to search for
