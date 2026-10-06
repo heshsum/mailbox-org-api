@@ -530,7 +530,7 @@ class APIClient:
         return self.api_request('domain.deletelist.delete', {'mail': mail})
 
     def mail_list(self, domain: str, details: bool = False, page_size: int | None = None, page: int | None = None,
-                  sort_field: str | None = None, sort_order: str | None = None) -> dict:
+                  sort_field: str | None = None, sort_order: str | None = None) -> list[dict[str, Any]] | dict[str, Any]:
         """
         Function to list all mailboxes
         :param domain: the domain to list
