@@ -134,13 +134,21 @@ with APIClient() as api:
     # 9. Schedule future mailbox deletion (or delete immediately)
     api.mail_set_deletion_date(mail, deletion_date="2026-12-31")
     # api.mail_del(mail)
+
+    # 10. Configure mailbox capabilities (mapping to 'on', 'off', or 'inherit')
+    # Options: MAIL_SPAMPROTECTION, MAIL_OTP, MAIL_BLACKLIST, MAIL_BACKUPRECOVER, MAIL_PASSWORDRESET_SMS
+    api.mail_capabilities_set(mail, capabilities={
+        "MAIL_SPAMPROTECTION": "on",
+        "MAIL_BLACKLIST": "inherit"
+    })
+    mail_caps = api.mail_capabilities_get(mail)
 ```
 
 ---
 
 ### 2. Managing Domains
 
-Manage domains associated with your account, configure capabilities, and verify DNS records.
+Manage domains associated with your account and verify DNS records.
 
 For all domain methods, see [Domain Methods in the Wiki](https://github.com/heshsum/mailbox-org-api/wiki/3.-Documentation-of-API-methods#domain).
 
@@ -156,13 +164,6 @@ with APIClient() as api:
 
     # Add a new domain
     api.domain_add(account=account, domain=domain, password="DomainPassword123!")
-
-    # Configure domain capabilities
-    # Options: MAIL_SPAMPROTECTION, MAIL_BLACKLIST, MAIL_BACKUPRECOVER, MAIL_PASSWORDRESET_SMS
-    api.domain_capabilities_set(
-        domain=domain,
-        capabilities=["MAIL_SPAMPROTECTION", "MAIL_BLACKLIST"]
-    )
 
     # Validate SPF DNS records for the domain
     spf_status = api.domain_validate_spf(domain)
@@ -185,6 +186,15 @@ with APIClient() as api:
 
     # Update account settings (e.g. payment method or contact details)
     api.account_set(account, payment_type="invoice", company="Acme Corp")
+
+    # Configure account-wide default capabilities and optional per-mailbox exceptions
+    # Intents: 'on', 'off', 'inherit'
+    api.account_capabilities_set(
+        account=account,
+        capabilities={"MAIL_SPAMPROTECTION": "on", "MAIL_BLACKLIST": "off"},
+        exceptions={"MAIL_SPAMPROTECTION": ["vip@example.com"]}
+    )
+    account_caps = api.account_capabilities_get(account)
 
     # Get a list of all open invoice IDs
     open_invoices = api.account_invoice_get_list_open(account)
@@ -267,10 +277,10 @@ For in-depth guides and parameter reference tables, please visit the [Project Wi
 | **Installation** | [1. Installation](https://github.com/heshsum/mailbox-org-api/wiki/1.-Installation) | Package installation from PyPI and git source |
 | **Getting Started** | [2. Basic Usage](https://github.com/heshsum/mailbox-org-api/wiki/2.-Basic-usage) | Client initialisation, debug mode, parameter validation, and response structures |
 | **General Methods** | [3. Methods: General](https://github.com/heshsum/mailbox-org-api/wiki/3.-Documentation-of-API-methods#general) | `auth`, `deauth`, `hello_world`, `hello_innerworld` |
-| **Account Operations** | [3. Methods: Account](https://github.com/heshsum/mailbox-org-api/wiki/3.-Documentation-of-API-methods#account) | Account retrieval, listing, setting attributes, and deletion |
+| **Account Operations** | [3. Methods: Account](https://github.com/heshsum/mailbox-org-api/wiki/3.-Documentation-of-API-methods#account) | Account retrieval, listing, setting attributes, deletion, and account capabilities |
 | **Invoices** | [3. Methods: Invoice](https://github.com/heshsum/mailbox-org-api/wiki/3.-Documentation-of-API-methods#invoice) | Listing invoices, tokens, and binary file downloads (`csv`, `pdf`, `xml`) |
-| **Domain Management** | [3. Methods: Domain](https://github.com/heshsum/mailbox-org-api/wiki/3.-Documentation-of-API-methods#domain) | Domain administration, SPF verification, capabilities configuration |
-| **Mailbox Management** | [3. Methods: Mail](https://github.com/heshsum/mailbox-org-api/wiki/3.-Documentation-of-API-methods#mail) | Mailbox CRUD, password reset, aliases, forwards, quotas, and backups |
+| **Domain Management** | [3. Methods: Domain](https://github.com/heshsum/mailbox-org-api/wiki/3.-Documentation-of-API-methods#domain) | Domain administration, SPF verification |
+| **Mailbox Management** | [3. Methods: Mail](https://github.com/heshsum/mailbox-org-api/wiki/3.-Documentation-of-API-methods#mail) | Mailbox CRUD, password reset, aliases, forwards, quotas, backups, and mailbox capabilities |
 | **Groups & Teams** | [3. Methods: Group](https://github.com/heshsum/mailbox-org-api/wiki/3.-Documentation-of-API-methods#group) | Listing, creating, updating, and deleting group accounts |
 | **Mailing Lists** | [3. Methods: Mailinglist](https://github.com/heshsum/mailbox-org-api/wiki/3.-Documentation-of-API-methods#mailinglist) | Managing mailing lists |
 | **Object Models** | [4. Object Orientation](https://github.com/heshsum/mailbox-org-api/wiki/4.-Object-orientation) | Details on `Account`, `Invoice`, and `Mail` domain objects |
