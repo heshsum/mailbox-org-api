@@ -177,6 +177,6 @@ class Account:
         # Get object attributes as a dict in order to iterate
         for k, v in self.__dict__.items():
             # Add each attribute to the String.
-            # As the attribute name is '_attribute', remove the leading character
-            print_string += f'{k[1:]}: {v}\n'
+            # Strip the leading underscore of property backing fields; dynamically set attributes have none
+            print_string += f"{k.removeprefix('_')}: {v}\n"
         return print_string
