@@ -120,18 +120,21 @@ class APIClient:
             print('API full response:\t', api_response)
 
         # Depending on the type of response the return changes.
+        if not isinstance(api_response, dict):
+            return api_response
+
+        # Errors take precedence: a response may contain "result": null alongside an error
+        if api_response.get('error') is not None:
+            error_data = api_response['error']
+            if isinstance(error_data, dict):
+                raise APIError(message=error_data.get('message', 'Unknown error'), code=error_data.get('code'))
+            raise APIError(message=str(error_data))
+
         # If a successful result, only the result is returned
         if 'result' in api_response:
             if self.debug_output:
                 print('API result:\t', api_response['result'])
             return api_response['result']
-
-        # In case of an error, the error is returned
-        elif 'error' in api_response:
-            error_data = api_response['error']
-            if isinstance(error_data, dict):
-                raise APIError(message=error_data.get('message', 'Unknown error'), code=error_data.get('code'))
-            raise APIError(message=str(error_data))
 
         # If neither a success nor an error, the full response if returned
         return api_response
