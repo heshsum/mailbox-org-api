@@ -1148,8 +1148,9 @@ class APIClient:
         :param adminmail: admin email address of the mailing list (optional)
         :return: True if the mailing list was added, error code otherwise
         """
-        return self.api_request('mailinglist.add', {'mailinglist': mailinglist, 'password': password,
-                                                    'account': account, 'adminmail': adminmail})
+        raw_params = {'mailinglist': mailinglist, 'password': password, 'account': account, 'adminmail': adminmail}
+        params = {k: v for k, v in raw_params.items() if v is not None}
+        return self.api_request('mailinglist.add', params)
 
     def mailinglist_get(self, mailinglist: str, account: str) -> dict[str, Any]:
         """
