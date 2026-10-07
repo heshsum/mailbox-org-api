@@ -292,7 +292,7 @@ class APIClient:
                               'address_payment_country': str, 'company': str,
                               'bank_iban': str, 'bank_bic': str, 'bank_account_owner': str, 'payment_type': str,
                               'ustid': str, 'av_contract_accept_name': str, 'max_mailinglist': int,
-                              'tarifflimits': dict, 'salutation':str, 'mail_forwarding': str,
+                              'tarifflimits': dict, 'salutation': str, 'mail_forwarding': str,
                               'av_contract_professional_secrecy': bool, 'language': str}
 
         validate_params(allowed_parameters, kwargs)
