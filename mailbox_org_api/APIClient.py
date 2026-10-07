@@ -567,7 +567,7 @@ class APIClient:
         :param domain: the domain to list
         :param details: whether to show details or not
         :param page_size: Optional pagination. Use value >1 to enable
-        :param page: Size of page for pagination. If 'page_size' is used this is mandatory to set >0
+        :param page: The page used to get when using pagination. If 'page_size' is used this is mandatory to set >0
         :param sort_field: the field to sort by. Possible values: mail, first_name, last_name, status, domain, plan, type, creation_date
         :param sort_order: the order to sort by. Possible values: 'asc', 'desc'
         :return: the response from the mailbox.org Business API
