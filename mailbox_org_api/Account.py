@@ -153,7 +153,7 @@ class Account:
         return self._tarifflimits
 
     @tarifflimits.setter
-    def tarifflimits(self, tarifflimits: list):
+    def tarifflimits(self, tarifflimits: dict):
         self._tarifflimits = tarifflimits
 
     @property
