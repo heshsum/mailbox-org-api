@@ -876,7 +876,8 @@ class APIClient:
         return self.api_request('mail.spamprotect.get', {'mail': mail})
 
     def mail_spamprotect_set(self, mail: str, greylist: bool, smtp_plausibility: bool, rbl: bool,
-                             bypass_banned_checks: bool, tag2level: float | int, killlevel: str, route_to: str) -> dict[str, Any]:
+                             bypass_banned_checks: bool, tag2level: float | int, killlevel: str, route_to: str) -> dict[
+        str, Any]:
         """
         Function to set the spam settings for a given mail
         :param mail: the mail to set the spam settings for
