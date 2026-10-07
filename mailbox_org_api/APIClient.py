@@ -289,7 +289,7 @@ class APIClient:
                               'address_payment_first_name': str, 'address_payment_last_name': str,
                               'address_payment_company': str, 'address_payment_street': str,
                               'address_payment_zipcode': str, 'address_payment_town': str,
-                              'address_payment_countr': str, 'company': str,
+                              'address_payment_country': str, 'company': str,
                               'bank_iban': str, 'bank_bic': str, 'bank_account_owner': str, 'payment_type': str,
                               'ustid': str, 'av_contract_accept_name': str, 'max_mailinglist': int,
                               'tarifflimits': dict, 'salutation':str, 'mail_forwarding': str,
