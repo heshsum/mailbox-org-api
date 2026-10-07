@@ -1092,7 +1092,7 @@ class APIClient:
         :return: True if the capabilities were set successfully
         """
         # Allowed capabilities (same as for domains) and intent values as documented here:
-        # https://api.mailbox.org/v1/doc/methods/index.html#account-capabilities-set
+        # https://api.mailbox.org/v1/doc/methods/index.html#mail-capabilities-set
 
         if not isinstance(capabilities, dict):
             raise TypeError('Parameter capabilities must be a dict.')
