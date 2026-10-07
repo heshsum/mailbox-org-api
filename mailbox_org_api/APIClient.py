@@ -186,19 +186,22 @@ class APIClient:
 
         Automatically closes the underlying HTTP session and logs out of the API
         session by calling ``deauth()`` if the client is currently authenticated.
-        Any APIError encountered during logout is suppressed.
+        Any exception encountered during logout is suppressed, and the session
+        is always closed.
 
         :param exc_type: The exception class raised within the context, if any
         :param exc_val: The exception instance raised within the context, if any
         :param exc_tb: The traceback associated with the exception, if any
         :return: None
         """
-        if self.auth_id:
-            try:
-                self.deauth()
-            except APIError:
-                pass
-        self.session.close()
+        try:
+            if self.auth_id:
+                try:
+                    self.deauth()
+                except Exception:
+                    pass
+        finally:
+            self.session.close()
 
     def hello_world(self) -> str:
         """
