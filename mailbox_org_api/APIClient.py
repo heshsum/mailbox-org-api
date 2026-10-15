@@ -198,7 +198,7 @@ class APIClient:
             if self.auth_id:
                 try:
                     self.deauth()
-                except Exception:
+                except APIError:
                     pass
         finally:
             self.session.close()
