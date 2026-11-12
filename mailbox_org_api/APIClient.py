@@ -645,7 +645,7 @@ class APIClient:
                               'phone': str, 'fax': str, 'cell_phone': str, 'recover': bool, 'skip_welcome_mail': bool,
                               'uid_extern': str, 'language': str, 'evac_force_activation': bool}
 
-        if password and 'password_hash' in kwargs:
+        if password and kwargs.get('password_hash') is not None:
             raise KeyError('''Simultaneous usage of 'password' and 'password_hash' not allowed.
           Use 'password' = None if password_hash is used.''')
 
