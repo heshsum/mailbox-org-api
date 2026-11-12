@@ -645,7 +645,7 @@ class APIClient:
                               'phone': str, 'fax': str, 'cell_phone': str, 'recover': bool, 'skip_welcome_mail': bool,
                               'uid_extern': str, 'language': str, 'evac_force_activation': bool}
 
-        if password and 'password_hash' in kwargs:
+        if password and kwargs.get('password_hash') is not None:
             raise KeyError('''Simultaneous usage of 'password' and 'password_hash' not allowed.
           Use 'password' = None if password_hash is used.''')
 
@@ -661,7 +661,9 @@ class APIClient:
         # After validation, build parameter list from mail and kwargs
         params = {'mail': mail, 'password': password, 'plan': plan, 'first_name': first_name, 'last_name': last_name,
                   'inboxsave': inboxsave, 'forwards': forwards}
-        params.update({k: v for k, v in kwargs.items() if v is not None})
+        params.update(kwargs)
+        # Filter out None values (e.g. password when password_hash is used) so they aren't serialized as `null`
+        params = {k: v for k, v in params.items() if v is not None}
         return self.api_request('mail.add', params)
 
     def mail_get(self, mail: str, include_quota_usage: bool = False) -> dict[str, Any]:
