@@ -339,6 +339,19 @@ class APIClient:
         """
         return self.api_request('account.invoice.get', {'account': account, 'token': token})
 
+    def _find_invoice(self, account: str, invoice_id: str) -> dict[str, Any]:
+        """
+        Helper to look up a single invoice entry in the invoice list of an account
+        :param account: the account name
+        :param invoice_id: the ID of the invoice to find
+        :return: the invoice entry as returned by account.invoice.list
+        :raises ValueError: if no invoice with the given ID exists
+        """
+        for entry in self.account_invoice_list(account):
+            if entry.get('invoice_id') == invoice_id:
+                return entry
+        raise ValueError('Invoice not found')
+
     def account_invoice_get_object(self, account: str, invoice_id: str) -> Invoice:
         """
         Function to get a specific invoice object for an account
