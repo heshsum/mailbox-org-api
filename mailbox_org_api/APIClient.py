@@ -359,19 +359,12 @@ class APIClient:
         :param invoice_id: the ID of the invoice to request
         :return: the invoice as an Invoice object
         """
-        # Get all invoices for the account
-        invoice_list = self.account_invoice_list(account)
-
-        # Iterate over all invoices and create an object if the ID matches
-        for i in invoice_list:
-            if i['invoice_id'] == invoice_id:
-                # Initialize the Invoice object
-                invoice = Invoice(account, invoice_id)
-                invoice.date = i['date']
-                invoice.status = i['status']
-                invoice.token = i['token']
-                return invoice
-        raise ValueError('Invoice not found')
+        entry = self._find_invoice(account, invoice_id)
+        invoice = Invoice(account, invoice_id)
+        invoice.date = entry.get('date')
+        invoice.status = entry.get('status')
+        invoice.token = entry.get('token')
+        return invoice
 
     def account_invoice_get_list(self, account: str) -> list[str]:
         """
