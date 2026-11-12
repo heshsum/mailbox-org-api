@@ -661,7 +661,9 @@ class APIClient:
         # After validation, build parameter list from mail and kwargs
         params = {'mail': mail, 'password': password, 'plan': plan, 'first_name': first_name, 'last_name': last_name,
                   'inboxsave': inboxsave, 'forwards': forwards}
-        params.update({k: v for k, v in kwargs.items() if v is not None})
+        params.update(kwargs)
+        # Filter out None values (e.g. password when password_hash is used) so they aren't serialized as `null`
+        params = {k: v for k, v in params.items() if v is not None}
         return self.api_request('mail.add', params)
 
     def mail_get(self, mail: str, include_quota_usage: bool = False) -> dict[str, Any]:
