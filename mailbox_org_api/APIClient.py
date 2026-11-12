@@ -386,11 +386,10 @@ class APIClient:
         :param invoice_id: the id of the invoice
         :return: the response from the mailbox.org Business API - the token to get the invoice
         """
-        response = self.api_request('account.invoice.list', {'account': account})
-        for invoice in response:
-            if invoice['invoice_id'] == invoice_id:
-                return invoice['token']
-        raise ValueError('Invoice not found')
+        token = self._find_invoice(account, invoice_id).get('token')
+        if token is None:
+            raise ValueError('Invoice has no token')
+        return token
 
     def account_invoice_get_file(self, account: str, invoice_id: str, file_type: str,
                                  token: str | None = None) -> bytes:
