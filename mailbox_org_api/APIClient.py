@@ -370,8 +370,7 @@ class APIClient:
         """
         Function to get a list of all invoice ids for a specific account
         """
-        response = self.api_request('account.invoice.list', {'account': account})
-        return [invoice['invoice_id'] for invoice in response]
+        return [i['invoice_id'] for i in self.account_invoice_list(account) if i.get('invoice_id') is not None]
 
     def account_invoice_get_list_open(self, account: str) -> list[str]:
         """
