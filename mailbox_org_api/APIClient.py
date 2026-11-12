@@ -376,8 +376,8 @@ class APIClient:
         """
         Function to get a list of all invoice id's with status 'open' for a specific account
         """
-        invoices = self.account_invoice_list(account)
-        return [i['invoice_id'] for i in invoices if i.get('status') == 'open']
+        return [i['invoice_id'] for i in self.account_invoice_list(account)
+                if i.get('status') == 'open' and i.get('invoice_id') is not None]
 
     def account_invoice_get_token(self, account: str, invoice_id: str) -> str:
         """
