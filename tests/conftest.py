@@ -23,7 +23,7 @@ def api_client():
             pass
 
 
-@pytest.fixture
+@pytest.fixture(scope='session')
 def api(api_client):
     """Alias for api_client fixture."""
     return api_client
