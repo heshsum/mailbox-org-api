@@ -29,7 +29,7 @@ def api(api_client):
     return api_client
 
 
-@pytest.fixture
+@pytest.fixture(scope='session')
 def domain(api_client):
     """
     Fixture providing the first domain associated with the test account.
