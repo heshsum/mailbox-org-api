@@ -4,11 +4,11 @@ import pytest
 from mailbox_org_api import APIClient
 
 
-@pytest.fixture
+@pytest.fixture(scope='session')
 def api_client():
     """
     Fixture providing an authenticated APIClient instance.
-    Automatically deauthenticates upon test completion.
+    Authenticates once per test session and deauthenticates at the end.
     """
     user = os.environ['API_TEST_USER']
     password = os.environ['API_TEST_PASS']
