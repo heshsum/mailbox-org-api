@@ -339,6 +339,19 @@ class APIClient:
         """
         return self.api_request('account.invoice.get', {'account': account, 'token': token})
 
+    def _find_invoice(self, account: str, invoice_id: str) -> dict[str, Any]:
+        """
+        Helper to look up a single invoice entry in the invoice list of an account
+        :param account: the account name
+        :param invoice_id: the ID of the invoice to find
+        :return: the invoice entry as returned by account.invoice.list
+        :raises ValueError: if no invoice with the given ID exists
+        """
+        for entry in self.account_invoice_list(account):
+            if entry.get('invoice_id') == invoice_id:
+                return entry
+        raise ValueError('Invoice not found')
+
     def account_invoice_get_object(self, account: str, invoice_id: str) -> Invoice:
         """
         Function to get a specific invoice object for an account
@@ -346,33 +359,25 @@ class APIClient:
         :param invoice_id: the ID of the invoice to request
         :return: the invoice as an Invoice object
         """
-        # Get all invoices for the account
-        invoice_list = self.account_invoice_list(account)
-
-        # Iterate over all invoices and create an object if the ID matches
-        for i in invoice_list:
-            if i['invoice_id'] == invoice_id:
-                # Initialize the Invoice object
-                invoice = Invoice(account, invoice_id)
-                invoice.date = i['date']
-                invoice.status = i['status']
-                invoice.token = i['token']
-                return invoice
-        raise ValueError('Invoice not found')
+        entry = self._find_invoice(account, invoice_id)
+        invoice = Invoice(account, invoice_id)
+        invoice.date = entry.get('date')
+        invoice.status = entry.get('status')
+        invoice.token = entry.get('token')
+        return invoice
 
     def account_invoice_get_list(self, account: str) -> list[str]:
         """
         Function to get a list of all invoice ids for a specific account
         """
-        response = self.api_request('account.invoice.list', {'account': account})
-        return [invoice['invoice_id'] for invoice in response]
+        return [i['invoice_id'] for i in self.account_invoice_list(account) if i.get('invoice_id') is not None]
 
     def account_invoice_get_list_open(self, account: str) -> list[str]:
         """
         Function to get a list of all invoice id's with status 'open' for a specific account
         """
-        invoices = self.account_invoice_list(account)
-        return [i['invoice_id'] for i in invoices if i.get('status') == 'open']
+        return [i['invoice_id'] for i in self.account_invoice_list(account)
+                if i.get('status') == 'open' and i.get('invoice_id') is not None]
 
     def account_invoice_get_token(self, account: str, invoice_id: str) -> str:
         """
@@ -381,11 +386,10 @@ class APIClient:
         :param invoice_id: the id of the invoice
         :return: the response from the mailbox.org Business API - the token to get the invoice
         """
-        response = self.api_request('account.invoice.list', {'account': account})
-        for invoice in response:
-            if invoice['invoice_id'] == invoice_id:
-                return invoice['token']
-        raise ValueError('Invoice not found')
+        token = self._find_invoice(account, invoice_id).get('token')
+        if token is None:
+            raise ValueError('Invoice has no token')
+        return token
 
     def account_invoice_get_file(self, account: str, invoice_id: str, file_type: str,
                                  token: str | None = None) -> bytes:
