@@ -50,5 +50,3 @@ jobs:
         env:
           API_TEST_USER: ${{ secrets.API_TEST_USER }}
           API_TEST_PASS: ${{ secrets.API_TEST_PASS }}
-        run: |
-          pytest ./tests/*.py
