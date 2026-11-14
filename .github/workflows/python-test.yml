@@ -2,6 +2,11 @@ name: Python Tests
 
 on:
   pull_request:
+    paths:
+      - "**/*.py"
+      - "pyproject.toml"
+      - "requirements*.txt"
+      - ".github/workflows/python-test.yml"
   push:
     branches:
       - main
