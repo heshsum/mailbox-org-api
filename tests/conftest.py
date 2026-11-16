@@ -1,5 +1,7 @@
 import os
 import time
+from importlib.metadata import version
+
 import pytest
 
 from mailbox_org_api import APIClient
@@ -11,6 +13,20 @@ def pytest_configure(config):
     It is set in the main process before pytest-xdist spawns its workers, so all workers share the same ID.
     """
     os.environ.setdefault('API_TEST_ID', str(int(time.time())))
+
+
+def pytest_runtest_setup(item):
+    """
+    Fail grouped tests if pytest-xdist did not apply the xdist groups with --dist=loadgroup.
+    Otherwise tests depending on each other run on different workers and are silently skipped.
+    pytest-xdist marks grouped tests by appending '@<group>' to the node ID, which pytest 9.2 no longer allows.
+    """
+    config = item.config
+    if (hasattr(config, 'workerinput') and config.getvalue('loadgroup')
+            and item.get_closest_marker('xdist_group') and '@' not in item.nodeid):
+        pytest.fail(f'xdist group not applied by pytest-xdist {version("pytest-xdist")} '
+                    f'with pytest {pytest.__version__}. Run without -n or use a supported pytest version.',
+                    pytrace=False)
 
 
 @pytest.fixture(scope='session')
