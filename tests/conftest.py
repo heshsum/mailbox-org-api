@@ -1,7 +1,16 @@
 import os
+import time
 import pytest
 
 from mailbox_org_api import APIClient
+
+
+def pytest_configure(config):
+    """
+    Create one unique ID per test run for objects created on the live API.
+    It is set in the main process before pytest-xdist spawns its workers, so all workers share the same ID.
+    """
+    os.environ.setdefault('API_TEST_ID', str(int(time.time())))
 
 
 @pytest.fixture(scope='session')

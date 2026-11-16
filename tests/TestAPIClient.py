@@ -43,7 +43,30 @@ def generate_pw():
             return pw
 
 
-test_id = generate_id()
+# Shared across pytest-xdist workers, see conftest.py
+test_id = os.environ['API_TEST_ID']
+
+# Tests that create, modify or depend on shared objects on the live API (the test mailbox, the first mailbox
+# of the domain, account capabilities, the number of mailboxes) are in one xdist group.
+# With '-n', the group runs on a single worker in the same order as a serial run; all other tests are distributed.
+shared_state = pytest.mark.xdist_group('shared_state')
+
+# Dependencies between tests (pytest-depends) are referenced by a custom name given with depends(name=...),
+# not by the test name: pytest-xdist appends the group to the node IDs (test_x@shared_state), so test names
+# can't be resolved when running with '-n'. Tests with dependencies must be in the same xdist group as their
+# dependencies, as results are only known to the worker that ran the test.
+
+
+@pytest.fixture(scope='session')
+def mail_cleanup(api_client, domain):
+    """
+    Fixture deleting the mailbox created by test_mail_add at the end of the session,
+    in case test_mail_del was skipped or failed.
+    """
+    yield
+    mail = test_id + '@' + domain
+    if mail in api_client.mail_get_list(domain):
+        api_client.mail_del(mail)
 
 
 class TestAPIClient:
@@ -217,6 +240,7 @@ class TestAPIClient:
         with pytest.raises(APIError):
             api_client.account_capabilities_get('nonexistent_account_' + api_test_user)
 
+    @shared_state
     def test_account_capabilities_set(self, api_client, domain):
         original = api_client.account_capabilities_get(api_test_user)
         mail = api_client.mail_get_list(domain)[0]
@@ -340,6 +364,7 @@ class TestAPIClient:
         with pytest.raises(ValueError):
             api_client.mail_list(domain, sort_order='wröng')
 
+    @shared_state
     def test_mail_get_list(self, api_client, domain):
         mails = api_client.mail_list(domain)
         mail_addresses = api_client.mail_get_list(domain)
@@ -364,12 +389,15 @@ class TestAPIClient:
         assert mail['plan'] in ['premium', 'standard', 'light']
         assert mail['creation_date'] is not None
 
-    def test_mail_add(self, api_client, domain):
+    @shared_state
+    @pytest.mark.depends(name='test_mail_add')
+    def test_mail_add(self, api_client, domain, mail_cleanup):
         mail_address = test_id + '@' + domain
         api_client.mail_add(mail_address, generate_pw(), 'standard', test_id, test_id)
         assert api_client.mail_get(mail_address)['mail'] == mail_address
 
-    @pytest.mark.depends(name='test_mail_add')
+    @shared_state
+    @pytest.mark.depends(on=['test_mail_add'])
     def test_mail_get_object(self, api_client, domain):
         mail = test_id + '@' + domain
         mail_obj = api_client.mail_get_object(mail)
@@ -377,7 +405,8 @@ class TestAPIClient:
         assert mail_obj.plan == 'standard'
         assert mail_obj.type == 'inbox'
 
-    @pytest.mark.depends(name='test_mail_add')
+    @shared_state
+    @pytest.mark.depends(name='test_mail_vacation_set', on=['test_mail_add'])
     def test_mail_vacation_set(self, api_client, domain):
         mail = test_id + '@' + domain
         start_date = (datetime.date.today() + datetime.timedelta(days=1)).strftime('%Y-%m-%d')
@@ -387,8 +416,8 @@ class TestAPIClient:
 
         assert api_client.mail_vacation_set(mail, subject, start_date, end_date, body=body) is True
 
-    @pytest.mark.depends(name='test_mail_add')
-    @pytest.mark.depends(name='test_mail_vacation_set')
+    @shared_state
+    @pytest.mark.depends(name='test_mail_vacation_get', on=['test_mail_vacation_set'])
     def test_mail_vacation_get(self, api_client, domain):
         mail = test_id + '@' + domain
         start_date = (datetime.date.today() + datetime.timedelta(days=1)).strftime('%Y-%m-%d')
@@ -400,9 +429,8 @@ class TestAPIClient:
         assert vacation['end_date'] == end_date
         assert vacation['body'] == 'I am currently on vacation.'
 
-    @pytest.mark.depends(name='test_mail_add')
-    @pytest.mark.depends(name='test_mail_vacation_set')
-    @pytest.mark.depends(name='test_mail_vacation_get')
+    @shared_state
+    @pytest.mark.depends(name='test_mail_vacation_delete', on=['test_mail_vacation_get'])
     def test_mail_vacation_delete(self, api_client, domain):
         mail = test_id + '@' + domain
 
@@ -411,8 +439,8 @@ class TestAPIClient:
         vacation = api_client.mail_vacation_get(mail)
         assert vacation.get('message') == 'no automatic mail response active'
 
-    @pytest.mark.depends(name='test_mail_add')
-    @pytest.mark.depends(name='test_mail_vacation_delete')
+    @shared_state
+    @pytest.mark.depends(on=['test_mail_vacation_delete'])
     def test_mail_vacation_delete_inactive(self, api_client, domain):
         mail = test_id + '@' + domain
 
@@ -424,9 +452,10 @@ class TestAPIClient:
         with pytest.raises(APIError):
             api_client.mail_vacation_delete('nonexistent_user_' + test_id + '@' + domain)
 
+    @shared_state
+    @pytest.mark.depends(on=['test_mail_add'])
     def test_mail_externaluid(self, api_client, domain):
-        mails = api_client.mail_list(domain)
-        mail = mails[0]['mail']
+        mail = test_id + '@' + domain
 
         # Setting the external uid
         api_client.mail_set(mail, uid_extern=test_id)
@@ -434,7 +463,10 @@ class TestAPIClient:
 
         assert returned_mail['mail'] == mail
 
-    @pytest.mark.depends(name='test_mail_add')
+    # mail.vacation.get fails for the mailbox after this test (API error 31), so it runs after the vacation tests
+    @shared_state
+    @pytest.mark.depends(on=['test_mail_add'])
+    @pytest.mark.order('second_to_last')
     def test_mail_set(self, api_client, domain):
         mail = test_id + '@' + domain
         uid_extern = generate_id()
@@ -469,13 +501,13 @@ class TestAPIClient:
         with pytest.raises(KeyError):
             api_client.mail_set(mail, additional_mail_quota=5, additional_cloud_quota=5)
 
-    @pytest.mark.depends(name='test_mail_add')
     def test_mail_set_conflicting_passwords(self, api_client, domain):
         mail = test_id + '@' + domain
         with pytest.raises(KeyError):
             api_client.mail_set(mail, password='pw1', password_hash='hash1')
 
-    @pytest.mark.depends(name='test_mail_add')
+    @shared_state
+    @pytest.mark.depends(on=['test_mail_add'])
     def test_mail_capabilities_get(self, api_client, domain):
         mail = test_id + '@' + domain
         capabilities = api_client.mail_capabilities_get(mail)
@@ -492,7 +524,8 @@ class TestAPIClient:
         with pytest.raises(APIError):
             api_client.mail_capabilities_get('nonexistent_' + test_id + '@' + domain)
 
-    @pytest.mark.depends(name="test_mail_add")
+    @shared_state
+    @pytest.mark.depends(on=['test_mail_add'])
     def test_mail_capabilities_set(self, api_client, domain):
         mail = test_id + '@' + domain
 
@@ -559,7 +592,8 @@ class TestAPIClient:
         # No request must have been sent
         assert api.jsonrpc_id == 0
 
-    @pytest.mark.depends(name='test_mail_add')
+    @shared_state
+    @pytest.mark.depends(on=['test_mail_add'])
     def test_mail_spamprotect(self, api_client, domain):
         mail = test_id + '@' + domain
         api_client.mail_capabilities_set(mail, {'MAIL_SPAMPROTECTION': 'on'})
@@ -583,7 +617,8 @@ class TestAPIClient:
 
         api_client.mail_capabilities_set(mail, {'MAIL_SPAMPROTECTION': 'inherit'})
 
-    @pytest.mark.depends(name='test_mail_add')
+    @shared_state
+    @pytest.mark.depends(on=['test_mail_add'])
     def test_mail_blacklist(self, api_client, domain):
         mail = test_id + '@' + domain
         api_client.mail_capabilities_set(mail, {'MAIL_BLACKLIST': 'on'})
@@ -606,7 +641,8 @@ class TestAPIClient:
 
         api_client.mail_capabilities_set(mail, {'MAIL_BLACKLIST': 'off'})
 
-    @pytest.mark.depends(name='test_mail_add')
+    @shared_state
+    @pytest.mark.depends(on=['test_mail_add'])
     def test_mail_backup_list(self, api_client, domain):
         mail = test_id + '@' + domain
         api_client.mail_capabilities_set(mail, {'MAIL_BACKUPRECOVER': 'on'})
@@ -616,31 +652,35 @@ class TestAPIClient:
 
         api_client.mail_capabilities_set(mail, {'MAIL_BACKUPRECOVER': 'off'})
 
-    @pytest.mark.depends(name='test_mail_add')
+    @shared_state
+    @pytest.mark.depends(on=['test_mail_add'])
     def test_mail_passwordreset_listmethods(self, api_client, domain):
         mail = test_id + '@' + domain
 
         methods = api_client.mail_passwordreset_listmethods(mail)
         assert isinstance(methods, list)
 
+    @shared_state
+    @pytest.mark.depends(on=['test_mail_add'])
     def test_mail_set_state(self, api_client, domain):
-        mails = api_client.mail_list(domain)
-        mail = mails[0]['mail']
+        mail = test_id + '@' + domain
 
         api_client.mail_set_state(mail, False)
         assert api_client.mail_get(mail)['active'] == False
         api_client.mail_set_state(mail, True)
         assert api_client.mail_get(mail)['active'] == True
 
+    @shared_state
+    @pytest.mark.depends(on=['test_mail_add'])
     def test_mail_set_plan(self, api_client, domain):
-        mails = api_client.mail_list(domain)
-        mail = mails[0]['mail']
+        mail = test_id + '@' + domain
         plans = ['premium', 'standard']
         for plan in plans:
             api_client.mail_set_plan(mail, plan)
             assert str(api_client.mail_get(mail)['plan']).lower() == plan
 
-    @pytest.mark.depends(name="test_mail_add")
+    @shared_state
+    @pytest.mark.depends(on=['test_mail_add'])
     def test_mail_set_aliases(self, api_client, domain):
         mail = test_id + '@' + domain
         aliases = []
@@ -653,7 +693,8 @@ class TestAPIClient:
         api_client.mail_set_aliases(mail, [])
         assert api_client.mail_get(mail)['aliases'] == []
 
-    @pytest.mark.depends(name="test_mail_add")
+    @shared_state
+    @pytest.mark.depends(on=['test_mail_add'])
     def test_mail_set_forwards(self, api_client, domain):
         mail = test_id + '@' + domain
         forwards = []
@@ -664,20 +705,24 @@ class TestAPIClient:
         api_client.mail_set_forwards(mail, forwards)
         assert api_client.mail_get(mail)['forwards'] == forwards
 
-    @pytest.mark.depends(name="test_mail_add")
+    @shared_state
+    @pytest.mark.depends(on=['test_mail_add'])
     def test_mail_set_password(self, api_client, domain):
         mail = test_id + '@' + domain
         # Set a newly generated password
         # As the response is just the mailbox info, the assertion is a comparison with mail_get
         assert api_client.mail_set_password(mail, generate_pw()) == api_client.mail_get(mail)
 
-    @pytest.mark.depends(name="test_mail_add")
+    @shared_state
+    @pytest.mark.depends(on=['test_mail_add'])
     def test_mail_set_password_require_reset(self, api_client, domain):
         mail = test_id + '@' + domain
         # Set a newly generated password
         # As the response is just the mailbox info, the assertion is a comparison with mail_get
         assert api_client.mail_set_password_require_reset(mail, generate_pw()) == api_client.mail_get(mail)
 
+    @shared_state
+    @pytest.mark.depends(on=['test_mail_add'])
     def test_mail_set_additional_mail_quota(self, api_client, domain):
         mail = test_id + '@' + domain
         additional_mail_quota = 23
@@ -687,7 +732,8 @@ class TestAPIClient:
         api_client.mail_set_additional_mail_quota(mail, additional_mail_quota)
         assert int(api_client.mail_get(mail)['additional_mail_quota']) == additional_mail_quota
 
-    @pytest.mark.depends(name="test_mail_add")
+    @shared_state
+    @pytest.mark.depends(on=['test_mail_add'])
     def test_mail_set_additional_cloud_quota(self, api_client, domain):
         mail = test_id + '@' + domain
         additional_cloud_quota = 42
@@ -697,21 +743,22 @@ class TestAPIClient:
         api_client.mail_set_additional_cloud_quota(mail, additional_cloud_quota)
         assert int(api_client.mail_get(mail)['additional_cloud_quota']) == additional_cloud_quota
 
-    @pytest.mark.depends(name="test_mail_add")
+    @shared_state
+    @pytest.mark.depends(name='test_mail_apppassword_add', on=['test_mail_add'])
     def test_mail_apppassword_add(self, api_client, domain):
         mail = test_id + '@' + domain
         len_before = len(api_client.mail_apppassword_list(mail))
         api_client.mail_apppassword_add(mail, test_id, True, True)
         assert len(api_client.mail_apppassword_list(mail)) == len_before + 1
 
-    @pytest.mark.depends(name="test_mail_add")
+    @shared_state
+    @pytest.mark.depends(name='test_mail_apppassword_list', on=['test_mail_apppassword_add'])
     def test_mail_apppassword_list(self, api_client, domain):
         mail = test_id + '@' + domain
         assert len(api_client.mail_apppassword_list(mail)) > 0
 
-    @pytest.mark.depends(name="test_mail_add")
-    @pytest.mark.depends(name='test_mail_apppassword_add')
-    @pytest.mark.depends(name='test_mail_apppassword_list')
+    @shared_state
+    @pytest.mark.depends(on=['test_mail_apppassword_list'])
     def test_mail_apppassword_del(self, api_client, domain):
         mail = test_id + '@' + domain
 
@@ -725,7 +772,10 @@ class TestAPIClient:
         # After deleting all app passwords, length should be 0
         assert len(api_client.mail_apppassword_list(mail)) == 0
 
-    @pytest.mark.depends(name='test_mail_add')
+    # mail.vacation.get fails for the mailbox after this test (API error 31), so it runs after the vacation tests
+    @shared_state
+    @pytest.mark.depends(on=['test_mail_add'])
+    @pytest.mark.order('second_to_last')
     def test_mail_set_deletion_date(self, api_client, domain):
         mail = test_id + '@' + domain
         deletion_date = '31.12.2099'
@@ -775,13 +825,16 @@ class TestAPIClient:
     #     api.mail_del(sub_mail)
     #     api.deauth()
 
-    @pytest.mark.depends(name='test_mail_add')
+    @shared_state
+    @pytest.mark.depends(on=['test_mail_add'])
     def test_search(self, api_client, domain):
         mail = test_id + '@' + domain
         assert mail in api_client.search(mail)['emails']
         assert domain in api_client.search(domain)['domains']
         assert api_test_user in api_client.search(api_test_user)['accounts']
 
+    @shared_state
+    @pytest.mark.depends(on=['test_mail_add'])
     @pytest.mark.order('last')
     def test_mail_del(self, api_client, domain):
         mail = test_id + '@' + domain
