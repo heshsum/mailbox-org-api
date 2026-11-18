@@ -1025,11 +1025,12 @@ class APIClient:
         Function to add a group
         :param name: the group name
         :param display_name: the group's display name
-        :param mail_addresses_to_add: a list of mail addresses to add
+        :param mail_addresses_to_add: a list of mail addresses to add. Addresses are converted to lowercase
         :param account: optional parameter for the account to add the group for
         :return: mailbox API response - True if the group was added, False otherwise
         """
-        params = {'name': name, 'display_name': display_name, 'mail_addresses_to_add': mail_addresses_to_add}
+        params = {'name': name, 'display_name': display_name,
+                  'mail_addresses_to_add': normalize_mail_addresses(mail_addresses_to_add)}
         if account:
             params['account'] = account
         return self.api_request('group.add', params)
@@ -1040,8 +1041,10 @@ class APIClient:
         Function to modify a group. Either mail_addresses_to_add or mail_addresses_to_remove have to be specified.
         :param group_id: the group's id of the group to modify
         :param display_name: the group's display name
-        :param mail_addresses_to_add: a list of mail addresses to add. Defaults to None
-        :param mail_addresses_to_remove: a list of mail addresses to remove. Defaults to None
+        :param mail_addresses_to_add: a list of mail addresses to add. Addresses are converted to lowercase.
+        Defaults to None
+        :param mail_addresses_to_remove: a list of mail addresses to remove. Addresses are converted to lowercase.
+        Defaults to None
         :param account: optional parameter for the account to set the group for
         :return: mailbox API response - True if the group was edited, False otherwise
         """
@@ -1052,8 +1055,8 @@ class APIClient:
         raw_params = {
             'group_id': group_id,
             'display_name': display_name,
-            'mail_addresses_to_add': mail_addresses_to_add,
-            'mail_addresses_to_remove': mail_addresses_to_remove,
+            'mail_addresses_to_add': normalize_mail_addresses(mail_addresses_to_add),
+            'mail_addresses_to_remove': normalize_mail_addresses(mail_addresses_to_remove),
             'account': account,
         }
         # Filter out any keys whose values are None so they aren't serialized as `null`
@@ -1308,6 +1311,18 @@ def validate_params(allowed: dict[str, Any], actual: dict[str, Any]) -> bool:
                 actual_type = type(val).__name__
                 raise TypeError(f'Attribute {arg} must be of type {expected_type}. {actual_type} given')
     return True
+
+
+def normalize_mail_addresses(mail_addresses: list[str] | None) -> list[str] | None:
+    """
+    Converts mail addresses to lowercase...
+    ...because that's how the mailbox.org API expects them for group.add and group.set.
+    :param mail_addresses: a list of mail addresses or None
+    :return: the list of lowercased mail addresses, or None if None was given
+    """
+    if mail_addresses is None:
+        return None
+    return [address.lower() for address in mail_addresses]
 
 
 def bool2str(state: bool) -> str:
