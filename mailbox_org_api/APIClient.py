@@ -103,7 +103,7 @@ class APIClient:
                     print_request['params'][param] = 'xxx'
 
             # Print the clean version of the request
-            print('API full request:\t', print_request)
+            print('API request:\t', print_request)
 
         try:
             response = self.session.post(self.url, json=request, timeout=self.request_timeout)
@@ -114,10 +114,10 @@ class APIClient:
         try:
             api_response = response.json()
         except (ValueError, requests.exceptions.JSONDecodeError) as error:
-            print(f'API Full response: {response.content}')
+            print(f'API response: {response.content}')
             raise APIError(message="Non-JSON response received from API", code=-32700) from error
         if self.debug_output:
-            print('API full response:\t', api_response)
+            print('API response:\t', api_response)
 
         # Depending on the type of response the return changes.
         if not isinstance(api_response, dict):
