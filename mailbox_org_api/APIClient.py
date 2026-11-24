@@ -151,12 +151,21 @@ class APIClient:
         :param password: the password
         :return: the API response for the request
         """
-        api_response = self.api_request('auth', {'user': username, 'pass': password})
+        # Remove the header used for API keys before the request: the API validates a sent key
+        # before the auth call and rejects it with error 493 if the key is invalid or expired.
+        api_key = self.session.headers.pop('X-Api-Key', None)
+        try:
+            api_response = self.api_request('auth', {'user': username, 'pass': password})
+        except Exception:
+            # Restore the previous state if authentication failed
+            if api_key is not None:
+                self.session.headers['X-Api-Key'] = api_key
+            raise
+
+        if not api_response.get('session') and api_key is not None:
+            self.session.headers['X-Api-Key'] = api_key
+
         if api_response.get('session'):
-
-            # Remove Header used for API tokens
-            self.session.headers.pop('X-Api-Key', None)
-
             self.level = api_response.get("level")
             self.auth_id = str(api_response["session"])
             self.session.headers.update({"HPLS-AUTH": str(self.auth_id)})
@@ -185,8 +194,17 @@ class APIClient:
         the API ignores the key while HPLS-AUTH is present.
         :param api_key: the API key created in the mailbox console
         """
+        if not isinstance(api_key, str):
+            raise TypeError('API key must be a string')
+
+        api_key = api_key.strip()
         if not api_key:
             raise ValueError('API key must not be empty')
+
+        # Reject keys that are not valid as a header value. Otherwise requests raises an error
+        # containing the full key, which would end up in logs. Don't include the key in the message.
+        if not api_key.isprintable() or any(c.isspace() for c in api_key):
+            raise ValueError('API key contains invalid characters or whitespace')
 
         # Remove the Auth-Header when using an API token
         self.session.headers.pop('HPLS-AUTH', None)
