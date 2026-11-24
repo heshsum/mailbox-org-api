@@ -25,12 +25,14 @@ class APIClient:
     Object for API Client
     """
 
-    def __init__(self, debug_output: bool = False, max_retries: int = 5, request_timeout: int = 30) -> None:
+    def __init__(self, debug_output: bool = False, max_retries: int = 5, request_timeout: int = 30,
+                 api_key: str | None = None) -> None:
         """
         Constructor for API Client
         :param debug_output: True to enable simple debug outputs. Defaults to False
         :param max_retries: Number of times to retry the API request. Defaults to 5
         :param request_timeout: Sets the network timeout in seconds. Defaults to 30
+        :param api_key: API key for authentication. Defaults to None
         """
         # URL of the API
         self.url = "https://api.mailbox.org/v1/"
@@ -67,6 +69,9 @@ class APIClient:
         self.session.mount('https://', adapter)
 
         self.request_timeout = request_timeout
+
+        if api_key:
+            self.set_api_key(api_key)
 
     # Increment the request ID
     def get_jsonrpc_id(self) -> str:
@@ -148,6 +153,10 @@ class APIClient:
         """
         api_response = self.api_request('auth', {'user': username, 'pass': password})
         if api_response.get('session'):
+
+            # Remove Header used for API tokens
+            self.session.headers.pop('X-Api-Key', None)
+
             self.level = api_response.get("level")
             self.auth_id = str(api_response["session"])
             self.session.headers.update({"HPLS-AUTH": str(self.auth_id)})
@@ -168,6 +177,27 @@ class APIClient:
             self.session.headers.pop("HPLS-AUTH", None)
             self.auth_id = None
             self.level = None
+
+    def set_api_key(self, api_key: str) -> None:
+        """
+        Authenticate all following requests with a static API key (X-Api-Key header).
+        No auth call is needed. Clears any existing HPLS-AUTH session, because
+        the API ignores the key while HPLS-AUTH is present.
+        :param api_key: the API key created in the mailbox console
+        """
+        if not api_key:
+            raise ValueError('API key must not be empty')
+
+        # Remove the Auth-Header when using an API token
+        self.session.headers.pop('HPLS-AUTH', None)
+
+        self.auth_id = None
+        self.level = None
+        self.session.headers['X-Api-Key'] = api_key
+
+    def clear_api_key(self) -> None:
+        """Stop sending the API key."""
+        self.session.headers.pop('X-Api-Key', None)
 
     def __enter__(self) -> 'APIClient':
         """
