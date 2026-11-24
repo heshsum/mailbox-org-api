@@ -3,6 +3,7 @@ import os
 import secrets
 import string
 import time
+from unittest.mock import patch
 
 import pytest
 
@@ -11,6 +12,7 @@ from mailbox_org_api.APIError import APIError
 
 api_test_user = os.environ['API_TEST_USER']
 api_test_pass = os.environ['API_TEST_PASS']
+
 
 valid_capabilities = ['MAIL_SPAMPROTECTION', 'MAIL_OTP', 'MAIL_BLACKLIST', 'MAIL_BACKUPRECOVER', 'MAIL_PASSWORDRESET_SMS']
 
@@ -139,6 +141,125 @@ class TestAPIClient:
             assert api.level == 'account'
         assert api.auth_id is None
         assert api.level is None
+
+    def test_api_key_not_set_by_default(self):
+        api = APIClient.APIClient()
+        assert api.session.headers.get('X-Api-Key') is None
+
+    def test_api_key_constructor(self):
+        api = APIClient.APIClient(api_key='test-key')
+        assert api.session.headers.get('X-Api-Key') == 'test-key'
+        assert api.session.headers.get('HPLS-AUTH') is None
+        assert api.auth_id is None
+        assert api.level is None
+
+    def test_api_key_constructor_none(self):
+        api = APIClient.APIClient(api_key=None)
+        assert api.session.headers.get('X-Api-Key') is None
+
+    def test_set_api_key_strips_whitespace(self):
+        api = APIClient.APIClient()
+        api.set_api_key('  test-key\n')
+        assert api.session.headers.get('X-Api-Key') == 'test-key'
+
+    @pytest.mark.parametrize('key', ['', '   ', '\n'])
+    def test_set_api_key_empty(self, key):
+        api = APIClient.APIClient()
+        with pytest.raises(ValueError):
+            api.set_api_key(key)
+        assert api.session.headers.get('X-Api-Key') is None
+
+    @pytest.mark.parametrize('key', ['secret key', 'secret\nkey', 'secret\rkey', 'secret\x00key', 'secret\tkey'])
+    def test_set_api_key_invalid_characters(self, key):
+        api = APIClient.APIClient()
+        with pytest.raises(ValueError) as error:
+            api.set_api_key(key)
+        # The key must never be part of the error message
+        assert 'secret' not in str(error.value)
+        assert api.session.headers.get('X-Api-Key') is None
+
+    @pytest.mark.parametrize('key', [None, b'test-key', 123])
+    def test_set_api_key_wrong_type(self, key):
+        api = APIClient.APIClient()
+        with pytest.raises(TypeError):
+            api.set_api_key(key)
+
+    def test_set_api_key_clears_session(self):
+        api = APIClient.APIClient()
+        # Simulate an existing session from auth()
+        api.auth_id = 'session-id'
+        api.level = 'account'
+        api.session.headers['HPLS-AUTH'] = 'session-id'
+
+        api.set_api_key('test-key')
+        assert api.session.headers.get('HPLS-AUTH') is None
+        assert api.session.headers.get('X-Api-Key') == 'test-key'
+        assert api.auth_id is None
+        assert api.level is None
+
+    def test_set_api_key_replaces_key(self):
+        api = APIClient.APIClient(api_key='old-key')
+        api.set_api_key('new-key')
+        assert api.session.headers.get('X-Api-Key') == 'new-key'
+
+    def test_clear_api_key(self):
+        api = APIClient.APIClient(api_key='test-key')
+        api.clear_api_key()
+        assert api.session.headers.get('X-Api-Key') is None
+        # Clearing without a key set must not fail
+        api.clear_api_key()
+
+    def test_api_key_sent_with_request(self):
+        api = APIClient.APIClient(api_key='test-key')
+        with patch.object(api.session, 'post', wraps=api.session.post) as post:
+            with pytest.raises(APIError):
+                api.hello_innerworld()
+        post.assert_called_once()
+        # The key is sent as a header, never as part of the JSON-RPC request
+        assert 'test-key' not in str(post.call_args.kwargs['json'])
+
+    def test_api_key_not_in_debug_output(self, capsys):
+        api = APIClient.APIClient(debug_output=True, api_key='test-key')
+        with pytest.raises(APIError):
+            api.hello_innerworld()
+        assert 'test-key' not in capsys.readouterr().out
+
+    def test_context_manager_api_key(self):
+        with patch.object(APIClient.APIClient, 'deauth') as deauth:
+            with APIClient.APIClient(api_key='test-key') as api:
+                pass
+        # API keys are not bound to a session, there is nothing to deauth
+        deauth.assert_not_called()
+        assert api.session.headers.get('X-Api-Key') == 'test-key'
+
+    def test_api_key_invalid(self):
+        api = APIClient.APIClient(api_key='invalid-api-key')
+        with pytest.raises(APIError) as error:
+            api.hello_innerworld()
+        assert error.value.code == 493
+
+    def test_auth_removes_api_key(self):
+        api = APIClient.APIClient(api_key='invalid-api-key')
+        api.auth(api_test_user, api_test_pass)
+        try:
+            assert api.session.headers.get('X-Api-Key') is None
+            assert api.session.headers.get('HPLS-AUTH') == api.auth_id
+            assert api.hello_innerworld() == 'Hello Inner-World!'
+        finally:
+            api.deauth()
+
+    def test_auth_failed_keeps_api_key(self):
+        api = APIClient.APIClient(api_key='test-key')
+        with pytest.raises(APIError):
+            api.auth('wröng_üser?', 'wröng_pässwörd!')
+        assert api.session.headers.get('X-Api-Key') == 'test-key'
+        assert api.auth_id is None
+
+    @pytest.mark.skipif(not os.environ.get('API_TEST_TOKEN'), reason='API_TEST_TOKEN not set')
+    def test_api_token_valid(self):
+        with APIClient.APIClient(api_key=os.environ['API_TEST_TOKEN']) as api:
+            assert api.hello_innerworld() == 'Hello Inner-World!'
+            assert api.auth_id is None
 
     def test_account_get(self, api_client):
         account = api_client.account_get(api_test_user)
