@@ -16,6 +16,7 @@ The primary goal of this package is to mirror all calls and features of the offi
 ## Features
 
 - **Direct API Mirroring**: Straightforward mapping of mailbox.org JSON-RPC methods using Pythonic naming (e.g. `mail.add` &rarr; `mail_add`).
+- **Two Authentication Methods**: Session-based login with username and password, or a static API key (`X-Api-Key`), which also works for accounts with two-factor authentication.
 - **Context Manager Support**: Clean session lifecycle handling via `with APIClient() as api:`, which automatically handles session termination (`deauth`) and connection cleanup.
 - **Convenience Helpers**: High-level helpers for everyday tasks such as password management, force-reset on login, plan upgrades, aliases, forwarders, storage quotas, vacation autoresponders, and invoice downloads.
 - **Object-Oriented Models**: Built-in models (`Mail`, `Account`, `Invoice`) for interacting with resources as Python objects.
@@ -73,6 +74,38 @@ with APIClient() as api:
 > **Debug Mode**: Pass `debug_output=True` when creating the client (`APIClient(debug_output=True)`) to print all requests and responses with credentials safely redacted.
 > 
 > See the [Basic Usage Wiki](https://github.com/heshsum/mailbox-org-api/wiki/2.-Basic-usage) for details on naming conventions, validation, and return formats.
+
+### Authenticating with an API Key
+
+As an alternative to `auth()`, requests can be authenticated with a static API key. This is required for accounts with two-factor authentication (2FA) enabled. API keys are not bound to a session: there is no `auth()` or `deauth()` call, and the key is sent with every request in the `X-Api-Key` header.
+
+API keys are created in the mailbox console in the user profile under **API access**. The complete key is shown only once, directly after it has been created. See the [official documentation](https://api.mailbox.org/v1/doc/welcome/API-Key-Authentication.html) for details.
+
+```python
+import os
+
+from mailbox_org_api.APIClient import APIClient
+
+# Read the key from the environment instead of hard-coding it
+with APIClient(api_key=os.environ["MAILBOX_API_KEY"]) as api:
+    api.hello_innerworld()
+```
+
+The key can also be set or removed on an existing client:
+
+```python
+api = APIClient()
+api.set_api_key(os.environ["MAILBOX_API_KEY"])  # Switch to API key authentication
+api.clear_api_key()                             # Stop sending the key
+```
+
+> **One method at a time**: The API ignores the API key if a session header (`HPLS-AUTH`) is present. `set_api_key()` therefore stops using an existing session (call `deauth()` first to also close it on the server), and `auth()` removes the API key. As the access level is only returned by `auth()`, `api.level` is `None` when using an API key.
+>
+> **Validation**: Surrounding whitespace (e.g. a trailing newline when reading the key from a file) is stripped. Empty keys or keys containing whitespace or non-printable characters raise a `ValueError`. The key is never included in error messages.
+>
+> **Errors**: An unknown, expired or deleted key raises an `APIError` with code `493`. Code `494` means API key authentication is temporarily unavailable at mailbox; retry the request later.
+>
+> **Security**: Treat the API key like a password. Don't put it in your code, URLs, logs or shell history. If you suspect misuse, delete the key in the mailbox console; this revokes it immediately.
 
 ---
 
@@ -276,7 +309,7 @@ For in-depth guides and parameter reference tables, please visit the [Project Wi
 | --- | --- | --- |
 | **Installation** | [1. Installation](https://github.com/heshsum/mailbox-org-api/wiki/1.-Installation) | Package installation from PyPI and git source |
 | **Getting Started** | [2. Basic Usage](https://github.com/heshsum/mailbox-org-api/wiki/2.-Basic-usage) | Client initialisation, debug mode, parameter validation, and response structures |
-| **General Methods** | [3. Methods: General](https://github.com/heshsum/mailbox-org-api/wiki/3.-Documentation-of-API-methods#general) | `auth`, `deauth`, `hello_world`, `hello_innerworld` |
+| **General Methods** | [3. Methods: General](https://github.com/heshsum/mailbox-org-api/wiki/3.-Documentation-of-API-methods#general) | `auth`, `deauth`, `set_api_key`, `clear_api_key`, `hello_world`, `hello_innerworld` |
 | **Account Operations** | [3. Methods: Account](https://github.com/heshsum/mailbox-org-api/wiki/3.-Documentation-of-API-methods#account) | Account retrieval, listing, setting attributes, deletion, and account capabilities |
 | **Invoices** | [3. Methods: Invoice](https://github.com/heshsum/mailbox-org-api/wiki/3.-Documentation-of-API-methods#invoice) | Listing invoices, tokens, and binary file downloads (`csv`, `pdf`, `xml`) |
 | **Domain Management** | [3. Methods: Domain](https://github.com/heshsum/mailbox-org-api/wiki/3.-Documentation-of-API-methods#domain) | Domain administration, SPF verification |
