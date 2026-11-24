@@ -157,6 +157,11 @@ class TestAPIClient:
         api = APIClient.APIClient(api_key=None)
         assert api.session.headers.get('X-Api-Key') is None
 
+    @pytest.mark.parametrize('key', ['', '   ', '\n'])
+    def test_api_key_constructor_empty(self, key):
+        with pytest.raises(ValueError):
+            APIClient.APIClient(api_key=key)
+
     def test_set_api_key_strips_whitespace(self):
         api = APIClient.APIClient()
         api.set_api_key('  test-key\n')
