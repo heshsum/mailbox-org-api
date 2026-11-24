@@ -32,7 +32,7 @@ class APIClient:
         :param debug_output: True to enable simple debug outputs. Defaults to False
         :param max_retries: Number of times to retry the API request. Defaults to 5
         :param request_timeout: Sets the network timeout in seconds. Defaults to 30
-        :param api_key: API key for authentication. Defaults to None
+        :param api_key: API key for authentication, see set_api_key(). Defaults to None
         """
         # URL of the API
         self.url = "https://api.mailbox.org/v1/"
@@ -70,7 +70,9 @@ class APIClient:
 
         self.request_timeout = request_timeout
 
-        if api_key:
+        # Check for None explicitly: an empty key (e.g. from an empty environment variable)
+        # is a configuration error and raises a ValueError in set_api_key()
+        if api_key is not None:
             self.set_api_key(api_key)
 
     # Increment the request ID
