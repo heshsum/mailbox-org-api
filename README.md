@@ -16,7 +16,7 @@ The primary goal of this package is to mirror all calls and features of the offi
 ## Features
 
 - **Direct API Mirroring**: Straightforward mapping of mailbox.org JSON-RPC methods using Pythonic naming (e.g. `mail.add` &rarr; `mail_add`).
-- **Two Authentication Methods**: Session-based login with username and password, or a static API key (`X-Api-Key`), which also works for accounts with two-factor authentication.
+- **Support for user/password login and API key authentication**: Session-based login with username and password, or a static API key (`X-Api-Key`), which also works for accounts with two-factor authentication.
 - **Context Manager Support**: Clean session lifecycle handling via `with APIClient() as api:`, which automatically handles session termination (`deauth`) and connection cleanup.
 - **Convenience Helpers**: High-level helpers for everyday tasks such as password management, force-reset on login, plan upgrades, aliases, forwarders, storage quotas, vacation autoresponders, and invoice downloads.
 - **Object-Oriented Models**: Built-in models (`Mail`, `Account`, `Invoice`) for interacting with resources as Python objects.
