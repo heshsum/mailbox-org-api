@@ -1,6 +1,6 @@
 [project]
 name = "mailbox-org-api"
-version = "2.9"
+version = "2.10"
 authors = [
   { name="Hendrik Schlange", email="mail@heshsum.de" },
 ]
