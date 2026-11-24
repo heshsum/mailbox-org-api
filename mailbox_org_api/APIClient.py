@@ -208,7 +208,7 @@ class APIClient:
         if not api_key.isprintable() or any(c.isspace() for c in api_key):
             raise ValueError('API key contains invalid characters or whitespace')
 
-        # Remove the Auth-Header when using an API token
+        # Remove the Auth-Header when using an API key
         self.session.headers.pop('HPLS-AUTH', None)
 
         self.auth_id = None
