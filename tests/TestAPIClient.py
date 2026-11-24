@@ -260,9 +260,9 @@ class TestAPIClient:
         assert api.session.headers.get('X-Api-Key') == 'test-key'
         assert api.auth_id is None
 
-    @pytest.mark.skipif(not os.environ.get('API_TEST_TOKEN'), reason='API_TEST_TOKEN not set')
-    def test_api_token_valid(self):
-        with APIClient.APIClient(api_key=os.environ['API_TEST_TOKEN']) as api:
+    @pytest.mark.skipif(not os.environ.get('API_TEST_KEY'), reason='API_TEST_KEY not set')
+    def test_api_key_valid(self):
+        with APIClient.APIClient(api_key=os.environ['API_TEST_KEY']) as api:
             assert api.hello_innerworld() == 'Hello Inner-World!'
             assert api.auth_id is None
 
